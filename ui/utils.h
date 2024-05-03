@@ -1,4 +1,7 @@
 #include <ncurses.h>
 
-/// \brief This function transcripts an ascii draw into a ncurses window
+/// \brief This functions reads a file with an ASCII draw and put it into
+/// ncurses
+///
+/// Go through each line and prints it inside the window
 void display_menu(WINDOW *win);

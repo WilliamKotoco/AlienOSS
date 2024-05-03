@@ -23,7 +23,7 @@ void show_and_run() {
   wbkgd(option_window, COLOR_PAIR(1));
   wattron(option_window, COLOR_PAIR(2));
 
-  display_menu(option_window);
+  display_ascii_art(option_window);
 
   box(option_window, 0, 0);
 

@@ -3,7 +3,7 @@
 #include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
-void display_menu(WINDOW *win) {
+void display_ascii_art(WINDOW *win) {
   FILE *file = fopen("assets/alien.txt", "r");
 
   if (!file) {
