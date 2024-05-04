@@ -58,12 +58,13 @@ void show_and_run() {
         highlight = 2;
       break;
 
+      /// Enter key
     case '\n':
       if (highlight == 0) {
-        mvwprintw(option_window, 35, 1, "Created");
+        mvwprintw(option_window, 35, 1, "Created"); /// temporary
 
       } else if (highlight == 1) {
-        mvwprintw(option_window, 35, 1, "Toggled");
+        mvwprintw(option_window, 35, 1, "Toggled"); /// temporary
 
       } else {
         return;
