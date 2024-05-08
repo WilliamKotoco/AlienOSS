@@ -15,6 +15,8 @@ add_executable(AlienOS
   ui/main-window.c
   ui/utils.h 
   ui/utils.c
+  list/list.h 
+  list/list.c
   )
 
 
