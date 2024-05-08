@@ -1,5 +1,5 @@
 #include "../list/list.h"
-#include "../process/process.h"
+#include "../process/instruction.h"
 #include <stdio.h>
 #include <stdlib.h>
 

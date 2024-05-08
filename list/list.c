@@ -3,6 +3,16 @@
 #include <stdlib.h>
 #include <string.h>
 
+List *create_list(size_t data_size, void (*compare) (const void *, const void *)){ // se der erro é o compare
+  List *new_list = malloc(sizeof(List));
+  
+  new_list->header = new_list->tail = NULL;
+  new_list->cmp = compare;
+  new_list->data_size = data_size;
+
+  return new_list;
+}
+
 void push(List *list, void *new_data) {
   /// Memory for the new node
   Node *new_node = malloc(sizeof(Node));

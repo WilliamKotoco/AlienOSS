@@ -29,6 +29,9 @@ typedef struct List {
 
 } List;
 
+
+List *create_list(size_t data_size, void (*compare) (const void *, const void *));
+
 /// Function to add a new Node on the end of the list.
 /// Receives the list, the new_data and the size of the data type
 ///
