@@ -23,6 +23,8 @@ add_executable(AlienOS
   process/process.c
   semaphore/semaphore.h
   semaphore/semaphore.c
+  list/list.h 
+  list/list.c
   )
 
 
