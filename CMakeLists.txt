@@ -15,6 +15,14 @@ add_executable(AlienOS
   ui/main-window.c
   ui/utils.h 
   ui/utils.c
+  memory/memory.h
+  memory/memory.c
+  process/instruction.h
+  process/instruction.c
+  process/process.h
+  process/process.c
+  semaphore/semaphore.h
+  semaphore/semaphore.c
   )
 
 
