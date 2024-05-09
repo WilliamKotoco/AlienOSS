@@ -1,4 +1,7 @@
 #include "memory.h"
+/// Necessary for using global variables defined in main.c
+extern Memory *memory;
+
 
 int compare_pages(void *d1, void *d2) {
   Page *p1 = (Page *)d1;

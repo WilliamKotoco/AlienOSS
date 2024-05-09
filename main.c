@@ -1,6 +1,12 @@
 #include "ui/main-window.h"
 #include "process/process.h"
 
+/// creating global variables 
+List *PCB;
+Memory *memory;
+int processes_id;
+
+
 int main(int argc, char *argv[]) {
   /// inicializing global variables
   PCB = create_list(sizeof(Process), compare_processes); 

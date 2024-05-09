@@ -4,9 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-List *PCB; //!< process control block, list of process on a system
 
-int processes_id;
 
 /// @enum states a process can be in
 typedef enum status { READY, WAITING, FINISHED } Status;

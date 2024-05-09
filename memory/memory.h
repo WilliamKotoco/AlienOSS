@@ -34,7 +34,6 @@ typedef struct segment {
   int num_instructions; //!< number of instructions the program posesses
 } Segment;
 
-Memory *memory; //!< memory management
 
 /// Compares two pages based on their number. Used on the generic list.
 /// @param d1 a page

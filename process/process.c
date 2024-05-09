@@ -1,5 +1,11 @@
 #include "process.h"
 
+/// Necessary for using global variables  defined in main.c
+extern Memory *memory;
+extern int processes_id;
+extern List *PCB;
+
+
 int compare_processes(void *d1, void *d2) {
   Process *p1 = (Process *)d1;
 
