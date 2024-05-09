@@ -27,3 +27,5 @@ typedef struct segment {
   int in_memory;
   List *instructions;
 } Segment;
+
+int compare_pages(void *d1, void *d2);

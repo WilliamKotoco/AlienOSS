@@ -1,5 +1,4 @@
 #include "../memory/memory.h"
-#include "instruction.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -16,3 +15,5 @@ typedef struct process {
   int PC; ///< program counter, stores the offset of the next instruction to be
           ///< executed
 } Process;
+
+int compare_processes(void *d1, void *d2);

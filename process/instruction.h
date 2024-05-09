@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 /// @enum instruction's OpCodes
-typedef enum opcode { EXEC, READ, WRITE, P, V, print } Opcode;
+typedef enum opcode { EXEC, READ, WRITE, P, V, PRINT } Opcode;
 
 ///
 typedef struct instruction {
