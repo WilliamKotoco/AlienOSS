@@ -9,16 +9,18 @@ void show_and_run() {
   /// secondary windows
   WINDOW *process_state_window;
   WINDOW *memory_state_window;
+  
   initscr();
   cbreak();
 
   start_color();
-  init_pair(1, COLOR_BLACK, COLOR_BLACK);
-  init_pair(2, COLOR_GREEN, COLOR_BLACK);
-  init_pair(3, COLOR_GREEN, COLOR_WHITE);
+  init_pair(1, COLOR_BLACK, COLOR_BLACK); /// background color
+  init_pair(2, COLOR_GREEN, COLOR_BLACK); /// Alien green color
+  init_pair(3, COLOR_GREEN, COLOR_WHITE); /// Color for inputting from user
   bkgd(COLOR_PAIR(1));
 
   load_process_window(&process_state_window);
+
   //  load_memory_window(memory_state_window);
   /// get the maximum from the standard screen
   option_window = newwin(getmaxy(stdscr), getmaxx(stdscr) / 4, 0, 0);

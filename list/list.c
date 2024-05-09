@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 List *create_list(size_t data_size,
                   void (*compare)(const void *,
                                   const void *)) { // se der erro é o compare
@@ -15,6 +16,7 @@ List *create_list(size_t data_size,
   return new_list;
 }
 
+.
 void push(List *list, void *new_data) {
   /// Memory for the new node
   Node *new_node = malloc(sizeof(Node));
@@ -40,7 +42,10 @@ void push(List *list, void *new_data) {
   }
 }
 
-/// compares between a person and a cpf, if the cpf is found
+/// @brief  TEMP
+/// @param d1 
+/// @param d2 
+/// @return 
 int compare_person(void *d1, void *d2) {
 
   struct person *p1 = (struct person *)d1;
@@ -56,10 +61,13 @@ int compare_person(void *d1, void *d2) {
   }
 }
 
+
+
 Node *find(List *list, void *data) {
   Node *tmp = list->header;
 
   while (tmp) {
+    /// use compare function passed to the list struct.
     if (list->cmp(tmp->data, data))
       return tmp;
     tmp = tmp->next;
@@ -71,10 +79,12 @@ Node *find(List *list, void *data) {
 void delete_list(List *list, void *data) {
   Node *place = find(list, data);
 
+  /// if the element to be removed is the head of the list
   if (list->header == place) {
     place->prev = NULL;
     list->header = place->next;
 
+  /// if the element to be removed is the tail of the list
   } else if (list->tail == place) {
     place->prev->next = NULL;
     list->tail = place->prev;
