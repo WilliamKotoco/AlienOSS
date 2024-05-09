@@ -9,15 +9,15 @@ struct person {
 
 /// Generic node from a list. It stores the data and a pointer to the next item
 /// on list
-typedef struct Node {
+typedef struct node {
 
   void *data;        /// data stored in the node
-  struct Node *next; /// pointer to next element on list
-  struct Node *prev; /// pointer to previous element on list
+  struct node *next; /// pointer to next element on list
+  struct node *prev; /// pointer to previous element on list
 } Node;
 
 /// List that stores the header and the tail of the list
-typedef struct List {
+typedef struct list {
   Node *header;
 
   Node *tail;
