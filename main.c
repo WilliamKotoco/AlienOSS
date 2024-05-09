@@ -1,15 +1,19 @@
 #include "ui/main-window.h"
 #include "process/process.h"
 
-List *PCB;
-Memory *memory;
-
 int main(int argc, char *argv[]) {
-  // inicializar coisas, como listas, etc
-  PCB = create_list(sizeof(Process), compare_processes);
-  memory->pages = create_list(sizeof(Page), compare_pages);
+  /// inicializing global variables
+  PCB = create_list(sizeof(Process), compare_processes); 
 
-  show_and_run();
+  memory = malloc(sizeof(Memory));
+  memory->pages = create_list(sizeof(Page), compare_pages);
+  memory->num_free_pages = NUM_PAGES; //!< at first, all pages (beside the ones used by the OS) are free
+
+  memory->semaphores = create_list(sizeof(Semaphore), compare_semaphores);
+
+  //show_and_run();
+
+  create_process("test/programa_sintetico.txt");
 
   return 0;
 }
