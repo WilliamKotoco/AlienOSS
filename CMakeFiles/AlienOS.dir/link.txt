@@ -1,1 +1,0 @@
-/usr/bin/cc  -pthread -Wall -lncurses CMakeFiles/AlienOS.dir/main.c.o "CMakeFiles/AlienOS.dir/ui/main-window.c.o" CMakeFiles/AlienOS.dir/ui/utils.c.o CMakeFiles/AlienOS.dir/memory/memory.c.o CMakeFiles/AlienOS.dir/process/instruction.c.o CMakeFiles/AlienOS.dir/process/process.c.o CMakeFiles/AlienOS.dir/semaphore/semaphore.c.o CMakeFiles/AlienOS.dir/list/list.c.o -o AlienOS 

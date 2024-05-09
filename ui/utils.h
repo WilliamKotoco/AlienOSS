@@ -4,4 +4,4 @@
 /// ncurses
 ///
 /// Go through each line and prints it inside the window
-void display_menu(WINDOW *win);
+void display_ascii_art(WINDOW *win);

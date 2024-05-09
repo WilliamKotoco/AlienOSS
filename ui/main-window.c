@@ -15,6 +15,7 @@ void show_and_run() {
   start_color();
   init_pair(1, COLOR_BLACK, COLOR_BLACK);
   init_pair(2, COLOR_GREEN, COLOR_BLACK);
+  init_pair(3, COLOR_GREEN, COLOR_WHITE);
   bkgd(COLOR_PAIR(1));
 
   load_process_window(&process_state_window);
@@ -35,6 +36,7 @@ void show_and_run() {
   char options[3][100] = {"Create a new process",
                           "Toggle semaphore aquisition (?)", "Exit"};
   int choice;
+
   int highlight = 0;
 
   while (1) {
@@ -64,8 +66,13 @@ void show_and_run() {
       /// Enter key
     case '\n':
       if (highlight == 0) {
-        mvwprintw(process_state_window, 10, 10, "Created"); /// temporary
-        wrefresh(process_state_window);
+        char *input = get_process_filename();
+        load_process_window(&process_state_window);
+        mvwprintw(process_state_window, 10, 5, input);
+
+        wrefresh(process_state_window);   /// redrawing updated process window
+        display_ascii_art(option_window); /// reloading option window
+        box(option_window, 0, 0);
 
       } else if (highlight == 1) {
         mvwprintw(option_window, 35, 1, "Toggled"); /// temporary
@@ -96,4 +103,39 @@ void load_process_window(WINDOW **win) {
   mvwprintw(*win, 0, 2, "Process window");
   wattroff(*win, A_BOLD);
   wrefresh(*win);
+}
+
+char *get_process_filename() {
+  int maxy, maxx;
+  getmaxyx(stdscr, maxy, maxx);
+
+  /// Calcula as coordenadas para posicionar a janela no centro da tela
+  int starty = (maxy - 5) / 2;
+  int startx = (maxx - 40) / 2;
+
+  /// Cria a janela para o nome do arquivo
+  WINDOW *file_win = newwin(5, 40, starty, startx);
+  if (file_win == NULL) {
+    return NULL;
+  }
+
+  char *filename = (char *)malloc(80 * sizeof(char));
+  if (filename == NULL) {
+    delwin(file_win);
+    return NULL;
+  }
+
+  char *input = "File name: ";
+  mvwprintw(file_win, 1, 1, "%s", input);
+  wbkgd(file_win, COLOR_PAIR(3));
+  box(file_win, 0, 0);
+
+  wrefresh(file_win);
+
+  wgetstr(file_win, filename);
+
+  touchwin(stdscr);
+  delwin(file_win);
+  refresh();
+  return filename;
 }
