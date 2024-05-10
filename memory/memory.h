@@ -14,7 +14,9 @@ typedef struct page {
   int number;     //!< page number, identifier
   int segment_id; //!< reference to the segment this page belongs to
   int process_id; //!< reference to the process that owns the segment/page
-  int dirt_bit;   ///< reference bit used by the swapping mechanism
+  int dirty_bit; //!< indicates whether the data has been modified since it came
+                 //!< to memory
+  int used_bit   //!< indicates if the page has been read or written recently
 } Page;
 
 /// Represents the memory of the system, contains the page table, needed for the
@@ -27,11 +29,11 @@ typedef struct memory {
 
 /// Represents a process segment, with its size, pages and instructions.
 typedef struct segment {
-  int id;        //!< segment identifier
-  int size;      //!< size of the program data
-  int num_pages; ///< number of memory pages the segment occupies, its size /
-                 ///< PAGE_SIZE
-  int in_memory; //!< flag that indicates whether the segment is in memory
+  int id;          //!< segment identifier
+  int size;        //!< size of the program data
+  int num_pages;   ///< number of memory pages the segment occupies, its size /
+                   ///< PAGE_SIZE
+  int present_bit; //!< flag that indicates whether the segment is in memory
   Instruction *instructions; //!< array of the process instructions
   int num_instructions;      //!< number of instructions the program posesses
 } Segment;

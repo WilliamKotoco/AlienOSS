@@ -96,7 +96,7 @@ long read_program_header(char *program_name, Process *process) {
   Segment *process_segment = malloc(sizeof(Segment));
 
   process_segment->id = seg_id;
-  process_segment->in_memory = 0; /// segment is in the disk at first
+  process_segment->present_bit = 0; /// segment is in the disk at first
   process_segment->size =
       seg_size * KBYTE; /// converting the segment size from KB to bytes
   process_segment->num_pages = ceil(
