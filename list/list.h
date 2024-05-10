@@ -8,8 +8,10 @@ struct person {
 };
 
 
-typedef struct node {
 
+/// Generic node from a list. It stores the data and a pointer to the next item
+/// on list
+typedef struct Node {
   void *data;        /// data stored in the node
   struct node *next; /// pointer to next element on list
   struct node *prev; /// pointer to previous element on list

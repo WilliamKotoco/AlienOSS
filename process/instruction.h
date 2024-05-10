@@ -4,8 +4,9 @@
 /// @enum instruction's OpCodes
 typedef enum opcode { EXEC, READ, WRITE, P, V, PRINT } Opcode;
 
-///
+/// Represents one intruction of a program. Made up of a OpCode and its operand.
 typedef struct instruction {
-  Opcode opcode;
-  int operand; /*OBS VER SE DÁ PRO SEMÁFORO*/
+  Opcode opcode; //!< instruction OpCode
+  int operand;
+  char semaphore;
 } Instruction;
