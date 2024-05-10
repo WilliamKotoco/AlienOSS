@@ -28,3 +28,8 @@ typedef struct process {
 int compare_processes(void *d1, void *d2);
 
 void create_process(char *program_name);
+
+long read_program_header(char *program_name, Process *process);
+
+
+int read_program_instructions(char *program_name, Process *process, long final_header);

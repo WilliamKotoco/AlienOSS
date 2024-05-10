@@ -1,4 +1,5 @@
 #include "process.h"
+#include <stdio.h>
 
 /// Necessary for using global variables  defined in main.c
 extern Memory *memory;
@@ -25,7 +26,8 @@ void create_process(char *program_name){
   new_process->id = processes_id++;
   new_process->PC = 0;
 
-  if((read_program_header(program_name, new_process) == -1) || (read_program_instructions(program_name, new_process) == -1) ){
+  long final_header = read_program_header(program_name, new_process);
+  if((final_header == -1) || (read_program_instructions(program_name, new_process, final_header) == -1)){
     return;
   }
 
@@ -34,7 +36,7 @@ void create_process(char *program_name){
   push(PCB, new_process);
 }
 
-int read_program_header(char *program_name, Process *process){
+long read_program_header(char *program_name, Process *process){
   FILE *fp = fopen(program_name, "r");
 
   if(!fp){
@@ -44,10 +46,16 @@ int read_program_header(char *program_name, Process *process){
 
   int seg_id, seg_size;
 
-  fscanf(fp, "%s", process->name);
-  fscanf(fp, "%d", &seg_id);
-  fscanf(fp, "%d", &process->priority);
-  fscanf(fp, "%d", &seg_size);
+  printf("%ld", ftell(fp));
+  fscanf(fp, "%s\n%d\n%d\n%d\n", process->name, &seg_id, &process->priority, &seg_size);
+  printf("Dados do processo: %d %d %d %d ", process->name, seg_id, process->priority, seg_size);
+
+  exit(0);
+  // fscanf(fp, "%s", process->name);
+  // printf("BLALBLBAL %s", process->name);
+  // fscanf(fp, "%d", &seg_id);
+  // fscanf(fp, "%d", &process->priority);
+  // fscanf(fp, "%d", &seg_size);
 
   char ch;
   while((ch = getc (fp)) != '\n'){ // semaphore line
@@ -56,7 +64,7 @@ int read_program_header(char *program_name, Process *process){
       }
       
       // ch is a semaphore name
-      Node *node_found = find(memory->semaphores, ch);
+      Node *node_found = find(memory->semaphores, &ch);
 
       if(!node_found){ // this program is the first one to use this semaphore
         Semaphore *new_semaphore = malloc(sizeof(Semaphore));
@@ -76,10 +84,12 @@ int read_program_header(char *program_name, Process *process){
 
   process->segment = process_segment;
 
-  return 1;
+  printf("Dados do processo: %d %d %d %d ", process->id, process->segment->id, process->priority, process->segment->size);
+
+  return ftell(fp);
 }
 
-int read_program_instructions(char *program_name, Process *process){
+int read_program_instructions(char *program_name, Process *process, long final_header){
   FILE *fp = fopen(program_name, "r");
 
   if(!fp){
@@ -89,7 +99,12 @@ int read_program_instructions(char *program_name, Process *process){
 
   char buffer[100];
 
+  fseek(fp, final_header, SEEK_SET); /// end of header
+  ///
   fgets(buffer, 99, fp); // begin of instructions block
+
+
+  printf("BUFFER: %s \n", buffer);
   long instr_begin = ftell(fp);
 
   int num_instr = 0;
@@ -98,6 +113,7 @@ int read_program_instructions(char *program_name, Process *process){
     num_instr++;
   }
 
+  printf("instru number: %d ", num_instr);
   fseek(fp, instr_begin, SEEK_SET); // repositioning the file pointer to the begin of the instructions block
   
   process->segment->num_instructions = num_instr;
@@ -116,6 +132,8 @@ int read_program_instructions(char *program_name, Process *process){
     } else {
       char* left = strtok(buffer, " "); // left part of the instruction, the OpCode
       char *right = strtok(NULL, " "); // right part of the instruction, the operand
+     
+
 
       if (strcmp(left, "exec") == 0)
         process->segment->instructions[i].opcode = EXEC;
@@ -126,7 +144,7 @@ int read_program_instructions(char *program_name, Process *process){
       else if (strcmp(left, "print") == 0)
         process->segment->instructions[i].opcode = PRINT;
 
-      process->segment->instructions[i].operand = atoi(right);
+        // process->segment->instructions[i].operand = atoi(right);
     }
 
     i++;
