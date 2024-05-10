@@ -27,9 +27,19 @@ typedef struct process {
 /// @return 1 if d1 and d2 are the same process, and 0 otherwise
 int compare_processes(void *d1, void *d2);
 
+/// Creates a new process, reading its information and instructions from the program file, and adding the new process to the PCB, OS's list of processes
+/// @param program_name name of the program file, submitted by the user
 void create_process(char *program_name);
 
+/// Auxiliary funtion to create a new process. Reads the header of the program from the file and stores it in the process.
+/// @param program_name name of the program file, submitted by the user
+/// @param process the process to be created
+/// @return -1 if the file cannot be opened, otherwise the position of the end of the header in the file
 long read_program_header(char *program_name, Process *process);
 
-
+/// Auxiliary funtion to create a new process. Reads the instructions of the program from the file and stores it in the process segment.
+/// @param program_name name of the program file, submitted by the user
+/// @param process the process to be created
+/// @param final_header the position of the end of the header in the file (the begin of the instructions block)
+/// @return -1 if the file cannot be opened, otherwise 1
 int read_program_instructions(char *program_name, Process *process, long final_header);

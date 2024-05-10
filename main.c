@@ -17,9 +17,20 @@ int main(int argc, char *argv[]) {
 
   memory->semaphores = create_list(sizeof(Semaphore), compare_semaphores);
 
-  //show_and_run();
+  show_and_run();
 
-  create_process("test/programa_sintetico.txt");
+  // create_process("test/programa_sintetico.txt");
+
+  // printf("Após ler programa sintético:\n");
+
+  // Process *teste = (Process *)PCB->header->data;
+  // printf("Cabeça da lista de processos: ID %d Name %s\n", teste->id, teste->name);
+
+  // Semaphore *sema = (Semaphore *)memory->semaphores->header->data;
+  // printf("Semáforo: 1) %c ", sema->name);
+
+  // Semaphore *sema2 = (Semaphore *)memory->semaphores->header->next->data;
+  // printf("2) %c ", sema2->name);
 
   return 0;
 }
