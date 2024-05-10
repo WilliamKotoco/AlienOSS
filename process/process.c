@@ -30,7 +30,7 @@ void create_process(char *program_name) {
   if ((final_header == -1) ||
       (read_program_instructions(program_name, new_process, final_header) ==
        -1)) { /// if the file cannot be opened
-    return;
+    exit(1);
   }
 
   new_process->status = READY;
