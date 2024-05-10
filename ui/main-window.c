@@ -9,7 +9,7 @@ void show_and_run() {
   /// secondary windows
   WINDOW *process_state_window;
   WINDOW *memory_state_window;
-  
+
   initscr();
   cbreak();
 

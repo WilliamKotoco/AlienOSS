@@ -7,8 +7,8 @@
 
 /// \brief Window for displaying information and to user
 ///
-/// @details Display the logo and the options to create a process, display memory and
-/// display idk
+/// @details Display the logo and the options to create a process, display
+/// memory and display idk
 void show_and_run();
 
 /// @brief Load the process window, which is the window responsible to show

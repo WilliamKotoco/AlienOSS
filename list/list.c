@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 List *create_list(size_t data_size,
                   void (*compare)(const void *,
                                   const void *)) { // se der erro é o compare
@@ -16,7 +15,6 @@ List *create_list(size_t data_size,
   return new_list;
 }
 
-.
 void push(List *list, void *new_data) {
   /// Memory for the new node
   Node *new_node = malloc(sizeof(Node));
@@ -43,9 +41,9 @@ void push(List *list, void *new_data) {
 }
 
 /// @brief  TEMP
-/// @param d1 
-/// @param d2 
-/// @return 
+/// @param d1
+/// @param d2
+/// @return
 int compare_person(void *d1, void *d2) {
 
   struct person *p1 = (struct person *)d1;
@@ -60,8 +58,6 @@ int compare_person(void *d1, void *d2) {
     return 0;
   }
 }
-
-
 
 Node *find(List *list, void *data) {
   Node *tmp = list->header;
@@ -84,7 +80,7 @@ void delete_list(List *list, void *data) {
     place->prev = NULL;
     list->header = place->next;
 
-  /// if the element to be removed is the tail of the list
+    /// if the element to be removed is the tail of the list
   } else if (list->tail == place) {
     place->prev->next = NULL;
     list->tail = place->prev;

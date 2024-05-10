@@ -6,7 +6,6 @@ extern Memory *memory;
 extern int processes_id;
 extern List *PCB;
 
-
 int compare_processes(void *d1, void *d2) {
   Process *p1 = (Process *)d1;
 
@@ -21,13 +20,16 @@ int compare_processes(void *d1, void *d2) {
   }
 }
 
-void create_process(char *program_name){
-  Process *new_process = malloc(sizeof(Process)); /// allocate memory for the new process
+void create_process(char *program_name) {
+  Process *new_process =
+      malloc(sizeof(Process)); /// allocate memory for the new process
   new_process->id = processes_id++;
   new_process->PC = 0;
 
-  long final_header = read_program_header(program_name, new_process); 
-  if((final_header == -1) || (read_program_instructions(program_name, new_process, final_header) == -1)){ /// if the file cannot be opened
+  long final_header = read_program_header(program_name, new_process);
+  if ((final_header == -1) ||
+      (read_program_instructions(program_name, new_process, final_header) ==
+       -1)) { /// if the file cannot be opened
     return;
   }
 
@@ -36,10 +38,10 @@ void create_process(char *program_name){
   push(PCB, new_process); /// adding the new process to the OS's PCB list
 }
 
-long read_program_header(char *program_name, Process *process){
+long read_program_header(char *program_name, Process *process) {
   FILE *fp = fopen(program_name, "r");
 
-  if(!fp){ /// cannot open the file
+  if (!fp) { /// cannot open the file
     printf("Error opening the program named %s", program_name);
     return -1;
   }
@@ -68,42 +70,49 @@ long read_program_header(char *program_name, Process *process){
   seg_size = strtol(buffer, NULL, 10);
 
   char ch;
-  while((ch = getc (fp)) != '\n'){ /// semaphore line
-      if(ch == ' '){
-         continue;
-      }
-      
-      /// ch is a semaphore name
-      Node *node_found = find(memory->semaphores, &ch); /// check if the semaphore is already created
+  while ((ch = getc(fp)) != '\n') { /// semaphore line
+    if (ch == ' ') {
+      continue;
+    }
 
-      if(!node_found){ // this program is the first one to use this semaphore
-        Semaphore *new_semaphore = malloc(sizeof(Semaphore)); /// create a new semaphore
+    /// ch is a semaphore name
+    Node *node_found = find(memory->semaphores,
+                            &ch); /// check if the semaphore is already created
 
-        new_semaphore->name = ch;
-        new_semaphore->owner_id = -1; /// no owner yet
-        new_semaphore->processes_waiting = create_list(sizeof(Process), compare_processes);
+    if (!node_found) { // this program is the first one to use this semaphore
+      Semaphore *new_semaphore =
+          malloc(sizeof(Semaphore)); /// create a new semaphore
 
-        push(memory->semaphores, new_semaphore); /// adds semaphore to OS's list
-      }
-   }
+      new_semaphore->name = ch;
+      new_semaphore->owner_id = -1; /// no owner yet
+      new_semaphore->processes_waiting =
+          create_list(sizeof(Process), compare_processes);
+
+      push(memory->semaphores, new_semaphore); /// adds semaphore to OS's list
+    }
+  }
 
   // create the process's segment
   Segment *process_segment = malloc(sizeof(Segment));
 
   process_segment->id = seg_id;
   process_segment->in_memory = 0; /// segment is in the disk at first
-  process_segment->size = seg_size * KBYTE; /// converting the segment size from KB to bytes
-  process_segment->num_pages = ceil(process_segment->size / PAGE_SIZE); /// calculating the number of pages needed to store the program data
+  process_segment->size =
+      seg_size * KBYTE; /// converting the segment size from KB to bytes
+  process_segment->num_pages = ceil(
+      process_segment->size / PAGE_SIZE); /// calculating the number of pages
+                                          /// needed to store the program data
 
   process->segment = process_segment;
 
   return ftell(fp); /// position on the file of the end of the program header
 }
 
-int read_program_instructions(char *program_name, Process *process, long final_header){
+int read_program_instructions(char *program_name, Process *process,
+                              long final_header) {
   FILE *fp = fopen(program_name, "r");
 
-  if(!fp){ /// cannot open the file
+  if (!fp) { /// cannot open the file
     printf("Error opening the program named %s", program_name);
     return -1;
   }
@@ -112,36 +121,41 @@ int read_program_instructions(char *program_name, Process *process, long final_h
 
   fseek(fp, final_header, SEEK_SET); /// end of header
 
-  fgets(buffer, 99, fp); // begin of instructions block (next line from the header)
+  fgets(buffer, 99,
+        fp); // begin of instructions block (next line from the header)
   long instr_begin = ftell(fp);
 
   int num_instr = 0;
 
-  /// scrolling through the file counting the number of instructions  
-  while(fgets(buffer, 99, fp)){ /// one instrcution = one line on the file
+  /// scrolling through the file counting the number of instructions
+  while (fgets(buffer, 99, fp)) { /// one instrcution = one line on the file
     num_instr++;
   }
 
-  fseek(fp, instr_begin, SEEK_SET); /// repositioning the file pointer to the begin of the instructions block
-  
+  fseek(fp, instr_begin, SEEK_SET); /// repositioning the file pointer to the
+                                    /// begin of the instructions block
+
   process->segment->num_instructions = num_instr;
-  process->segment->instructions = (Instruction *) malloc(sizeof(Instruction) * num_instr); /// allocating the instructions array
+  process->segment->instructions = (Instruction *)malloc(
+      sizeof(Instruction) * num_instr); /// allocating the instructions array
 
   int i = 0;
-  while (fgets(buffer, 99, fp)){ /// for every instruction
-    if (buffer[0] == 'P' || buffer[0] == 'V'){ /// instruction related to a semaphore
-      if(buffer[0] == 'P'){
-        process->segment->instructions[i].opcode = P; 
-      } else{
+  while (fgets(buffer, 99, fp)) { /// for every instruction
+    if (buffer[0] == 'P' ||
+        buffer[0] == 'V') { /// instruction related to a semaphore
+      if (buffer[0] == 'P') {
+        process->segment->instructions[i].opcode = P;
+      } else {
         process->segment->instructions[i].opcode = V;
       }
 
-      process->segment->instructions[i].semaphore = buffer[2]; /// semaphore name
+      process->segment->instructions[i].semaphore =
+          buffer[2]; /// semaphore name
     } else {
       /// instruction = OpCode [blankspace] operator
-      char* left = strtok(buffer, " "); // left part of the instruction
-      char *right = strtok(NULL, " "); // right part of the instruction
-     
+      char *left = strtok(buffer, " "); // left part of the instruction
+      char *right = strtok(NULL, " ");  // right part of the instruction
+
       /// verifying the OpCode, attribuing the related enum value
       if (strcmp(left, "exec") == 0)
         process->segment->instructions[i].opcode = EXEC;
@@ -153,7 +167,8 @@ int read_program_instructions(char *program_name, Process *process, long final_h
         process->segment->instructions[i].opcode = PRINT;
 
       /// instructions operand
-      process->segment->instructions[i].operand = strtol(right, NULL, 10); /// converting string to integer
+      process->segment->instructions[i].operand =
+          strtol(right, NULL, 10); /// converting string to integer
     }
 
     i++;
