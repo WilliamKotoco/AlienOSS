@@ -1,13 +1,21 @@
 #include "process/process.h"
+#include "scheduler/scheduler.h"
 #include "ui/main-window.h"
+#include <semaphore.h>
 
 /// creating global variables
 List *PCB;
 Memory *memory;
 int processes_id;
+Scheduler *scheduler;
+sem_t process_semaphore; /// Read-write semaphore for the current running
+                         /// process in the scheduler.
 
 int main(int argc, char *argv[]) {
+
   /// inicializing global variables
+
+  sem_init(&process_semaphore, 1, 0);
   PCB = create_list(sizeof(Process), compare_processes);
 
   memory = malloc(sizeof(Memory));
@@ -17,6 +25,7 @@ int main(int argc, char *argv[]) {
 
   memory->semaphores = create_list(sizeof(Semaphore), compare_semaphores);
 
+  init_scheduler();
   show_and_run();
 
   // create_process("test/programa_sintetico.txt");
