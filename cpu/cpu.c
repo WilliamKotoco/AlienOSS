@@ -18,15 +18,16 @@ void init_cpu() {
 }
 
 void cpu() {
-  while (1) {
-    if (! scheduler->running_process) { // no running process
-      forward_scheduling();
-    } else{ // there is a scheduled process
+  while (1) { /// constantly running
+    if (! scheduler->running_process) { /// no running process
+      forward_scheduling(); /// schedules another process
+    } else{ /// there is a scheduled process already
       while (scheduler->running_process && scheduler->running_process->PC 
         < scheduler->running_process->segment->num_instructions &&
         scheduler->running_process->remaining_time > 0) { /// while the process is still running
         
         sem_wait(&process_semaphore);
+
         Process *running = scheduler->running_process;
 
         if(! running->segment->present_bit){ // segment is not loaded in the memory 
@@ -41,16 +42,14 @@ void cpu() {
         sem_post(&process_semaphore);
       }
 
-      // após sair do while -> processo parou de rodar pq foi interrompido, 
-      // pq terminou de executar ou pq estourou o tempo
+      /// exited while, that means the process stopped running, either because it was interrupted, 
+      /// because it has finished running, or because it used all of its quantum time
 
-      if(! scheduler->running_process){
-        continue; // vai para o while de fora e chama escalonador para reescalonar
-      }
-
-      if(scheduler->running_process->PC >= scheduler->running_process->segment->num_instructions){
+      if(scheduler->running_process->PC >= scheduler->running_process->segment->num_instructions){ /// finished
         syscall(PROCESS_FINISH, scheduler->running_process); // process finished
-      } else{ // process completed the quantum time
+      } 
+      
+      if(scheduler->running_process->remaining_time <= 0){ // completed the quantum time
         syscall(PROCESS_INTERRUPT, QUANTUM_COMPLETED);
       }  
     }

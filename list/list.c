@@ -91,9 +91,9 @@ void delete_list(List *list, void *data) {
 }
 
 Node *pop(List *list){
-  Node *tmp = list->header;
+  Node *tmp = list->header; /// first element in the list
 
-  list->header = list->header->next;
+  list->header = list->header->next; /// new header is the second element
   list->header->prev = NULL;
   
   return tmp;

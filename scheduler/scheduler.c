@@ -14,24 +14,24 @@ void init_scheduler() {
 }
 
 void forward_scheduling() {
-  sem_wait(&process_semaphore);
+  sem_wait(&process_semaphore); /// we cannot change the ready processes list in between these following actions
 
   Node *scheduled = pop(scheduler->ready_processes); /// first process on the queue
   Process *scheduled_process = (Process *) scheduled->data;
 
-  if (scheduled_process){
+  if (scheduled_process){ /// there is a process on the list
     scheduled_process->status = RUNNING;
     scheduled_process->remaining_time = QUANTUM_TIME_TOTAL / scheduled_process->priority; /// process's quantum time is inversely proportional to its priority
   }
+    
+  // OBS FALTA TRATAR O PROCESSO "REMOVIDO" (SE VOLTA PARA A LISTA COMO PRONTO OU SE ESTÁ BLOQUEADO)
 
   scheduler->running_process = scheduled_process;
 
-  // OBS FALTA TRATAR O PROCESSO "REMOVIDO" (SE VOLTA PARA A LISTA COMO PRONTO OU SE ESTÁ BLOQUEADO)
-    
   sem_post(&process_semaphore);
 }
 
-Node *search_process_priority(List *list, int priority) {
+Node *last_process_priority(List *list, int priority) {
   Node *tmp = list->header;
 
   if(!tmp){ // list is empty
@@ -57,7 +57,7 @@ Node *search_process_priority(List *list, int priority) {
 }
 
 void add_process_scheduler(Process *new_process){
-  Node *prev = search_process_priority(scheduler->ready_processes, new_process->priority);
+  Node *prev = last_process_priority(scheduler->ready_processes, new_process->priority);
 
   Node *new_node = malloc(sizeof(Node));
   new_node->data = new_process;

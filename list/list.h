@@ -43,6 +43,11 @@ List *create_list(size_t data_size,
 /// the recently created node to the end of the list
 void push(List *list, void *new_data);
 
+/// @brief Pop a node from the list
+/// @param list the list
+/// @return the first node of the list
+Node *pop(List *list);
+
 /// @brief  Search in the list given a key
 /// @param list The list to be searched for
 /// @param data The key to identify the node within the list
