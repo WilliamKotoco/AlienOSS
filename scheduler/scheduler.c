@@ -17,12 +17,14 @@ void forward_scheduling() {
   sem_wait(&process_semaphore); /// we cannot change the ready processes list in between these following actions
 
   Node *scheduled = pop(scheduler->ready_processes); /// first process on the queue
+  if(! scheduled){ /// there is no process on the list
+    return; 
+  }
+
   Process *scheduled_process = (Process *) scheduled->data;
 
-  if (scheduled_process){ /// there is a process on the list
-    scheduled_process->status = RUNNING;
-    scheduled_process->remaining_time = QUANTUM_TIME_TOTAL / scheduled_process->priority; /// process's quantum time is inversely proportional to its priority
-  }
+  scheduled_process->status = RUNNING;
+  scheduled_process->remaining_time = QUANTUM_TIME_TOTAL / scheduled_process->priority; /// process's quantum time is inversely proportional to its priority  
     
   // OBS FALTA TRATAR O PROCESSO "REMOVIDO" (SE VOLTA PARA A LISTA COMO PRONTO OU SE ESTÁ BLOQUEADO)
 

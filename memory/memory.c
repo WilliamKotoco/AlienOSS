@@ -15,3 +15,20 @@ int compare_pages(void *d1, void *d2) {
     return 0;
   }
 }
+
+Memory *init_memory(){
+  Memory *memory = malloc(sizeof(Memory));
+
+  memory->pages = malloc(sizeof(Page) * NUM_PAGES);
+  memory->num_free_pages = NUM_PAGES; //!< at first, all pages (beside the ones
+                                      //!< used by the OS) are free
+
+  for(int i = 0; i < NUM_PAGES; i++){
+    memory->pages[i].number = i;
+    memory->pages[i].free = 1;
+  }
+
+  memory->semaphores = create_list(sizeof(Semaphore), compare_semaphores);
+
+  return memory;
+}

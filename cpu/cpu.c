@@ -33,10 +33,9 @@ void cpu() {
         if(! running->segment->present_bit){ // segment is not loaded in the memory 
           // chamar função de carregar, que chama interrupção e tira o processo de executar
         } else{
-          int page_number = fetch_instruction(running->PC);
-          // procura página na tabela de páginas e muda bit
+          running->segment->used_bit = 1;
 
-          execute_instruction(running, running->segment->instructions[running->PC]); // aumenta PC aqui se der certo
+          //execute_instruction(running, running->segment->instructions[running->PC]); // aumenta PC aqui se der certo
         }
         
         sem_post(&process_semaphore);
@@ -46,16 +45,42 @@ void cpu() {
       /// because it has finished running, or because it used all of its quantum time
 
       if(scheduler->running_process->PC >= scheduler->running_process->segment->num_instructions){ /// finished
-        syscall(PROCESS_FINISH, scheduler->running_process); // process finished
+        //syscall(PROCESS_FINISH, scheduler->running_process); // process finished
       } 
       
       if(scheduler->running_process->remaining_time <= 0){ // completed the quantum time
-        syscall(PROCESS_INTERRUPT, QUANTUM_COMPLETED);
+        //syscall(PROCESS_INTERRUPT, QUANTUM_COMPLETED);
       }  
     }
   }
 }
 
-int fetch_instruction(int PC){
-  return PC / PAGE_SIZE; /// the number of the page where the instruction is
+void memory_load_requisition(Process *process){
+  if(memory->num_free_pages >= process->segment->num_pages){ /// there is space available in the memory for the pages
+    // creating the pages and inserting them into memory's page table
+    for(int i = 0; i < process->segment->num_pages; i++){
+      Page *new_page = malloc(sizeof(Page));
+      new_page->process_id = process->id;
+      new_page->segment_id = process->segment->id;
+
+      add_page_memory(new_page);
+    }
+  } else{
+    /// second chance
+  }
+}
+
+void add_page_memory(Page *new_page){ // percorrer páginas e adicionar se achar livre no meio. Se não achar, adicionar depois
+  int i = 0;
+
+  while(memory->pages[i].free == 0 && i < NUM_PAGES){ /// searches first free page
+    i++;
+  }
+
+  memory->pages[i].number = new_page->number;
+  memory->pages[i].process_id = new_page->process_id;
+  memory->pages[i].segment_id = new_page->segment_id;
+  memory->pages[i].free = 0;
+
+  memory->num_free_pages--;
 }
