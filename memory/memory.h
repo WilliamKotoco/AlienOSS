@@ -6,7 +6,11 @@
 #define MEMORY_SIZE 1073742000
 #define PAGE_SIZE 8192
 #define NUM_PAGES 131072
+
 #define KBYTE 1024
+
+#define INSTR_SIZE 64
+#define INSTR_PER_PAGE 128
 
 /// Represents a memory page, identified by its number and that references the
 /// segment and process it belongs to. A tuple on the memory's page table.
@@ -16,7 +20,7 @@ typedef struct page {
   int process_id; //!< reference to the process that owns the segment/page
   int dirty_bit; //!< indicates whether the data has been modified since it came
                  //!< to memory
-  int used_bit   //!< indicates if the page has been read or written recently
+  int used_bit;  //!< indicates if the page has been read or written recently
 } Page;
 
 /// Represents the memory of the system, contains the page table, needed for the

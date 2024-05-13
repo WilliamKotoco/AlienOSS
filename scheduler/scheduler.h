@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define QUANTUM_TIME_TOTAL 5000
+
 typedef struct scheduler {
   Process *running_process;
   List *ready_processes;

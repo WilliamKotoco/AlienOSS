@@ -89,3 +89,12 @@ void delete_list(List *list, void *data) {
     place->next->prev = place->prev;
   }
 }
+
+Node *pop(List *list){
+  Node *tmp = list->header;
+
+  list->header = list->header->next;
+  list->header->prev = NULL;
+  
+  return tmp;
+}

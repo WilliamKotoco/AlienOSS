@@ -6,7 +6,6 @@
 /// creating global variables
 List *PCB;
 Memory *memory;
-int processes_id;
 Scheduler *scheduler;
 sem_t process_semaphore; /// Read-write semaphore for the current running
                          /// process in the scheduler.
@@ -14,8 +13,8 @@ sem_t process_semaphore; /// Read-write semaphore for the current running
 int main(int argc, char *argv[]) {
 
   /// inicializing global variables
-
   sem_init(&process_semaphore, 1, 0);
+
   PCB = create_list(sizeof(Process), compare_processes);
 
   memory = malloc(sizeof(Memory));

@@ -1,5 +1,6 @@
 #include <pthread.h>
 #include <semaphore.h>
+
 /// @brief  Initialize the CPU thread
 void init_cpu();
 

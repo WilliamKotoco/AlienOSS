@@ -5,18 +5,22 @@
 #include <string.h>
 
 /// @enum states a process can be in
-typedef enum status { READY, WAITING, FINISHED } Status;
+typedef enum status { READY, WAITING, FINISHED, RUNNING } Status;
 
 /// info needed from a process, obtained from the synthetic program
 typedef struct process {
   char *name;    //!< program name
   int id;        //!< process identifier
+
   int priority;  ///< process priority, smaller the number, higher the priority
   Status status; //!< @enum process status
   Segment *segment; ///< @struct memory segment, groups the program data
   int PC; ///< program counter, stores the offset of the next instruction to be
           ///< executed
+  long remaining_time;
 } Process;
+
+int processes_id;
 
 /// @brief Compares two processes based on their id. Used on the generic list.
 /// @param d1 a process

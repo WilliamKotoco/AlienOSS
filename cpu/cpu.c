@@ -19,17 +19,44 @@ void init_cpu() {
 
 void cpu() {
   while (1) {
-    while (scheduler->running_process && scheduler->running_process->PC < 40 &&
-           scheduler->running_process->time) {
-      sem_wait(&process_semaphore);
+    if (! scheduler->running_process) { // no running process
+      forward_scheduling();
+    } else{ // there is a scheduled process
+      while (scheduler->running_process && scheduler->running_process->PC 
+        < scheduler->running_process->segment->num_instructions &&
+        scheduler->running_process->remaining_time > 0) { /// while the process is still running
+        
+        sem_wait(&process_semaphore);
+        Process *running = scheduler->running_process;
 
-      /// if(instrucoes do processo nao estao carregadas)
-      ///        carregar
+        if(! running->segment->present_bit){ // segment is not loaded in the memory 
+          // chamar função de carregar, que chama interrupção e tira o processo de executar
+        } else{
+          int page_number = fetch_instruction(running->PC);
+          // procura página na tabela de páginas e muda bit
 
-      /// executa instrucao
-      /// scheduler->pc++;
+          execute_instruction(running, running->segment->instructions[running->PC]); // aumenta PC aqui se der certo
+        }
+        
+        sem_post(&process_semaphore);
+      }
 
-      sem_post(&process_semaphore);
+      // após sair do while -> processo parou de rodar pq foi interrompido, 
+      // pq terminou de executar ou pq estourou o tempo
+
+      if(! scheduler->running_process){
+        continue; // vai para o while de fora e chama escalonador para reescalonar
+      }
+
+      if(scheduler->running_process->PC >= scheduler->running_process->segment->num_instructions){
+        syscall(PROCESS_FINISH, scheduler->running_process); // process finished
+      } else{ // process completed the quantum time
+        syscall(PROCESS_INTERRUPT, QUANTUM_COMPLETED);
+      }  
     }
   }
+}
+
+int fetch_instruction(int PC){
+  return PC / PAGE_SIZE; /// the number of the page where the instruction is
 }
