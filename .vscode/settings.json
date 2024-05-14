@@ -1,6 +1,9 @@
 {
     "files.associations": {
         "cpu.h": "c",
-        "scheduler.h": "c"
+        "scheduler.h": "c",
+        "semaphore.h": "c",
+        "main-window.h": "c",
+        "pthread.h": "c"
     }
 }

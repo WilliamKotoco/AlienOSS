@@ -40,24 +40,24 @@ void push(List *list, void *new_data) {
   }
 }
 
-/// @brief  TEMP
-/// @param d1
-/// @param d2
-/// @return
-int compare_person(void *d1, void *d2) {
+// /// @brief  TEMP
+// /// @param d1
+// /// @param d2
+// /// @return
+// int compare_person(void *d1, void *d2) {
 
-  struct person *p1 = (struct person *)d1;
+//   struct person *p1 = (struct person *)d1;
 
-  int d11 = p1->cpf;
+//   int d11 = p1->cpf;
 
-  int *d22 = (int *)d2;
+//   int *d22 = (int *)d2;
 
-  if (d11 == *d22) {
-    return 1;
-  } else {
-    return 0;
-  }
-}
+//   if (d11 == *d22) {
+//     return 1;
+//   } else {
+//     return 0;
+//   }
+// }
 
 Node *find(List *list, void *data) {
   Node *tmp = list->header;
@@ -90,11 +90,11 @@ void delete_list(List *list, void *data) {
   }
 }
 
-Node *pop(List *list){
+Node *pop(List *list) {
   Node *tmp = list->header; /// first element in the list
 
   list->header = list->header->next; /// new header is the second element
   list->header->prev = NULL;
-  
+
   return tmp;
 }

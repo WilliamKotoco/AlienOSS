@@ -14,17 +14,23 @@ void init_scheduler() {
 }
 
 void forward_scheduling() {
-  sem_wait(&process_semaphore); /// we cannot change the ready processes list in between these following actions
+  sem_wait(&process_semaphore); /// we cannot change the ready processes list in
+                                /// between these following actions
 
-  Node *scheduled = pop(scheduler->ready_processes); /// first process on the queue
-  Process *scheduled_process = (Process *) scheduled->data;
+  Node *scheduled =
+      pop(scheduler->ready_processes); /// first process on the queue
+  Process *scheduled_process = (Process *)scheduled->data;
 
-  if (scheduled_process){ /// there is a process on the list
+  if (scheduled_process) { /// there is a process on the list
     scheduled_process->status = RUNNING;
-    scheduled_process->remaining_time = QUANTUM_TIME_TOTAL / scheduled_process->priority; /// process's quantum time is inversely proportional to its priority
+    scheduled_process->remaining_time =
+        QUANTUM_TIME_TOTAL /
+        scheduled_process->priority; /// process's quantum time is inversely
+                                     /// proportional to its priority
   }
-    
-  // OBS FALTA TRATAR O PROCESSO "REMOVIDO" (SE VOLTA PARA A LISTA COMO PRONTO OU SE ESTÁ BLOQUEADO)
+
+  // OBS FALTA TRATAR O PROCESSO "REMOVIDO" (SE VOLTA PARA A LISTA COMO PRONTO
+  // OU SE ESTÁ BLOQUEADO)
 
   scheduler->running_process = scheduled_process;
 
@@ -34,43 +40,45 @@ void forward_scheduling() {
 Node *last_process_priority(List *list, int priority) {
   Node *tmp = list->header;
 
-  if(!tmp){ // list is empty
+  if (!tmp) { // list is empty
     return NULL;
   }
-  
-  Process *tmp_process = (Process *) tmp->data;
+
+  Process *tmp_process = (Process *)tmp->data;
   int next_priority = priority + 1;
 
-  if(tmp_process->priority > next_priority){ /// new process has the highest priority
-      return NULL; // there is no process before it
+  if (tmp_process->priority >
+      next_priority) { /// new process has the highest priority
+    return NULL;       // there is no process before it
   }
 
   while (tmp) { // searches for the first process with next_priority
     if (tmp_process->priority == next_priority)
       return tmp->prev; // the last process with priority
-    
+
     tmp = tmp->next;
-    tmp_process = (Process *) tmp->data;
+    tmp_process = (Process *)tmp->data;
   }
 
   return list->tail;
 }
 
-void add_process_scheduler(Process *new_process){
-  Node *prev = last_process_priority(scheduler->ready_processes, new_process->priority);
+void add_process_scheduler(Process *new_process) {
+  Node *prev =
+      last_process_priority(scheduler->ready_processes, new_process->priority);
 
   Node *new_node = malloc(sizeof(Node));
   new_node->data = new_process;
   new_node->prev = new_node->next = NULL;
 
-  if(! prev){ // new_process has the highest priority and is the head
+  if (!prev) { // new_process has the highest priority and is the head
     new_node->next = scheduler->ready_processes->header;
     scheduler->ready_processes->header = new_node;
-  } else{ // new_process is added after prev
+  } else { // new_process is added after prev
     new_node->next = prev->next;
     prev->next = new_node;
 
-    if(!new_node->next){ /// new process is the last node (the tail)
+    if (!new_node->next) { /// new process is the last node (the tail)
       scheduler->ready_processes->tail = new_node;
       new_node->next = scheduler->ready_processes->header;
     }

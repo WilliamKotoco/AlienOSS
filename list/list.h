@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/// TEMP
-struct person {
-  int age;
-  int cpf;
-};
+// /// TEMP
+// struct person {
+//   int age;
+//   int cpf;
+// };
 
 /// Generic node from a list. It stores the data and a pointer to the next item
 /// on list
