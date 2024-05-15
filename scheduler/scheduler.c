@@ -17,22 +17,26 @@ void forward_scheduling() {
   sem_wait(&process_semaphore); /// we cannot change the ready processes list in
                                 /// between these following actions
 
-  Node *scheduled = pop(scheduler->ready_processes); /// first process on the queue
+  Node *scheduled =
+      pop(scheduler->ready_processes); /// first process on the queue
 
   Process *old_process = scheduler->running_process;
 
-  if(old_process && old_process->status == READY){
+  if (old_process && old_process->status == READY) {
     add_process_scheduler(old_process);
   }
 
-  if(! scheduled){ /// there is no process on the list
-    return; 
+  if (!scheduled) { /// there is no process on the list
+    return;
   }
 
-  Process *scheduled_process = (Process *) scheduled->data;
+  Process *scheduled_process = (Process *)scheduled->data;
 
   scheduled_process->status = RUNNING;
-  scheduled_process->remaining_time = QUANTUM_TIME_TOTAL / scheduled_process->priority; /// process's quantum time is inversely proportional to its priority  
+  scheduled_process->remaining_time =
+      QUANTUM_TIME_TOTAL /
+      scheduled_process->priority; /// process's quantum time is inversely
+                                   /// proportional to its priority
 
   scheduler->running_process = scheduled_process;
 

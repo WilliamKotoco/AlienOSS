@@ -45,7 +45,6 @@ void cpu() {
               running,
               running->segment
                   ->instructions[running->PC]); // aumenta PC aqui se der certo
-
         }
 
         sem_post(&process_semaphore);
@@ -64,12 +63,11 @@ void cpu() {
       if (scheduler->running_process->remaining_time <=
           0) { // completed the quantum time
         // quantum tima acabopu = continua ready mas reescalona
+        process_interrupt(QUANTUM_TIME_INTERRUPTION);
       }
     }
   }
 }
-
-
 
 void process_instruction(Process *process, Instruction instruction) {
   switch (instruction.opcode) {
@@ -96,15 +94,12 @@ void process_instruction(Process *process, Instruction instruction) {
     Semaphore *semaphore = (Semaphore *)semaphore_node;
     FLAGS result = semaphore_p_syscall(semaphore);
 
-    if (result == SUCCESS)
-    {          
+    if (result == SUCCESS) {
       scheduler->running_process->remaining_time -=
-        200; /// 200 time required to semaphore
-        scheduler->running_process->PC++;
-    }
-    else
-    {
-      process_interrupt_syscall();
+          200; /// 200 time required to semaphore
+      scheduler->running_process->PC++;
+    } else {
+      process_interrupt(SEMAPHORE_INTERRUPTION);
     }
 
     break;
@@ -116,7 +111,7 @@ void process_instruction(Process *process, Instruction instruction) {
 
     Semaphore *semaphore = (Semaphore *)semaphore_node;
     semaphore_v_syscall(semaphore);
-    scheduler->running_process->PC ++;
+    scheduler->running_process->PC++;
 
     break;
 
@@ -130,8 +125,12 @@ void process_instruction(Process *process, Instruction instruction) {
   }
 }
 
-void process_interrupt_syscall() {
-  scheduler->running_process->status = WAITING;
+void process_interrupt(INTERRUPTION_TYPE TYPE) {
+
+  if (TYPE == SEMAPHORE_INTERRUPTION)
+    scheduler->running_process->status = WAITING;
+  else
+    scheduler->running_process->status = READY;
 
   /// re-schedules
   forward_scheduling();
@@ -144,7 +143,7 @@ FLAGS semaphore_p_syscall(Semaphore *semaphore) {
     return SUCCESS;
   }
   /// enqueue the process if there are elements in the queue
-  
+
   push(semaphore->processes_waiting, scheduler->running_process);
   return FAILURE;
 }
@@ -173,43 +172,50 @@ void process_finish_syscall() {
 
 void memory_load_syscall() {
   scheduler->running_process->status = WAITING;
-  
+
   memory_load_requisition();
   /// change process status and calls forward_scheduling to remove it
   /// and schedule the next running process
   /// OBS process interrupt qur mantem ready e reescalona
+  process_interrupt(MEMORY_INTERRPUTION);
 }
 
-void process_create_syscall(char * filename) {
-   Process *new_process = create_process(filename);
+void process_create_syscall(char *filename) {
+  Process *new_process = create_process(filename);
 
-   push(PCB, new_process); /// adding the new process to the OS's PCB list
+  push(PCB, new_process); /// adding the new process to the OS's PCB list
 
-   add_process_scheduler(new_process);
-   // interrompar quem está rodando (mantendo ready) e reescalonando
+  add_process_scheduler(new_process);
+  // interrompar quem está rodando (mantendo ready) e reescalonando
+  process_interrupt(NEW_PROCESS_INTERRUPTION);
 }
 
-void memory_load_requisition(){
+void memory_load_requisition() {
   Process *process = scheduler->running_process;
 
-  if(memory->num_free_pages >= process->segment->num_pages){ /// there is space available in the memory for the pages
+  if (memory->num_free_pages >=
+      process->segment->num_pages) { /// there is space available in the memory
+                                     /// for the pages
     // creating the pages and inserting them into memory's page table
-    for(int i = 0; i < process->segment->num_pages; i++){
+    for (int i = 0; i < process->segment->num_pages; i++) {
       Page *new_page = malloc(sizeof(Page));
       new_page->process_id = process->id;
       new_page->segment_id = process->segment->id;
 
       add_page_memory(new_page);
     }
-  } else{
+  } else {
     /// second chance
   }
 }
 
-void add_page_memory(Page *new_page){ // percorrer páginas e adicionar se achar livre no meio. Se não achar, adicionar depois
+void add_page_memory(
+    Page *new_page) { // percorrer páginas e adicionar se achar livre no meio.
+                      // Se não achar, adicionar depois
   int i = 0;
 
-  while(memory->pages[i].free == 0 && i < NUM_PAGES){ /// searches first free page
+  while (memory->pages[i].free == 0 &&
+         i < NUM_PAGES) { /// searches first free page
     i++;
   }
 

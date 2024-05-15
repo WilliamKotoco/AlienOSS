@@ -1,12 +1,19 @@
+#include "../process/process.h"
 #include "../scheduler/scheduler.h"
 #include <pthread.h>
 #include <semaphore.h>
-#include "../process/process.h"
 
 extern Memory *memory;
 
+typedef enum { SUCCESS, FAILURE } FLAGS;
 
-typedef enum {SUCCESS, FAILURE} FLAGS;
+typedef enum {
+  SEMAPHORE_INTERRUPTION,
+  MEMORY_INTERRPUTION,
+  NEW_PROCESS_INTERRUPTION,
+  QUANTUM_TIME_INTERRUPTION
+} INTERRUPTION_TYPE;
+
 /// @brief  Initialize the CPU thread
 void init_cpu();
 
@@ -26,11 +33,11 @@ void execute();
 /// @param instruction instruction to be executed
 void process_instruction(Process *process, Instruction instruction);
 
-/// @brief Syscall for the interruption of a process
+/// @brief the interruption of a process
 ///
 /// Change the running process status and schedules
 /// the next running process
-void process_interrupt_syscall();
+void process_interrupt(INTERRUPTION_TYPE);
 
 /// @brief Syscall for creating a process
 void process_create_syscall(char *filename);
@@ -55,10 +62,12 @@ void memory_finish_syscall();
 void process_finish_syscall();
 
 /// @brief Executes a memory load operation
-/// @details Creates the pages of the process's segment and inserts them into memory
+/// @details Creates the pages of the process's segment and inserts them into
+/// memory
 /// @param process the process requisiting the operation
 void memory_load_requisition();
 
 /// @brief Adds a page into the memory's page table
-/// @details Inserts a new page into the memory page table and performs the swapping if there aren't enough pages free
+/// @details Inserts a new page into the memory page table and performs the
+/// swapping if there aren't enough pages free
 void add_page_memory(Page *new_page);

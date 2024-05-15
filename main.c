@@ -1,6 +1,6 @@
+#include "cpu/cpu.h"
 #include "scheduler/scheduler.h"
 #include "ui/main-window.h"
-#include "cpu/cpu.h"
 #include <semaphore.h>
 
 /// creating global variables

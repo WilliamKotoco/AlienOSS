@@ -18,7 +18,7 @@ typedef struct page {
   int number;     //!< page number, identifier
   int segment_id; //!< reference to the segment this page belongs to
   int process_id; //!< reference to the process that owns the segment/page
-  int free; //!< indicates whether the page is free
+  int free;       //!< indicates whether the page is free
 } Page;
 
 /// Represents the memory of the system, contains the page table, needed for the
@@ -41,7 +41,7 @@ typedef struct segment {
 
   int dirty_bit; //!< indicates whether the data has been modified since it came
                  //!< to memory
-  int used_bit;  //!< indicates if the data has been read or written 
+  int used_bit;  //!< indicates if the data has been read or written
 } Segment;
 
 int pages_id;
