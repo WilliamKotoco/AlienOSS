@@ -96,7 +96,18 @@ void process_instruction(Process *process, Instruction instruction) {
     Node *semaphore_node = find(memory->semaphores, &semaphore_id);
 
     Semaphore *semaphore = (Semaphore *)semaphore_node;
-    semaphore_p_syscall(semaphore);
+    FLAGS result = semaphore_p_syscall(semaphore);
+
+    if (result == SUCCESS)
+    {          
+      scheduler->running_process->remaining_time -=
+        200; /// 200 time required to semaphore
+        scheduler->running_process->PC++;
+    }
+    else
+    {
+      process_interrupt_syscall();
+    }
 
     break;
 
@@ -127,23 +138,18 @@ void process_interrupt_syscall() {
   forward_scheduling();
 }
 
-void semaphore_p_syscall(Semaphore *semaphore) {
+FLAGS semaphore_p_syscall(Semaphore *semaphore) {
   /// if there are no elements in the semaphore's queue
   if (semaphore->owner_id == -1) {
     semaphore->owner_id = scheduler->running_process->id;
-    scheduler->running_process->remaining_time -=
-        200; /// 200 time required to semaphore
+    return SUCCESS;
   }
   /// enqueue the process if there are elements in the queue
-  else {
+  
     push(semaphore->processes_waiting, scheduler->running_process);
-    scheduler->running_process->status = WAITING;
-
-    /// forwards the scheduling to choose the next process and remove the
-    /// current one
-    forward_scheduling();
-  }
+  return FAILURE;
 }
+
 void semaphore_v_syscall(Semaphore *semaphore) {
   semaphore->owner_id = -1;
 
@@ -169,24 +175,25 @@ void process_finish_syscall() {
 }
 
 void memory_load_syscall() {
+  scheduler->running_process->status = WAITING;
   /// calls here function to load the memory
   /// func
   ///
 
   /// change process status and calls forward_scheduling to remove it
   /// and schedule the next running process
-  scheduler->running_process->status = WAITING;
+  scheduler->running_process->status = READY;
   forward_schedulin();
 }
 
-void process_create_syscall() {
+void process_create_syscall(char * filename) {
+
+   Process *new_process = create_process(filename);
 
   /// @TEMP não entendi se a gente vai passar o nome do arquivo aqui
   /// e chamar a create process sem arquivo ou se nem chama a create process
 
-  /// the last created process will be on tail
-  push(scheduler->ready_processes, PCB->tail);
-
+  add_process_scheduler(new_process);
   /// creating a new process interrupts the current one.
   process_interrupt_syscall();
 }

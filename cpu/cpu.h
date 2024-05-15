@@ -2,6 +2,8 @@
 #include <pthread.h>
 #include <semaphore.h>
 
+
+typedef enum {SUCCESS, FAILURE} FLAGS;
 /// @brief  Initialize the CPU thread
 void init_cpu();
 
@@ -36,7 +38,7 @@ void process_create_syscall();
 
 /// @brief  Syscall for trying the semaphore's acquisition
 /// @param  Semaphore that is being queried
-void semaphore_p_syscall(Semaphore *);
+FLAGS semaphore_p_syscall(Semaphore *);
 
 /// @brief  Syscall for releasing a semaphore
 /// @param  Semaphore to be released
@@ -48,7 +50,7 @@ void memory_load_syscall();
 void memory_finish_syscall();
 
 /// @brief  Finishes running the process
-///
+/// @param filename filename
 /// @details Removes the process from the PCB and calls the scheduler to forward
 /// scheduling
-void process_finish_syscall();
+void process_finish_syscall(char *filename);
