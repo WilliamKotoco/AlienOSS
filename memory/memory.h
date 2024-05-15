@@ -18,15 +18,13 @@ typedef struct page {
   int number;     //!< page number, identifier
   int segment_id; //!< reference to the segment this page belongs to
   int process_id; //!< reference to the process that owns the segment/page
-  int dirty_bit; //!< indicates whether the data has been modified since it came
-                 //!< to memory
-  int used_bit;  //!< indicates if the page has been read or written recently
+  int free; //!< indicates whether the page is free
 } Page;
 
 /// Represents the memory of the system, contains the page table, needed for the
 /// OS management.
 typedef struct memory {
-  List *pages;        ///< memory table, list of its pages
+  Page *pages;        ///< memory table, array of its pages
   int num_free_pages; //!< number of free pages, NUM_PAGES - List *pages length
   List *semaphores;   //!<
 } Memory;
@@ -40,10 +38,20 @@ typedef struct segment {
   int present_bit; //!< flag that indicates whether the segment is in memory
   Instruction *instructions; //!< array of the process instructions
   int num_instructions;      //!< number of instructions the program posesses
+
+  int dirty_bit; //!< indicates whether the data has been modified since it came
+                 //!< to memory
+  int used_bit;  //!< indicates if the data has been read or written 
 } Segment;
+
+int pages_id;
 
 /// Compares two pages based on their number. Used on the generic list.
 /// @param d1 a page
 /// @param d2 the page being compared to d1
 /// @return 1 if d1 and d2 are the same page, and 0 otherwise
 int compare_pages(void *d1, void *d2);
+
+/// @brief Initializes the system's memory
+/// @return the memory structure initialized
+Memory *init_memory();

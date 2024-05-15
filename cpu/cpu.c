@@ -39,13 +39,14 @@ void cpu() {
           // chamar função de carregar, que chama interrupção e tira o processo
           // de executar
         } else {
-          int page_number = fetch_instruction(running->PC);
+          running->segment->used_bit = 1;
           // procura página na tabela de páginas e muda bit
 
           process_instruction(
               running,
               running->segment
                   ->instructions[running->PC]); // aumenta PC aqui se der certo
+
         }
 
         sem_post(&process_semaphore);
@@ -69,9 +70,7 @@ void cpu() {
   }
 }
 
-int fetch_instruction(int PC) {
-  return PC / PAGE_SIZE; /// the number of the page where the instruction is
-}
+
 
 void process_instruction(Process *process, Instruction instruction) {
   switch (instruction.opcode) {
@@ -196,4 +195,33 @@ void process_create_syscall(char * filename) {
   add_process_scheduler(new_process);
   /// creating a new process interrupts the current one.
   process_interrupt_syscall();
+}
+void memory_load_requisition(Process *process){
+  if(memory->num_free_pages >= process->segment->num_pages){ /// there is space available in the memory for the pages
+    // creating the pages and inserting them into memory's page table
+    for(int i = 0; i < process->segment->num_pages; i++){
+      Page *new_page = malloc(sizeof(Page));
+      new_page->process_id = process->id;
+      new_page->segment_id = process->segment->id;
+
+      add_page_memory(new_page);
+    }
+  } else{
+    /// second chance
+  }
+}
+
+void add_page_memory(Page *new_page){ // percorrer páginas e adicionar se achar livre no meio. Se não achar, adicionar depois
+  int i = 0;
+
+  while(memory->pages[i].free == 0 && i < NUM_PAGES){ /// searches first free page
+    i++;
+  }
+
+  memory->pages[i].number = new_page->number;
+  memory->pages[i].process_id = new_page->process_id;
+  memory->pages[i].segment_id = new_page->segment_id;
+  memory->pages[i].free = 0;
+
+  memory->num_free_pages--;
 }

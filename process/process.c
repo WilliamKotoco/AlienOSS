@@ -96,6 +96,7 @@ long read_program_header(char *program_name, Process *process) {
 
   process_segment->id = seg_id;
   process_segment->present_bit = 0; /// segment is in the disk at first
+  process_segment->used_bit = 0; /// it has also not been used
   process_segment->size =
       seg_size * KBYTE; /// converting the segment size from KB to bytes
   process_segment->num_pages = ceil(

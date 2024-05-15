@@ -1,5 +1,6 @@
 #include "scheduler/scheduler.h"
 #include "ui/main-window.h"
+#include "cpu/cpu.h"
 #include <semaphore.h>
 
 /// creating global variables
@@ -16,14 +17,9 @@ int main(int argc, char *argv[]) {
 
   PCB = create_list(sizeof(Process), compare_processes);
 
-  memory = malloc(sizeof(Memory));
-  memory->pages = create_list(sizeof(Page), compare_pages);
-  memory->num_free_pages = NUM_PAGES; //!< at first, all pages (beside the ones
-                                      //!< used by the OS) are free
-
-  memory->semaphores = create_list(sizeof(Semaphore), compare_semaphores);
-
+  memory = init_memory();
   init_scheduler();
+  init_cpu();
   show_and_run();
 
   // create_process("test/programa_sintetico.txt");
