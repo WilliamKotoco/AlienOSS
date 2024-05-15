@@ -7,6 +7,7 @@ extern Scheduler *scheduler;
 extern sem_t process_semaphore;
 extern Memory *memory;
 extern List *PCB;
+
 void init_cpu() {
   pthread_t cpu_id;
 
@@ -36,11 +37,9 @@ void cpu() {
 
         if (!running->segment
                  ->present_bit) { // segment is not loaded in the memory
-          // chamar função de carregar, que chama interrupção e tira o processo
-          // de executar
+          memory_load_syscall();
         } else {
           running->segment->used_bit = 1;
-          // procura página na tabela de páginas e muda bit
 
           process_instruction(
               running,
@@ -64,7 +63,7 @@ void cpu() {
 
       if (scheduler->running_process->remaining_time <=
           0) { // completed the quantum time
-        process_interrupt_syscall();
+        // quantum tima acabopu = continua ready mas reescalona
       }
     }
   }
@@ -117,6 +116,7 @@ void process_instruction(Process *process, Instruction instruction) {
 
     Semaphore *semaphore = (Semaphore *)semaphore_node;
     semaphore_v_syscall(semaphore);
+    scheduler->running_process->PC ++;
 
     break;
 
@@ -145,7 +145,7 @@ FLAGS semaphore_p_syscall(Semaphore *semaphore) {
   }
   /// enqueue the process if there are elements in the queue
   
-    push(semaphore->processes_waiting, scheduler->running_process);
+  push(semaphore->processes_waiting, scheduler->running_process);
   return FAILURE;
 }
 
@@ -161,8 +161,6 @@ void semaphore_v_syscall(Semaphore *semaphore) {
 
     semaphore->owner_id = new_process->id;
   }
-
-  forward_scheduling();
 }
 
 void process_finish_syscall() {
@@ -175,28 +173,25 @@ void process_finish_syscall() {
 
 void memory_load_syscall() {
   scheduler->running_process->status = WAITING;
-  /// calls here function to load the memory
-  /// func
-  ///
-
+  
+  memory_load_requisition();
   /// change process status and calls forward_scheduling to remove it
   /// and schedule the next running process
-  scheduler->running_process->status = READY;
-  forward_schedulin();
+  /// OBS process interrupt qur mantem ready e reescalona
 }
 
 void process_create_syscall(char * filename) {
-
    Process *new_process = create_process(filename);
 
-  /// @TEMP não entendi se a gente vai passar o nome do arquivo aqui
-  /// e chamar a create process sem arquivo ou se nem chama a create process
+   push(PCB, new_process); /// adding the new process to the OS's PCB list
 
-  add_process_scheduler(new_process);
-  /// creating a new process interrupts the current one.
-  process_interrupt_syscall();
+   add_process_scheduler(new_process);
+   // interrompar quem está rodando (mantendo ready) e reescalonando
 }
-void memory_load_requisition(Process *process){
+
+void memory_load_requisition(){
+  Process *process = scheduler->running_process;
+
   if(memory->num_free_pages >= process->segment->num_pages){ /// there is space available in the memory for the pages
     // creating the pages and inserting them into memory's page table
     for(int i = 0; i < process->segment->num_pages; i++){

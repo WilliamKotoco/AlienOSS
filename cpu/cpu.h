@@ -33,7 +33,7 @@ void process_instruction(Process *process, Instruction instruction);
 void process_interrupt_syscall();
 
 /// @brief Syscall for creating a process
-void process_create_syscall();
+void process_create_syscall(char *filename);
 
 /// @brief  Syscall for trying the semaphore's acquisition
 /// @param  Semaphore that is being queried
@@ -52,11 +52,12 @@ void memory_finish_syscall();
 /// @param filename filename
 /// @details Removes the process from the PCB and calls the scheduler to forward
 /// scheduling
-void process_finish_syscall(char *filename);
+void process_finish_syscall();
+
 /// @brief Executes a memory load operation
 /// @details Creates the pages of the process's segment and inserts them into memory
 /// @param process the process requisiting the operation
-void memory_load_requisition(Process *process);
+void memory_load_requisition();
 
 /// @brief Adds a page into the memory's page table
 /// @details Inserts a new page into the memory page table and performs the swapping if there aren't enough pages free

@@ -31,7 +31,7 @@ int compare_processes(void *d1, void *d2);
 /// Creates a new process, reading its information and instructions from the
 /// program file, and adding the new process to the PCB, OS's list of processes
 /// @param program_name name of the program file, submitted by the user
-void create_process(char *program_name);
+Process *create_process(char *program_name);
 
 /// Auxiliary funtion to create a new process. Reads the header of the program
 /// from the file and stores it in the process.

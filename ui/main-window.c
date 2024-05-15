@@ -1,5 +1,5 @@
 #include "main-window.h"
-#include "../process/process.h"
+#include "../cpu/cpu.h"
 #include "utils.h"
 #include <curses.h>
 #include <ncurses.h>
@@ -77,7 +77,7 @@ void show_and_run() {
         wrefresh(process_state_window);   /// redrawing updated process window
         display_ascii_art(option_window); /// reloading option window
         box(option_window, 0, 0);
-        create_process(input);
+        process_create_syscall(input);
 
         /// TEMP
         Process *teste = (Process *)PCB->header->data;

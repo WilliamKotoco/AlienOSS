@@ -19,7 +19,7 @@ int compare_processes(void *d1, void *d2) {
   }
 }
 
-void create_process(char *program_name) {
+Process* create_process(char *program_name) {
   Process *new_process =
       malloc(sizeof(Process)); /// allocate memory for the new process
   new_process->id = processes_id++;
@@ -33,8 +33,8 @@ void create_process(char *program_name) {
   }
 
   new_process->status = READY;
-
-  push(PCB, new_process); /// adding the new process to the OS's PCB list
+  
+  return new_process;
 }
 
 long read_program_header(char *program_name, Process *process) {
