@@ -25,7 +25,7 @@ typedef struct list {
   size_t data_size;
 
   int (*cmp)(void *, void *); // compare
-                                          //
+                              //
 
 } List;
 
@@ -33,8 +33,7 @@ typedef struct list {
 /// @param data_size
 /// @param compare
 /// @return the new created list
-List *create_list(size_t data_size,
-                  int (*compare)(void *, void *));
+List *create_list(size_t data_size, int (*compare)(void *, void *));
 
 /// @brief Adds a new node on the end of the list
 /// @param list The list to be added

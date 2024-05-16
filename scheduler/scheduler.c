@@ -1,4 +1,5 @@
 #include "scheduler.h"
+#include <semaphore.h>
 
 extern Scheduler *scheduler;
 extern sem_t process_semaphore;
@@ -13,6 +14,9 @@ void init_scheduler() {
 }
 
 void forward_scheduling() {
+  int sem_val;
+  sem_getvalue(&process_semaphore, &sem_val);
+
   sem_wait(&process_semaphore); /// we cannot change the ready processes list in
                                 /// between these following actions
 
@@ -40,6 +44,8 @@ void forward_scheduling() {
   scheduler->running_process = scheduled_process;
 
   sem_post(&process_semaphore);
+
+  printf("teste");
 }
 
 Node *last_process_priority(List *list, int priority) {

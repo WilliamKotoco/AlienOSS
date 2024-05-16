@@ -1,4 +1,5 @@
 #include "cpu.h"
+#include <semaphore.h>
 
 /// Necessary for global variables
 extern Scheduler *scheduler;
@@ -19,52 +20,54 @@ void init_cpu() {
 }
 
 void cpu() {
-  while (1) {  
-    while(!scheduler->running_process);                        /// constantly running
-    //if (!scheduler->running_process) { /// no running process
-      //forward_scheduling();            /// schedules another process
-    //} else {                           /// there is a scheduled process already
-      while (scheduler->running_process &&
-             scheduler->running_process->PC <
-                 scheduler->running_process->segment->num_instructions &&
-             scheduler->running_process->remaining_time >
-                 0) { /// while the process is still running
+  while (1) {
+    while (!scheduler->running_process)
+      ; /// constantly running
+        // if (!scheduler->running_process) { /// no running process
+    // forward_scheduling();            /// schedules another process
+    //} else {                           /// there is a scheduled process
+    //already
+    while (scheduler->running_process &&
+           scheduler->running_process->PC <
+               scheduler->running_process->segment->num_instructions &&
+           scheduler->running_process->remaining_time >
+               0) { /// while the process is still running
 
-        sem_wait(&process_semaphore);
+      sem_wait(&process_semaphore);
 
-        Process *running = scheduler->running_process;
+      Process *running = scheduler->running_process;
 
-        if (!running->segment
-                 ->present_bit) { // segment is not loaded in the memory
-          memory_load_syscall();
-        } else {
-          running->segment->used_bit = 1;
+      if (!running->segment
+               ->present_bit) { // segment is not loaded in the memory
+        memory_load_syscall();
+      } else {
+        running->segment->used_bit = 1;
 
-          process_instruction(
-              running,
-              running->segment
-                  ->instructions[running->PC]); // aumenta PC aqui se der certo
-        }
-
-        sem_post(&process_semaphore);
+        process_instruction(
+            running,
+            running->segment
+                ->instructions[running->PC]); // aumenta PC aqui se der certo
       }
 
-      /// exited while, that means the process stopped running, either because
-      /// it was interrupted, because it has finished running, or because it
-      /// used all of its quantum time
-
-      if (scheduler->running_process->PC >=
-          scheduler->running_process->segment->num_instructions) { /// finished
-
-        process_finish_syscall(); // process finished
-      }
-
-      if (scheduler->running_process->remaining_time <=
-          0) { // completed the quantum time
-        // quantum tima acabopu = continua ready mas reescalona
-        process_interrupt(QUANTUM_TIME_INTERRUPTION);
-      }
+      sem_post(&process_semaphore);
     }
+
+    /// exited while, that means the process stopped running, either because
+    /// it was interrupted, because it has finished running, or because it
+    /// used all of its quantum time
+
+    if (scheduler->running_process->PC >=
+        scheduler->running_process->segment->num_instructions) { /// finished
+
+      process_finish_syscall(); // process finished
+    }
+
+    if (scheduler->running_process->remaining_time <=
+        0) { // completed the quantum time
+      // quantum tima acabopu = continua ready mas reescalona
+      process_interrupt(QUANTUM_TIME_INTERRUPTION);
+    }
+  }
   //}
 }
 
@@ -125,7 +128,7 @@ void process_instruction(Process *process, Instruction instruction) {
 
 void process_interrupt(INTERRUPTION_TYPE TYPE) {
 
-  if(scheduler->running_process){
+  if (scheduler->running_process) {
     if (TYPE == SEMAPHORE_INTERRUPTION)
       scheduler->running_process->status = WAITING;
     else
@@ -183,6 +186,9 @@ void process_create_syscall(char *filename) {
   Process *new_process = create_process(filename);
 
   push(PCB, new_process); /// adding the new process to the OS's PCB list
+
+  int sem_val;
+  sem_getvalue(&process_semaphore, &sem_val);
 
   add_process_scheduler(new_process);
   // interrompar quem está rodando (mantendo ready) e reescalonando

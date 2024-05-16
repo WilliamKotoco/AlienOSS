@@ -73,17 +73,17 @@ void show_and_run() {
         wrefresh(process_state_window);   /// redrawing updated process window
         display_ascii_art(option_window); /// reloading option window
         box(option_window, 0, 0);
-        
-        //process_create_syscall(input);
+
+        // process_create_syscall(input);
 
         /// TEMP
-        //Process *teste = (Process *)PCB->header->data;
-        //mvwprintw(process_state_window, 11, 5,
-                 // "Cabeça da lista de processos: ID %d Name %s\n", teste->id,
-                 // teste->name);
-        //wrefresh(process_state_window);
-        //display_ascii_art(option_window); /// reloading option window
-        //box(option_window, 0, 0);
+        // Process *teste = (Process *)PCB->header->data;
+        // mvwprintw(process_state_window, 11, 5,
+        //  "Cabeça da lista de processos: ID %d Name %s\n", teste->id,
+        //  teste->name);
+        // wrefresh(process_state_window);
+        // display_ascii_art(option_window); /// reloading option window
+        // box(option_window, 0, 0);
         process_create_syscall(input);
 
       } else if (highlight == 1) {
@@ -94,7 +94,7 @@ void show_and_run() {
       }
 
       break;
-      
+
     default:
       break;
     }

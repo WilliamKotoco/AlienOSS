@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.6)
 
 
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread -Wall -lncurses")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -pthread -Wall -lncurses")
 
 project(AlienOS C)
 
