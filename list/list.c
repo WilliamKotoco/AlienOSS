@@ -1,11 +1,7 @@
 #include "list.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 List *create_list(size_t data_size,
-                  void (*compare)(const void *,
-                                  const void *)) { // se der erro é o compare
+                  int (* compare)(void *, void *)) {
   List *new_list = malloc(sizeof(List));
 
   new_list->header = new_list->tail = NULL;
@@ -91,10 +87,16 @@ void delete_list(List *list, void *data) {
 }
 
 Node *pop(List *list) {
-  Node *tmp = list->header; /// first element in the list
+  if(list->header){
+    Node *tmp = list->header; /// first element in the list
 
-  list->header = list->header->next; /// new header is the second element
-  list->header->prev = NULL;
+    list->header = list->header->next; /// new header is the second element
 
-  return tmp;
+    if(list->header)
+      list->header->prev = NULL;
+
+    return tmp;
+  } 
+
+  return NULL;
 }

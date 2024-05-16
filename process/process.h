@@ -20,8 +20,6 @@ typedef struct process {
   long remaining_time;
 } Process;
 
-int processes_id;
-
 /// @brief Compares two processes based on their id. Used on the generic list.
 /// @param d1 a process
 /// @param d2 the process being compared to d1

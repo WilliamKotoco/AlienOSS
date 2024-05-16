@@ -1,6 +1,4 @@
 #include "cpu.h"
-#include "../list/list.h"
-#include "../scheduler/scheduler.h"
 
 /// Necessary for global variables
 extern Scheduler *scheduler;
@@ -17,14 +15,15 @@ void init_cpu() {
 
   pthread_attr_setscope(&cpu_attr, PTHREAD_SCOPE_SYSTEM);
 
-  pthread_create(&cpu_id, NULL, (void *)execute, NULL);
+  pthread_create(&cpu_id, NULL, (void *)cpu, NULL);
 }
 
 void cpu() {
-  while (1) {                          /// constantly running
-    if (!scheduler->running_process) { /// no running process
-      forward_scheduling();            /// schedules another process
-    } else {                           /// there is a scheduled process already
+  while (1) {  
+    while(!scheduler->running_process);                        /// constantly running
+    //if (!scheduler->running_process) { /// no running process
+      //forward_scheduling();            /// schedules another process
+    //} else {                           /// there is a scheduled process already
       while (scheduler->running_process &&
              scheduler->running_process->PC <
                  scheduler->running_process->segment->num_instructions &&
@@ -66,7 +65,7 @@ void cpu() {
         process_interrupt(QUANTUM_TIME_INTERRUPTION);
       }
     }
-  }
+  //}
 }
 
 void process_instruction(Process *process, Instruction instruction) {
@@ -88,11 +87,11 @@ void process_instruction(Process *process, Instruction instruction) {
     break;
 
   case P:
-    char semaphore_id = instruction.semaphore;
-    Node *semaphore_node = find(memory->semaphores, &semaphore_id);
+    char semaphore_p_id = instruction.semaphore;
+    Node *semaphore_p_node = find(memory->semaphores, &semaphore_p_id);
 
-    Semaphore *semaphore = (Semaphore *)semaphore_node;
-    FLAGS result = semaphore_p_syscall(semaphore);
+    Semaphore *semaphore_p = (Semaphore *)semaphore_p_node;
+    FLAGS result = semaphore_p_syscall(semaphore_p);
 
     if (result == SUCCESS) {
       scheduler->running_process->remaining_time -=
@@ -105,12 +104,11 @@ void process_instruction(Process *process, Instruction instruction) {
     break;
 
   case V:
+    char semaphore_v_id = instruction.semaphore;
+    Node *semaphore_v_node = find(memory->semaphores, &semaphore_v_id);
 
-    char semaphore_id = instruction.semaphore;
-    Node *semaphore_node = find(memory->semaphores, &semaphore_id);
-
-    Semaphore *semaphore = (Semaphore *)semaphore_node;
-    semaphore_v_syscall(semaphore);
+    Semaphore *semaphore_v = (Semaphore *)semaphore_v_node;
+    semaphore_v_syscall(semaphore_v);
     scheduler->running_process->PC++;
 
     break;
@@ -127,11 +125,12 @@ void process_instruction(Process *process, Instruction instruction) {
 
 void process_interrupt(INTERRUPTION_TYPE TYPE) {
 
-  if (TYPE == SEMAPHORE_INTERRUPTION)
-    scheduler->running_process->status = WAITING;
-  else
-    scheduler->running_process->status = READY;
-
+  if(scheduler->running_process){
+    if (TYPE == SEMAPHORE_INTERRUPTION)
+      scheduler->running_process->status = WAITING;
+    else
+      scheduler->running_process->status = READY;
+  }
   /// re-schedules
   forward_scheduling();
 }
@@ -188,6 +187,8 @@ void process_create_syscall(char *filename) {
   add_process_scheduler(new_process);
   // interrompar quem está rodando (mantendo ready) e reescalonando
   process_interrupt(NEW_PROCESS_INTERRUPTION);
+
+  printf("saiu do interrupr");
 }
 
 void memory_load_requisition() {

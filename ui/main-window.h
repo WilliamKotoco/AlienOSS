@@ -1,6 +1,9 @@
 #include <curses.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "../cpu/cpu.h"
+#include "utils.h"
+#include <ncurses.h>
 
 #include "utils.h"
 #define ALIEN_GREEN 11

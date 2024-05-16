@@ -1,4 +1,7 @@
 #include <ncurses.h>
+#include <curses.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 /// \brief This functions reads a file with an ASCII draw and put it into
 /// ncurses

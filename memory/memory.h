@@ -44,8 +44,6 @@ typedef struct segment {
   int used_bit;  //!< indicates if the data has been read or written
 } Segment;
 
-int pages_id;
-
 /// Compares two pages based on their number. Used on the generic list.
 /// @param d1 a page
 /// @param d2 the page being compared to d1

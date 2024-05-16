@@ -1,4 +1,3 @@
-#include "../process/process.h"
 #include "../scheduler/scheduler.h"
 #include <pthread.h>
 #include <semaphore.h>
@@ -21,12 +20,6 @@ void init_cpu();
 /// @details while there is a process scheduled, the cpu calls the syscall to
 /// execute the process's instructions
 void cpu();
-
-/// @brief  Function responsible for emulating CPU's execution
-/// @details This function execute the instructions of the current
-/// running process in the scheduler. It uses a semaphore to
-/// verify if the running process is not being changed by the scheduler.
-void execute();
 
 /// @brief  Emulates the execution of a given instruction
 /// @param process that is executing

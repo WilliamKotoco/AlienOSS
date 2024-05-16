@@ -1,4 +1,5 @@
 #include "memory.h"
+
 /// Necessary for using global variables defined in main.c
 extern Memory *memory;
 

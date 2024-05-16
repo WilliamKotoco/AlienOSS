@@ -1,5 +1,3 @@
-#include "cpu/cpu.h"
-#include "scheduler/scheduler.h"
 #include "ui/main-window.h"
 #include <semaphore.h>
 
@@ -9,11 +7,12 @@ Memory *memory;
 Scheduler *scheduler;
 sem_t process_semaphore; /// Read-write semaphore for the current running
                          /// process in the scheduler.
+int processes_id = 0;
 
 int main(int argc, char *argv[]) {
 
   /// inicializing global variables
-  sem_init(&process_semaphore, 1, 0);
+  sem_init(&process_semaphore, 1, 1);
 
   PCB = create_list(sizeof(Process), compare_processes);
 

@@ -25,6 +25,10 @@ add_executable(AlienOS
   semaphore/semaphore.c
   list/list.h 
   list/list.c
+  cpu/cpu.h 
+  cpu/cpu.c 
+  scheduler/scheduler.h 
+  scheduler/scheduler.c 
   )
 
 

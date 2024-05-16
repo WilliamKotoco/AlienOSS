@@ -1,8 +1,4 @@
 #include "main-window.h"
-#include "../cpu/cpu.h"
-#include "utils.h"
-#include <curses.h>
-#include <ncurses.h>
 
 extern List *PCB;
 void show_and_run() {
@@ -77,14 +73,18 @@ void show_and_run() {
         wrefresh(process_state_window);   /// redrawing updated process window
         display_ascii_art(option_window); /// reloading option window
         box(option_window, 0, 0);
-        process_create_syscall(input);
+        
+        //process_create_syscall(input);
 
         /// TEMP
-        Process *teste = (Process *)PCB->header->data;
-        mvwprintw(process_state_window, 11, 5,
-                  "Cabeça da lista de processos: ID %d Name %s\n", teste->id,
-                  teste->name);
-        wrefresh(process_state_window);
+        //Process *teste = (Process *)PCB->header->data;
+        //mvwprintw(process_state_window, 11, 5,
+                 // "Cabeça da lista de processos: ID %d Name %s\n", teste->id,
+                 // teste->name);
+        //wrefresh(process_state_window);
+        //display_ascii_art(option_window); /// reloading option window
+        //box(option_window, 0, 0);
+        process_create_syscall(input);
 
       } else if (highlight == 1) {
         mvwprintw(option_window, 35, 1, "Toggled"); /// temporary
@@ -92,6 +92,9 @@ void show_and_run() {
       } else {
         return;
       }
+
+      break;
+      
     default:
       break;
     }

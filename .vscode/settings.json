@@ -4,6 +4,11 @@
         "scheduler.h": "c",
         "semaphore.h": "c",
         "main-window.h": "c",
-        "pthread.h": "c"
+        "pthread.h": "c",
+        "process.h": "c",
+        "memory.h": "c",
+        "instruction.h": "c",
+        "list.h": "c",
+        "utils.h": "c"
     }
 }

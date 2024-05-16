@@ -1,5 +1,4 @@
-#include "scheduler/scheduler.h"
-#include "../process/process.h"
+#include "scheduler.h"
 
 extern Scheduler *scheduler;
 extern sem_t process_semaphore;

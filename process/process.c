@@ -1,5 +1,6 @@
 #include "process.h"
-#include <stdio.h>
+
+extern int processes_id;
 
 /// Necessary for using global variables defined in main.c
 extern Memory *memory;
