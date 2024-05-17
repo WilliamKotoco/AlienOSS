@@ -44,8 +44,6 @@ void forward_scheduling() {
   scheduler->running_process = scheduled_process;
 
   sem_post(&process_semaphore);
-
-  printf("teste");
 }
 
 Node *last_process_priority(List *list, int priority) {
@@ -64,11 +62,12 @@ Node *last_process_priority(List *list, int priority) {
   }
 
   while (tmp) { // searches for the first process with next_priority
+    tmp_process = (Process *)tmp->data;
+    
     if (tmp_process->priority == next_priority)
       return tmp->prev; // the last process with priority
 
     tmp = tmp->next;
-    tmp_process = (Process *)tmp->data;
   }
 
   return list->tail;

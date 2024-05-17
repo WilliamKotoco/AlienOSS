@@ -129,6 +129,10 @@ void process_instruction(Process *process, Instruction instruction) {
 void process_interrupt(INTERRUPTION_TYPE TYPE) {
 
   if (scheduler->running_process) {
+    if(TYPE != NEW_PROCESS_INTERRUPTION){
+      sem_post(&process_semaphore);
+    }
+
     if (TYPE == SEMAPHORE_INTERRUPTION)
       scheduler->running_process->status = WAITING;
     else
