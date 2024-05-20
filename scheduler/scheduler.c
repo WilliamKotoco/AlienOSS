@@ -28,7 +28,14 @@ void forward_scheduling() {
   Node *scheduled =
       pop(scheduler->ready_processes); /// first process on the queue
 
+  /// there are no process to schedule
   if (!scheduled) { /// there is no process on the list
+
+    /// free the current running process since it won't be replaced
+    free(scheduler->running_process);
+
+    scheduler->running_process = NULL;
+    sem_post(&process_semaphore);
     return;
   }
 
@@ -62,7 +69,7 @@ Node *last_process_priority(List *list, int priority) {
 
   while (tmp) { // searches for the first process with next_priority
     tmp_process = (Process *)tmp->data;
-    
+
     if (tmp_process->priority == next_priority)
       return tmp->prev; // the last process with priority
 

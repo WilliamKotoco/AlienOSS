@@ -90,7 +90,7 @@ void show_and_run() {
         mvwprintw(option_window, 35, 1, "Toggled"); /// temporary
 
       } else {
-        //delwin(stdscr);
+        // delwin(stdscr);
         delwin(option_window);
         delwin(process_state_window);
         return;

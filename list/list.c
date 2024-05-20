@@ -59,7 +59,7 @@ Node *find(List *list, void *data) {
 
   while (tmp) {
     /// use compare function passed to the list struct.
-    if (list->cmp(tmp->data, data)){
+    if (list->cmp(tmp->data, data)) {
       return tmp;
     }
     tmp = tmp->next;
@@ -71,7 +71,7 @@ Node *find(List *list, void *data) {
 void delete_list(List *list, void *data) {
   Node *place = find(list, data);
 
-  if(!place){
+  if (!place) {
     int teste = 0;
     printf("não tem");
     return;
@@ -79,7 +79,7 @@ void delete_list(List *list, void *data) {
 
   /// if the element to be removed is the head of the list
   if (list->header == place) {
-    if(place->prev){
+    if (place->prev) {
       place->prev = NULL;
     }
     list->header = place->next;
@@ -92,6 +92,8 @@ void delete_list(List *list, void *data) {
     place->prev->next = place->next;
     place->next->prev = place->prev;
   }
+
+  free(place);
 }
 
 Node *pop(List *list) {

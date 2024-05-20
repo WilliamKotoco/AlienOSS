@@ -26,7 +26,7 @@ void cpu() {
         // if (!scheduler->running_process) { /// no running process
     // forward_scheduling();            /// schedules another process
     //} else {                           /// there is a scheduled process
-    //already
+    // already
     while (scheduler->running_process &&
            scheduler->running_process->PC <
                scheduler->running_process->segment->num_instructions &&
@@ -45,11 +45,11 @@ void cpu() {
       } else {
         running->segment->used_bit = 1;
 
-        FLAGS teste = process_instruction( running, running->segment
-              ->instructions[running->PC]);
-        if(teste == SUCCESS){
+        FLAGS teste = process_instruction(
+            running, running->segment->instructions[running->PC]);
+        if (teste == SUCCESS) {
           sem_post(&process_semaphore);
-        } 
+        }
       }
     }
 
@@ -62,8 +62,8 @@ void cpu() {
       process_finish_syscall(scheduler->running_process); // process finished
     }
 
-    if (scheduler->running_process->remaining_time <=
-        0) { // completed the quantum time
+    else if (scheduler->running_process->remaining_time <=
+             0) { // completed the quantum time
       // quantum tima acabopu = continua ready mas reescalona
       process_interrupt(QUANTUM_TIME_INTERRUPTION);
     }
@@ -72,6 +72,7 @@ void cpu() {
 }
 
 FLAGS process_instruction(Process *process, Instruction instruction) {
+  Opcode opcode = instruction.opcode;
   switch (instruction.opcode) {
   /// EXEC has the format EXEC X, where X is the necessary time to execute  a
   /// given instruction
@@ -127,7 +128,7 @@ FLAGS process_instruction(Process *process, Instruction instruction) {
   /// later
   case PRINT:
     process->PC++;
-    
+
     return SUCCESS;
 
   default:
@@ -139,7 +140,7 @@ FLAGS process_instruction(Process *process, Instruction instruction) {
 void process_interrupt(INTERRUPTION_TYPE TYPE) {
 
   if (scheduler->running_process) {
-    if(TYPE != NEW_PROCESS_INTERRUPTION){
+    if (TYPE != NEW_PROCESS_INTERRUPTION) {
       sem_post(&process_semaphore);
     }
 
@@ -178,13 +179,16 @@ void semaphore_v_syscall(Semaphore *semaphore) {
   }
 }
 
-void process_finish_syscall(Process *process) { // OBS liberar páginas da memória
+void process_finish_syscall(
+    Process *process) { // OBS liberar páginas da memória
   /// delete the scheduler from the PCB
-  process->status = FINISHED;
+
+  scheduler->running_process->status = FINISHED;
+
   delete_list(PCB, &process->id);
-  
-  Process* teste = (Process *)PCB->header;
-  if(!teste){
+
+  Process *teste = (Process *)PCB->header;
+  if (!teste) {
     printf("apagou");
   }
 
@@ -208,7 +212,7 @@ void process_create_syscall(char *filename) {
   Process *new_process = create_process(filename);
 
   push(PCB, new_process); /// adding the new process to the OS's PCB list
-  
+
   add_process_scheduler(new_process);
   // interrompar quem está rodando (mantendo ready) e reescalonando
   process_interrupt(NEW_PROCESS_INTERRUPTION);
