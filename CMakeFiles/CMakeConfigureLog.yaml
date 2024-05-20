@@ -39,8 +39,8 @@ events:
     checks:
       - "Detecting C compiler ABI info"
     directories:
-      source: "/home/bibi/Documentos/GitHub/AlienOSS/CMakeFiles/CMakeScratch/TryCompile-fYXv1P"
-      binary: "/home/bibi/Documentos/GitHub/AlienOSS/CMakeFiles/CMakeScratch/TryCompile-fYXv1P"
+      source: "/home/bibi/Documentos/GitHub/AlienOSS/CMakeFiles/CMakeScratch/TryCompile-b1lxyp"
+      binary: "/home/bibi/Documentos/GitHub/AlienOSS/CMakeFiles/CMakeScratch/TryCompile-b1lxyp"
     cmakeVariables:
       CMAKE_C_FLAGS: " -g -pthread -Wall -lncurses"
       CMAKE_EXE_LINKER_FLAGS: ""
@@ -48,13 +48,13 @@ events:
       variable: "CMAKE_C_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: '/home/bibi/Documentos/GitHub/AlienOSS/CMakeFiles/CMakeScratch/TryCompile-fYXv1P'
+        Change Dir: '/home/bibi/Documentos/GitHub/AlienOSS/CMakeFiles/CMakeScratch/TryCompile-b1lxyp'
         
-        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_4bba4/fast
-        /usr/bin/gmake  -f CMakeFiles/cmTC_4bba4.dir/build.make CMakeFiles/cmTC_4bba4.dir/build
-        gmake[1]: Entering directory '/home/bibi/Documentos/GitHub/AlienOSS/CMakeFiles/CMakeScratch/TryCompile-fYXv1P'
-        Building C object CMakeFiles/cmTC_4bba4.dir/CMakeCCompilerABI.c.o
-        /usr/lib64/ccache/cc   -g -pthread -Wall -lncurses    -v -o CMakeFiles/cmTC_4bba4.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake/Modules/CMakeCCompilerABI.c
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_68b52/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_68b52.dir/build.make CMakeFiles/cmTC_68b52.dir/build
+        gmake[1]: Entering directory '/home/bibi/Documentos/GitHub/AlienOSS/CMakeFiles/CMakeScratch/TryCompile-b1lxyp'
+        Building C object CMakeFiles/cmTC_68b52.dir/CMakeCCompilerABI.c.o
+        /usr/lib64/ccache/cc   -g -pthread -Wall -lncurses    -v -o CMakeFiles/cmTC_68b52.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake/Modules/CMakeCCompilerABI.c
         Using built-in specs.
         COLLECT_GCC=/usr/bin/cc
         OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa
@@ -64,8 +64,8 @@ events:
         Thread model: posix
         Supported LTO compression algorithms: zlib zstd
         gcc version 14.1.1 20240507 (Red Hat 14.1.1-1) (GCC) 
-        COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-g' '-pthread' '-Wall' '-v' '-c' '-o' 'CMakeFiles/cmTC_4bba4.dir/CMakeCCompilerABI.c.o' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_4bba4.dir/'
-         /usr/libexec/gcc/x86_64-redhat-linux/14/cc1 -quiet -v -D_REENTRANT /usr/share/cmake/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_4bba4.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mtune=generic -march=x86-64 -g -Wall -version -fdiagnostics-color=always -o /tmp/ccw8Re5O.s
+        COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-g' '-pthread' '-Wall' '-v' '-c' '-o' 'CMakeFiles/cmTC_68b52.dir/CMakeCCompilerABI.c.o' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_68b52.dir/'
+         /usr/libexec/gcc/x86_64-redhat-linux/14/cc1 -quiet -v -D_REENTRANT /usr/share/cmake/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_68b52.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mtune=generic -march=x86-64 -g -Wall -version -fdiagnostics-color=always -o /tmp/ccDGW222.s
         GNU C17 (GCC) version 14.1.1 20240507 (Red Hat 14.1.1-1) (x86_64-redhat-linux)
         	compiled by GNU C version 14.1.1 20240507 (Red Hat 14.1.1-1), GMP version 6.2.1, MPFR version 4.2.1, MPC version 1.3.1, isl version isl-0.24-GMP
         
@@ -79,15 +79,15 @@ events:
          /usr/include
         End of search list.
         Compiler executable checksum: 133e5f8de3d56968bff7a625330a0019
-        COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-g' '-pthread' '-Wall' '-v' '-c' '-o' 'CMakeFiles/cmTC_4bba4.dir/CMakeCCompilerABI.c.o' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_4bba4.dir/'
-         as -v --gdwarf-5 --64 -o CMakeFiles/cmTC_4bba4.dir/CMakeCCompilerABI.c.o /tmp/ccw8Re5O.s
+        COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-g' '-pthread' '-Wall' '-v' '-c' '-o' 'CMakeFiles/cmTC_68b52.dir/CMakeCCompilerABI.c.o' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_68b52.dir/'
+         as -v --gdwarf-5 --64 -o CMakeFiles/cmTC_68b52.dir/CMakeCCompilerABI.c.o /tmp/ccDGW222.s
         GNU assembler version 2.41 (x86_64-redhat-linux) using BFD version version 2.41-37.fc40
         COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/14/:/usr/libexec/gcc/x86_64-redhat-linux/14/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/14/:/usr/lib/gcc/x86_64-redhat-linux/
         LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/14/:/usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/14/../../../:/lib/:/usr/lib/
-        COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-g' '-pthread' '-Wall' '-v' '-c' '-o' 'CMakeFiles/cmTC_4bba4.dir/CMakeCCompilerABI.c.o' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_4bba4.dir/CMakeCCompilerABI.c.'
-        Linking C executable cmTC_4bba4
-        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4bba4.dir/link.txt --verbose=1
-        /usr/lib64/ccache/cc  -g -pthread -Wall -lncurses   -v CMakeFiles/cmTC_4bba4.dir/CMakeCCompilerABI.c.o -o cmTC_4bba4 
+        COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-g' '-pthread' '-Wall' '-v' '-c' '-o' 'CMakeFiles/cmTC_68b52.dir/CMakeCCompilerABI.c.o' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_68b52.dir/CMakeCCompilerABI.c.'
+        Linking C executable cmTC_68b52
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_68b52.dir/link.txt --verbose=1
+        /usr/lib64/ccache/cc  -g -pthread -Wall -lncurses   -v CMakeFiles/cmTC_68b52.dir/CMakeCCompilerABI.c.o -o cmTC_68b52 
         Using built-in specs.
         COLLECT_GCC=/usr/bin/cc
         COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/14/lto-wrapper
@@ -100,10 +100,10 @@ events:
         gcc version 14.1.1 20240507 (Red Hat 14.1.1-1) (GCC) 
         COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/14/:/usr/libexec/gcc/x86_64-redhat-linux/14/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/14/:/usr/lib/gcc/x86_64-redhat-linux/
         LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/14/:/usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/14/../../../:/lib/:/usr/lib/
-        COLLECT_GCC_OPTIONS='-g' '-pthread' '-Wall' '-v' '-o' 'cmTC_4bba4' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_4bba4.'
-         /usr/libexec/gcc/x86_64-redhat-linux/14/collect2 -plugin /usr/libexec/gcc/x86_64-redhat-linux/14/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/14/lto-wrapper -plugin-opt=-fresolution=/tmp/cc7SqKa1.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_4bba4 /usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/14/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/14 -L/usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/14/../../.. -lncurses CMakeFiles/cmTC_4bba4.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lpthread -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc/x86_64-redhat-linux/14/crtend.o /usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64/crtn.o
-        COLLECT_GCC_OPTIONS='-g' '-pthread' '-Wall' '-v' '-o' 'cmTC_4bba4' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_4bba4.'
-        gmake[1]: Leaving directory '/home/bibi/Documentos/GitHub/AlienOSS/CMakeFiles/CMakeScratch/TryCompile-fYXv1P'
+        COLLECT_GCC_OPTIONS='-g' '-pthread' '-Wall' '-v' '-o' 'cmTC_68b52' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_68b52.'
+         /usr/libexec/gcc/x86_64-redhat-linux/14/collect2 -plugin /usr/libexec/gcc/x86_64-redhat-linux/14/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/14/lto-wrapper -plugin-opt=-fresolution=/tmp/ccxyGC7w.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_68b52 /usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/14/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/14 -L/usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/14/../../.. -lncurses CMakeFiles/cmTC_68b52.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lpthread -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc/x86_64-redhat-linux/14/crtend.o /usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64/crtn.o
+        COLLECT_GCC_OPTIONS='-g' '-pthread' '-Wall' '-v' '-o' 'cmTC_68b52' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_68b52.'
+        gmake[1]: Leaving directory '/home/bibi/Documentos/GitHub/AlienOSS/CMakeFiles/CMakeScratch/TryCompile-b1lxyp'
         
       exitCode: 0
   -
@@ -135,13 +135,13 @@ events:
     message: |
       Parsed C implicit link information:
         link line regex: [^( *|.*[/\\])(ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
-        ignore line: [Change Dir: '/home/bibi/Documentos/GitHub/AlienOSS/CMakeFiles/CMakeScratch/TryCompile-fYXv1P']
+        ignore line: [Change Dir: '/home/bibi/Documentos/GitHub/AlienOSS/CMakeFiles/CMakeScratch/TryCompile-b1lxyp']
         ignore line: []
-        ignore line: [Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_4bba4/fast]
-        ignore line: [/usr/bin/gmake  -f CMakeFiles/cmTC_4bba4.dir/build.make CMakeFiles/cmTC_4bba4.dir/build]
-        ignore line: [gmake[1]: Entering directory '/home/bibi/Documentos/GitHub/AlienOSS/CMakeFiles/CMakeScratch/TryCompile-fYXv1P']
-        ignore line: [Building C object CMakeFiles/cmTC_4bba4.dir/CMakeCCompilerABI.c.o]
-        ignore line: [/usr/lib64/ccache/cc   -g -pthread -Wall -lncurses    -v -o CMakeFiles/cmTC_4bba4.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake/Modules/CMakeCCompilerABI.c]
+        ignore line: [Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_68b52/fast]
+        ignore line: [/usr/bin/gmake  -f CMakeFiles/cmTC_68b52.dir/build.make CMakeFiles/cmTC_68b52.dir/build]
+        ignore line: [gmake[1]: Entering directory '/home/bibi/Documentos/GitHub/AlienOSS/CMakeFiles/CMakeScratch/TryCompile-b1lxyp']
+        ignore line: [Building C object CMakeFiles/cmTC_68b52.dir/CMakeCCompilerABI.c.o]
+        ignore line: [/usr/lib64/ccache/cc   -g -pthread -Wall -lncurses    -v -o CMakeFiles/cmTC_68b52.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake/Modules/CMakeCCompilerABI.c]
         ignore line: [Using built-in specs.]
         ignore line: [COLLECT_GCC=/usr/bin/cc]
         ignore line: [OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa]
@@ -151,8 +151,8 @@ events:
         ignore line: [Thread model: posix]
         ignore line: [Supported LTO compression algorithms: zlib zstd]
         ignore line: [gcc version 14.1.1 20240507 (Red Hat 14.1.1-1) (GCC) ]
-        ignore line: [COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-g' '-pthread' '-Wall' '-v' '-c' '-o' 'CMakeFiles/cmTC_4bba4.dir/CMakeCCompilerABI.c.o' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_4bba4.dir/']
-        ignore line: [ /usr/libexec/gcc/x86_64-redhat-linux/14/cc1 -quiet -v -D_REENTRANT /usr/share/cmake/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_4bba4.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mtune=generic -march=x86-64 -g -Wall -version -fdiagnostics-color=always -o /tmp/ccw8Re5O.s]
+        ignore line: [COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-g' '-pthread' '-Wall' '-v' '-c' '-o' 'CMakeFiles/cmTC_68b52.dir/CMakeCCompilerABI.c.o' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_68b52.dir/']
+        ignore line: [ /usr/libexec/gcc/x86_64-redhat-linux/14/cc1 -quiet -v -D_REENTRANT /usr/share/cmake/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_68b52.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mtune=generic -march=x86-64 -g -Wall -version -fdiagnostics-color=always -o /tmp/ccDGW222.s]
         ignore line: [GNU C17 (GCC) version 14.1.1 20240507 (Red Hat 14.1.1-1) (x86_64-redhat-linux)]
         ignore line: [	compiled by GNU C version 14.1.1 20240507 (Red Hat 14.1.1-1)  GMP version 6.2.1  MPFR version 4.2.1  MPC version 1.3.1  isl version isl-0.24-GMP]
         ignore line: []
@@ -166,15 +166,15 @@ events:
         ignore line: [ /usr/include]
         ignore line: [End of search list.]
         ignore line: [Compiler executable checksum: 133e5f8de3d56968bff7a625330a0019]
-        ignore line: [COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-g' '-pthread' '-Wall' '-v' '-c' '-o' 'CMakeFiles/cmTC_4bba4.dir/CMakeCCompilerABI.c.o' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_4bba4.dir/']
-        ignore line: [ as -v --gdwarf-5 --64 -o CMakeFiles/cmTC_4bba4.dir/CMakeCCompilerABI.c.o /tmp/ccw8Re5O.s]
+        ignore line: [COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-g' '-pthread' '-Wall' '-v' '-c' '-o' 'CMakeFiles/cmTC_68b52.dir/CMakeCCompilerABI.c.o' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_68b52.dir/']
+        ignore line: [ as -v --gdwarf-5 --64 -o CMakeFiles/cmTC_68b52.dir/CMakeCCompilerABI.c.o /tmp/ccDGW222.s]
         ignore line: [GNU assembler version 2.41 (x86_64-redhat-linux) using BFD version version 2.41-37.fc40]
         ignore line: [COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/14/:/usr/libexec/gcc/x86_64-redhat-linux/14/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/14/:/usr/lib/gcc/x86_64-redhat-linux/]
         ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/14/:/usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/14/../../../:/lib/:/usr/lib/]
-        ignore line: [COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-g' '-pthread' '-Wall' '-v' '-c' '-o' 'CMakeFiles/cmTC_4bba4.dir/CMakeCCompilerABI.c.o' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_4bba4.dir/CMakeCCompilerABI.c.']
-        ignore line: [Linking C executable cmTC_4bba4]
-        ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4bba4.dir/link.txt --verbose=1]
-        ignore line: [/usr/lib64/ccache/cc  -g -pthread -Wall -lncurses   -v CMakeFiles/cmTC_4bba4.dir/CMakeCCompilerABI.c.o -o cmTC_4bba4 ]
+        ignore line: [COLLECT_GCC_OPTIONS='-fdiagnostics-color=always' '-g' '-pthread' '-Wall' '-v' '-c' '-o' 'CMakeFiles/cmTC_68b52.dir/CMakeCCompilerABI.c.o' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_68b52.dir/CMakeCCompilerABI.c.']
+        ignore line: [Linking C executable cmTC_68b52]
+        ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_68b52.dir/link.txt --verbose=1]
+        ignore line: [/usr/lib64/ccache/cc  -g -pthread -Wall -lncurses   -v CMakeFiles/cmTC_68b52.dir/CMakeCCompilerABI.c.o -o cmTC_68b52 ]
         ignore line: [Using built-in specs.]
         ignore line: [COLLECT_GCC=/usr/bin/cc]
         ignore line: [COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/14/lto-wrapper]
@@ -187,13 +187,13 @@ events:
         ignore line: [gcc version 14.1.1 20240507 (Red Hat 14.1.1-1) (GCC) ]
         ignore line: [COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/14/:/usr/libexec/gcc/x86_64-redhat-linux/14/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/14/:/usr/lib/gcc/x86_64-redhat-linux/]
         ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/14/:/usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/14/../../../:/lib/:/usr/lib/]
-        ignore line: [COLLECT_GCC_OPTIONS='-g' '-pthread' '-Wall' '-v' '-o' 'cmTC_4bba4' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_4bba4.']
-        link line: [ /usr/libexec/gcc/x86_64-redhat-linux/14/collect2 -plugin /usr/libexec/gcc/x86_64-redhat-linux/14/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/14/lto-wrapper -plugin-opt=-fresolution=/tmp/cc7SqKa1.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_4bba4 /usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/14/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/14 -L/usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/14/../../.. -lncurses CMakeFiles/cmTC_4bba4.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lpthread -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc/x86_64-redhat-linux/14/crtend.o /usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64/crtn.o]
+        ignore line: [COLLECT_GCC_OPTIONS='-g' '-pthread' '-Wall' '-v' '-o' 'cmTC_68b52' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_68b52.']
+        link line: [ /usr/libexec/gcc/x86_64-redhat-linux/14/collect2 -plugin /usr/libexec/gcc/x86_64-redhat-linux/14/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/14/lto-wrapper -plugin-opt=-fresolution=/tmp/ccxyGC7w.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_68b52 /usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/14/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/14 -L/usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/14/../../.. -lncurses CMakeFiles/cmTC_68b52.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lpthread -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc/x86_64-redhat-linux/14/crtend.o /usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64/crtn.o]
           arg [/usr/libexec/gcc/x86_64-redhat-linux/14/collect2] ==> ignore
           arg [-plugin] ==> ignore
           arg [/usr/libexec/gcc/x86_64-redhat-linux/14/liblto_plugin.so] ==> ignore
           arg [-plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/14/lto-wrapper] ==> ignore
-          arg [-plugin-opt=-fresolution=/tmp/cc7SqKa1.res] ==> ignore
+          arg [-plugin-opt=-fresolution=/tmp/ccxyGC7w.res] ==> ignore
           arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
           arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
           arg [-plugin-opt=-pass-through=-lpthread] ==> ignore
@@ -209,7 +209,7 @@ events:
           arg [-dynamic-linker] ==> ignore
           arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
           arg [-o] ==> ignore
-          arg [cmTC_4bba4] ==> ignore
+          arg [cmTC_68b52] ==> ignore
           arg [/usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64/crt1.o] ==> obj [/usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64/crt1.o]
           arg [/usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64/crti.o] ==> obj [/usr/lib/gcc/x86_64-redhat-linux/14/../../../../lib64/crti.o]
           arg [/usr/lib/gcc/x86_64-redhat-linux/14/crtbegin.o] ==> obj [/usr/lib/gcc/x86_64-redhat-linux/14/crtbegin.o]
@@ -219,7 +219,7 @@ events:
           arg [-L/usr/lib/../lib64] ==> dir [/usr/lib/../lib64]
           arg [-L/usr/lib/gcc/x86_64-redhat-linux/14/../../..] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/14/../../..]
           arg [-lncurses] ==> lib [ncurses]
-          arg [CMakeFiles/cmTC_4bba4.dir/CMakeCCompilerABI.c.o] ==> ignore
+          arg [CMakeFiles/cmTC_68b52.dir/CMakeCCompilerABI.c.o] ==> ignore
           arg [-lgcc] ==> lib [gcc]
           arg [--push-state] ==> ignore
           arg [--as-needed] ==> ignore

@@ -32,6 +32,8 @@ void cpu() {
                scheduler->running_process->segment->num_instructions &&
            scheduler->running_process->remaining_time >
                0) { /// while the process is still running
+      int sem_val_cpu;
+      sem_getvalue(&process_semaphore, &sem_val_cpu);
 
       sem_wait(&process_semaphore);
 
@@ -39,17 +41,16 @@ void cpu() {
 
       if (!running->segment
                ->present_bit) { // segment is not loaded in the memory
-        memory_load_syscall();
+        memory_load_syscall(running);
       } else {
         running->segment->used_bit = 1;
 
-        process_instruction(
-            running,
-            running->segment
-                ->instructions[running->PC]); // aumenta PC aqui se der certo
+        FLAGS teste = process_instruction( running, running->segment
+              ->instructions[running->PC]);
+        if(teste == SUCCESS){
+          sem_post(&process_semaphore);
+        } 
       }
-
-      sem_post(&process_semaphore);
     }
 
     /// exited while, that means the process stopped running, either because
@@ -58,8 +59,7 @@ void cpu() {
 
     if (scheduler->running_process->PC >=
         scheduler->running_process->segment->num_instructions) { /// finished
-
-      process_finish_syscall(); // process finished
+      process_finish_syscall(scheduler->running_process); // process finished
     }
 
     if (scheduler->running_process->remaining_time <=
@@ -71,7 +71,7 @@ void cpu() {
   //}
 }
 
-void process_instruction(Process *process, Instruction instruction) {
+FLAGS process_instruction(Process *process, Instruction instruction) {
   switch (instruction.opcode) {
   /// EXEC has the format EXEC X, where X is the necessary time to execute  a
   /// given instruction
@@ -79,15 +79,19 @@ void process_instruction(Process *process, Instruction instruction) {
     process->remaining_time -= instruction.operand;
     /// updates program counter
     process->PC++;
-    break;
 
+    return SUCCESS;
     /// later
   case READ:
-    break;
+    process->PC++;
+
+    return SUCCESS;
 
   /// later
   case WRITE:
-    break;
+    process->PC++;
+
+    return SUCCESS;
 
   case P:
     char semaphore_p_id = instruction.semaphore;
@@ -100,8 +104,12 @@ void process_instruction(Process *process, Instruction instruction) {
       scheduler->running_process->remaining_time -=
           200; /// 200 time required to semaphore
       scheduler->running_process->PC++;
+
+      return SUCCESS;
     } else {
       process_interrupt(SEMAPHORE_INTERRUPTION);
+
+      return FAILURE;
     }
 
     break;
@@ -114,11 +122,13 @@ void process_instruction(Process *process, Instruction instruction) {
     semaphore_v_syscall(semaphore_v);
     scheduler->running_process->PC++;
 
-    break;
+    return SUCCESS;
 
   /// later
   case PRINT:
-    break;
+    process->PC++;
+    
+    return SUCCESS;
 
   default:
     printf("Error: the opcode is invalid");
@@ -168,18 +178,26 @@ void semaphore_v_syscall(Semaphore *semaphore) {
   }
 }
 
-void process_finish_syscall() {
+void process_finish_syscall(Process *process) { // OBS liberar páginas da memória
   /// delete the scheduler from the PCB
-  delete_list(PCB, scheduler->running_process);
+  process->status = FINISHED;
+  delete_list(PCB, &process->id);
+  
+  Process* teste = (Process *)PCB->header;
+  if(!teste){
+    printf("apagou");
+  }
 
   /// calls the scheduler to advance scheduling
   forward_scheduling();
 }
 
-void memory_load_syscall() {
-  scheduler->running_process->status = WAITING;
+void memory_load_syscall(Process *process) {
+  process->status = WAITING;
 
-  memory_load_requisition();
+  memory_load_requisition(process);
+
+  process->segment->present_bit = 1;
   /// change process status and calls forward_scheduling to remove it
   /// and schedule the next running process
   /// OBS process interrupt qur mantem ready e reescalona
@@ -190,20 +208,13 @@ void process_create_syscall(char *filename) {
   Process *new_process = create_process(filename);
 
   push(PCB, new_process); /// adding the new process to the OS's PCB list
-
-  int sem_val;
-  sem_getvalue(&process_semaphore, &sem_val);
-
+  
   add_process_scheduler(new_process);
   // interrompar quem está rodando (mantendo ready) e reescalonando
   process_interrupt(NEW_PROCESS_INTERRUPTION);
-
-  printf("saiu do interrupr");
 }
 
-void memory_load_requisition() {
-  Process *process = scheduler->running_process;
-
+void memory_load_requisition(Process *process) {
   if (memory->num_free_pages >=
       process->segment->num_pages) { /// there is space available in the memory
                                      /// for the pages

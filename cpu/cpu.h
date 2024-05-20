@@ -24,7 +24,7 @@ void cpu();
 /// @brief  Emulates the execution of a given instruction
 /// @param process that is executing
 /// @param instruction instruction to be executed
-void process_instruction(Process *process, Instruction instruction);
+FLAGS process_instruction(Process *process, Instruction instruction);
 
 /// @brief the interruption of a process
 ///

@@ -14,20 +14,19 @@ void init_scheduler() {
 }
 
 void forward_scheduling() {
-  int sem_val;
-  sem_getvalue(&process_semaphore, &sem_val);
+  int sem_val_sched;
+  sem_getvalue(&process_semaphore, &sem_val_sched);
 
   sem_wait(&process_semaphore); /// we cannot change the ready processes list in
-                                /// between these following actions
-
-  Node *scheduled =
-      pop(scheduler->ready_processes); /// first process on the queue
-
+                                /// between these following action
   Process *old_process = scheduler->running_process;
 
   if (old_process && old_process->status == READY) {
     add_process_scheduler(old_process);
   }
+
+  Node *scheduled =
+      pop(scheduler->ready_processes); /// first process on the queue
 
   if (!scheduled) { /// there is no process on the list
     return;

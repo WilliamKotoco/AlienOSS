@@ -12,8 +12,9 @@ int compare_processes(void *d1, void *d2) {
   int d11 = p1->id;
 
   int *d22 = (int *)d2;
+  int d23 = *d22;
 
-  if (d11 == *d22) {
+  if (d11 == d23) {
     return 1;
   } else {
     return 0;
