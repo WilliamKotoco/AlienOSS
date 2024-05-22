@@ -193,7 +193,7 @@ void process_finish_syscall(Process *process) {
   delete_list(PCB, &process->id);
 
   /// unloads segment from the memory
-  memory_unload_segment(process);
+  memory_unload_segment(process->segment);
 
   /// calls the scheduler to advance scheduling
   forward_scheduling();
@@ -223,19 +223,27 @@ void process_create_syscall(char *filename) {
 }
 
 void memory_load_requisition(Process *process) {
+  /// not enough space, swapping needed
+  while(memory->num_free_pages < process->segment->num_pages){
+    swap_segment();
+  }
+
   /// there is enough space available in the memory
-  if (memory->num_free_pages >= process->segment->num_pages) {
-    // creates the pages and inserts them into memory's page table
-    for (int i = 0; i < process->segment->num_pages; i++) {
-      Page *new_page = malloc(sizeof(Page));
+  load_segment(process);
 
-      new_page->process_id = process->id;
-      new_page->segment_id = process->segment->id;
+  /// inserts segment in the segments list
+  push(memory->segments, process->segment);
+}
 
-      add_page_memory(new_page);
-    }
-  } else { /// not enough space, swapping
-    /// second chance
+void load_segment(Process *process){
+  /// creates the pages and inserts them into memory's page table
+  for (int i = 0; i < process->segment->num_pages; i++) {
+    Page *new_page = malloc(sizeof(Page));
+
+    new_page->process_id = process->id;
+    new_page->segment_id = process->segment->id;
+
+    add_page_memory(new_page);
   }
 }
 
@@ -256,14 +264,16 @@ void add_page_memory(Page *new_page) {
   memory->num_free_pages--;
 }
 
-void memory_unload_segment(Process *process) {
-  for (int i = 0; i < process->segment->num_pages; i++) {
-    memory_delete_page(process->id);
+void memory_unload_segment(Segment *segment) {
+  for (int i = 0; i < segment->num_pages; i++) {
+    memory_delete_page(segment->id);
   }
 
-  process->segment->dirty_bit = 0;
-  process->segment->present_bit = 0;
-  process->segment->used_bit = 0;
+  segment->dirty_bit = 0;
+  segment->present_bit = 0;
+  segment->used_bit = 0;
+
+  delete_list(memory->segments, &segment->id);
 }
 
 void memory_delete_page(int id) {
@@ -271,7 +281,7 @@ void memory_delete_page(int id) {
 
   /// searches for the first used page of the process
   while (i < NUM_PAGES) {
-    if (memory->pages[i].free == 0 && memory->pages[i].process_id == id) {
+    if (memory->pages[i].free == 0 && memory->pages[i].segment_id == id) {
       break;
     }
     i++;
@@ -283,4 +293,28 @@ void memory_delete_page(int id) {
   memory->pages[i].segment_id = -1;
 
   memory->num_free_pages++;
+}
+
+void swap_segment(){
+  Node *tmp = memory->segments->header;
+
+  while(tmp){
+    Segment *tmp_seg = (Segment *)tmp->data;
+
+    if(tmp_seg->used_bit == 0){
+      memory_unload_segment(tmp_seg);
+
+      return;
+    } else{
+      tmp_seg->used_bit = 0;
+    }
+
+    if(! tmp->next){
+      tmp = memory->segments->header;
+    } else{
+      tmp = tmp->next; 
+    }
+  }
+
+  memory->segments->header = tmp;
 }
