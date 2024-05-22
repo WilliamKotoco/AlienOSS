@@ -1,6 +1,7 @@
 #include "list.h"
 
 List *create_list(size_t data_size, int (*compare)(void *, void *)) {
+  /// alocates space
   List *new_list = malloc(sizeof(List));
 
   new_list->header = new_list->tail = NULL;
@@ -35,47 +36,26 @@ void push(List *list, void *new_data) {
   }
 }
 
-// /// @brief  TEMP
-// /// @param d1
-// /// @param d2
-// /// @return
-// int compare_person(void *d1, void *d2) {
-
-//   struct person *p1 = (struct person *)d1;
-
-//   int d11 = p1->cpf;
-
-//   int *d22 = (int *)d2;
-
-//   if (d11 == *d22) {
-//     return 1;
-//   } else {
-//     return 0;
-//   }
-// }
-
 Node *find(List *list, void *data) {
   Node *tmp = list->header;
 
+  /// searches through all nodes
   while (tmp) {
-    /// use compare function passed to the list struct.
-    if (list->cmp(tmp->data, data)) {
+    /// uses the compare function passed on the list creation
+    if (list->cmp(tmp->data, data)) { /// found
       return tmp;
     }
+
     tmp = tmp->next;
   }
 
+  /// node with data not found
   return NULL;
 }
 
 void delete_list(List *list, void *data) {
+  /// searches for the node
   Node *place = find(list, data);
-
-  if (!place) {
-    int teste = 0;
-    printf("não tem");
-    return;
-  }
 
   /// if the element to be removed is the head of the list
   if (list->header == place) {
@@ -88,6 +68,8 @@ void delete_list(List *list, void *data) {
   } else if (list->tail == place) {
     place->prev->next = NULL;
     list->tail = place->prev;
+
+    /// in the middle of the list
   } else {
     place->prev->next = place->next;
     place->next->prev = place->prev;

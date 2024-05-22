@@ -8,44 +8,43 @@ void init_scheduler() {
   scheduler = malloc(sizeof(Scheduler));
   scheduler->running_process = NULL; /// set the current process to NULL
 
-  /// @TEMP: this will probaly causes circular dependencies, i'm sure
-  /// process will have to import scheduler.h
   scheduler->ready_processes = create_list(sizeof(Process), compare_processes);
 }
 
 void forward_scheduling() {
-  int sem_val_sched;
-  sem_getvalue(&process_semaphore, &sem_val_sched);
+  /// ensures that a new process does not interrupt a running process in the
+  /// middle of an instruction
+  sem_wait(&process_semaphore);
 
-  sem_wait(&process_semaphore); /// we cannot change the ready processes list in
-                                /// between these following action
   Process *old_process = scheduler->running_process;
 
+  /// if the process is still ready, it is added again in the list
   if (old_process && old_process->status == READY) {
     add_process_scheduler(old_process);
   }
 
-  Node *scheduled =
-      pop(scheduler->ready_processes); /// first process on the queue
+  /// schedules first process on the queue
+  Node *scheduled = pop(scheduler->ready_processes);
 
-  /// there are no process to schedule
-  if (!scheduled) { /// there is no process on the list
-
-    /// free the current running process since it won't be replaced
+  /// there isn't a process to schedule
+  if (!scheduled) {
+    /// frees the current running process since it won't be replaced
     free(scheduler->running_process);
-
     scheduler->running_process = NULL;
+
     sem_post(&process_semaphore);
+
     return;
   }
 
+  /// casting of the gerenic node
   Process *scheduled_process = (Process *)scheduled->data;
 
   scheduled_process->status = RUNNING;
+
+  /// process' quantum time is inversely proportional to its priority
   scheduled_process->remaining_time =
-      QUANTUM_TIME_TOTAL /
-      scheduled_process->priority; /// process's quantum time is inversely
-                                   /// proportional to its priority
+      QUANTUM_TIME_TOTAL / scheduled_process->priority;
 
   scheduler->running_process = scheduled_process;
 
@@ -62,9 +61,9 @@ Node *last_process_priority(List *list, int priority) {
   Process *tmp_process = (Process *)tmp->data;
   int next_priority = priority + 1;
 
-  if (tmp_process->priority >
-      next_priority) { /// new process has the highest priority
-    return NULL;       // there is no process before it
+  /// new process has the highest priority
+  if (tmp_process->priority > next_priority) {
+    return NULL; // there is no process before it
   }
 
   while (tmp) { // searches for the first process with next_priority
@@ -80,17 +79,19 @@ Node *last_process_priority(List *list, int priority) {
 }
 
 void add_process_scheduler(Process *new_process) {
+  /// previous process to new process, ordering by priority
   Node *prev =
       last_process_priority(scheduler->ready_processes, new_process->priority);
 
+  /// alocates space
   Node *new_node = malloc(sizeof(Node));
   new_node->data = new_process;
   new_node->prev = new_node->next = NULL;
 
-  if (!prev) { // new_process has the highest priority and is the head
+  if (!prev) { /// new_process has the highest priority and is the head
     new_node->next = scheduler->ready_processes->header;
     scheduler->ready_processes->header = new_node;
-  } else { // new_process is added after prev
+  } else { /// new_process is added after prev
     new_node->next = prev->next;
     prev->next = new_node;
 

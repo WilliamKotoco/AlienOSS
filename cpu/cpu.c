@@ -21,34 +21,33 @@ void init_cpu() {
 
 void cpu() {
   while (1) {
-    while (!scheduler->running_process)
-      ; /// constantly running
-        // if (!scheduler->running_process) { /// no running process
-    // forward_scheduling();            /// schedules another process
-    //} else {                           /// there is a scheduled process
-    // already
+    while (!scheduler->running_process) /// no scheduled process
+      ;
+
+    //// there is a scheduled process
+    /// it will continue running until it has used its quantum time, it has
+    /// finished, or it has been forcebly taken out of the CPU
     while (scheduler->running_process &&
            scheduler->running_process->PC <
                scheduler->running_process->segment->num_instructions &&
-           scheduler->running_process->remaining_time >
-               0) { /// while the process is still running
-      int sem_val_cpu;
-      sem_getvalue(&process_semaphore, &sem_val_cpu);
-
-      sem_wait(&process_semaphore);
+           scheduler->running_process->remaining_time > 0) {
+      sem_wait(&process_semaphore); /// ensures that the running process does
+                                    /// not change in the middle of executing a
+                                    /// instruction
 
       Process *running = scheduler->running_process;
 
-      if (!running->segment
-               ->present_bit) { // segment is not loaded in the memory
+      if (!running->segment->present_bit) { /// data is not loaded in the memory
         memory_load_syscall(running);
       } else {
-        running->segment->used_bit = 1;
+        running->segment->used_bit = 1; /// segment's data has been used
 
-        FLAGS teste = process_instruction(
-            running, running->segment->instructions[running->PC]);
-        if (teste == SUCCESS) {
-          sem_post(&process_semaphore);
+        if (process_instruction(running,
+                                running->segment->instructions[running->PC]) ==
+            SUCCESS) {
+          sem_post(&process_semaphore); /// the instruction was executed, can
+                                        /// now change the running process
+                                        /// safely (if desired)
         }
       }
     }
@@ -58,52 +57,52 @@ void cpu() {
     /// used all of its quantum time
 
     if (scheduler->running_process->PC >=
-        scheduler->running_process->segment->num_instructions) { /// finished
-      process_finish_syscall(scheduler->running_process); // process finished
+        scheduler->running_process->segment->num_instructions) {
+      /// all inscructions were executed
+      process_finish_syscall(scheduler->running_process); /// process finished
     }
 
-    else if (scheduler->running_process->remaining_time <=
-             0) { // completed the quantum time
-      // quantum tima acabopu = continua ready mas reescalona
+    else if (scheduler->running_process->remaining_time <= 0) {
+      /// completed the quantum time
       process_interrupt(QUANTUM_TIME_INTERRUPTION);
     }
   }
-  //}
 }
 
 FLAGS process_instruction(Process *process, Instruction instruction) {
-  Opcode opcode = instruction.opcode;
   switch (instruction.opcode) {
-  /// EXEC has the format EXEC X, where X is the necessary time to execute  a
-  /// given instruction
   case EXEC:
+    /// EXEC has the format EXEC X, where X is the necessary time to execute
     process->remaining_time -= instruction.operand;
+
     /// updates program counter
     process->PC++;
 
     return SUCCESS;
-    /// later
+
   case READ:
     process->PC++;
 
     return SUCCESS;
 
-  /// later
   case WRITE:
     process->PC++;
 
     return SUCCESS;
 
   case P:
+    /// P(s), where s is the semaphore the process is waiting for
     char semaphore_p_id = instruction.semaphore;
-    Node *semaphore_p_node = find(memory->semaphores, &semaphore_p_id);
 
-    Semaphore *semaphore_p = (Semaphore *)semaphore_p_node;
-    FLAGS result = semaphore_p_syscall(semaphore_p);
+    /// searches for the semaphore in the semaphores list
+    Node *semaphore_p_node = find(memory->semaphores, &semaphore_p_id);
+    Semaphore *semaphore_p = (Semaphore *)semaphore_p_node->data;
+
+    FLAGS result = semaphore_p_syscall(process, semaphore_p);
 
     if (result == SUCCESS) {
       scheduler->running_process->remaining_time -=
-          200; /// 200 time required to semaphore
+          200; /// 200 time required to acquire
       scheduler->running_process->PC++;
 
       return SUCCESS;
@@ -113,19 +112,21 @@ FLAGS process_instruction(Process *process, Instruction instruction) {
       return FAILURE;
     }
 
-    break;
-
   case V:
+    /// V(s), where s is the semaphore the process is posting
     char semaphore_v_id = instruction.semaphore;
-    Node *semaphore_v_node = find(memory->semaphores, &semaphore_v_id);
 
-    Semaphore *semaphore_v = (Semaphore *)semaphore_v_node;
+    /// searches for the semaphore in the semaphores list
+    Node *semaphore_v_node = find(memory->semaphores, &semaphore_v_id);
+    Semaphore *semaphore_v = (Semaphore *)semaphore_v_node->data;
+
+    /// frees semaphore
     semaphore_v_syscall(semaphore_v);
+
     scheduler->running_process->PC++;
 
     return SUCCESS;
 
-  /// later
   case PRINT:
     process->PC++;
 
@@ -138,9 +139,12 @@ FLAGS process_instruction(Process *process, Instruction instruction) {
 }
 
 void process_interrupt(INTERRUPTION_TYPE TYPE) {
-
   if (scheduler->running_process) {
+    /// any interruption created by the running process will make it stop
+    /// running mid execution
     if (TYPE != NEW_PROCESS_INTERRUPTION) {
+      /// makes it possible to reeschedule while the process has not finished
+      /// executing the instruction
       sem_post(&process_semaphore);
     }
 
@@ -149,48 +153,47 @@ void process_interrupt(INTERRUPTION_TYPE TYPE) {
     else
       scheduler->running_process->status = READY;
   }
+
   /// re-schedules
   forward_scheduling();
 }
 
-FLAGS semaphore_p_syscall(Semaphore *semaphore) {
-  /// if there are no elements in the semaphore's queue
+FLAGS semaphore_p_syscall(Process *process, Semaphore *semaphore) {
+  /// if there isn't a element in the semaphore
   if (semaphore->owner_id == -1) {
     semaphore->owner_id = scheduler->running_process->id;
+
     return SUCCESS;
   }
-  /// enqueue the process if there are elements in the queue
 
+  /// enqueue the process if there is already a process
   push(semaphore->processes_waiting, scheduler->running_process);
+
   return FAILURE;
 }
 
 void semaphore_v_syscall(Semaphore *semaphore) {
   semaphore->owner_id = -1;
 
+  /// checks if there is a process waiting for this semaphore
   Process *new_process = (Process *)pop(semaphore->processes_waiting);
 
   if (new_process) {
+    /// the process has acquired the semaphore and is ready to run
     new_process->status = READY;
-
     add_process_scheduler(new_process);
 
     semaphore->owner_id = new_process->id;
   }
 }
 
-void process_finish_syscall(
-    Process *process) { // OBS liberar páginas da memória
-  /// delete the scheduler from the PCB
-
+void process_finish_syscall(Process *process) {
+  /// changes status and deletes from the PCB
   scheduler->running_process->status = FINISHED;
-
   delete_list(PCB, &process->id);
 
-  Process *teste = (Process *)PCB->header;
-  if (!teste) {
-    printf("apagou");
-  }
+  /// unloads segment from the memory
+  memory_unload_segment(process);
 
   /// calls the scheduler to advance scheduling
   forward_scheduling();
@@ -211,44 +214,73 @@ void memory_load_syscall(Process *process) {
 void process_create_syscall(char *filename) {
   Process *new_process = create_process(filename);
 
-  push(PCB, new_process); /// adding the new process to the OS's PCB list
-
+  /// adds the new process to the OS's PCB list and scheduler's list
+  push(PCB, new_process);
   add_process_scheduler(new_process);
-  // interrompar quem está rodando (mantendo ready) e reescalonando
+
+  /// interrupts running process
   process_interrupt(NEW_PROCESS_INTERRUPTION);
 }
 
 void memory_load_requisition(Process *process) {
-  if (memory->num_free_pages >=
-      process->segment->num_pages) { /// there is space available in the memory
-                                     /// for the pages
-    // creating the pages and inserting them into memory's page table
+  /// there is enough space available in the memory
+  if (memory->num_free_pages >= process->segment->num_pages) {
+    // creates the pages and inserts them into memory's page table
     for (int i = 0; i < process->segment->num_pages; i++) {
       Page *new_page = malloc(sizeof(Page));
+
       new_page->process_id = process->id;
       new_page->segment_id = process->segment->id;
 
       add_page_memory(new_page);
     }
-  } else {
+  } else { /// not enough space, swapping
     /// second chance
   }
 }
 
-void add_page_memory(
-    Page *new_page) { // percorrer páginas e adicionar se achar livre no meio.
-                      // Se não achar, adicionar depois
+void add_page_memory(Page *new_page) {
   int i = 0;
 
-  while (memory->pages[i].free == 0 &&
-         i < NUM_PAGES) { /// searches first free page
+  /// searches first free page
+  while (memory->pages[i].free == 0 && i < NUM_PAGES) {
     i++;
   }
 
+  /// loads page into memory
   memory->pages[i].number = new_page->number;
   memory->pages[i].process_id = new_page->process_id;
   memory->pages[i].segment_id = new_page->segment_id;
   memory->pages[i].free = 0;
 
   memory->num_free_pages--;
+}
+
+void memory_unload_segment(Process *process) {
+  for (int i = 0; i < process->segment->num_pages; i++) {
+    memory_delete_page(process->id);
+  }
+
+  process->segment->dirty_bit = 0;
+  process->segment->present_bit = 0;
+  process->segment->used_bit = 0;
+}
+
+void memory_delete_page(int id) {
+  int i = 0;
+
+  /// searches for the first used page of the process
+  while (i < NUM_PAGES) {
+    if (memory->pages[i].free == 0 && memory->pages[i].process_id == id) {
+      break;
+    }
+    i++;
+  }
+
+  /// frees page
+  memory->pages[i].free = 1;
+  memory->pages[i].process_id = -1;
+  memory->pages[i].segment_id = -1;
+
+  memory->num_free_pages++;
 }

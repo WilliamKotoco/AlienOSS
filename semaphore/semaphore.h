@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/// stores information about a semaphore, which has a owner and can be shared
+/// Stores information about a semaphore, which has an owner and can be shared
 /// among different processes
 typedef struct semaphore {
   char name;               //!< semaphore name
@@ -13,6 +13,6 @@ typedef struct semaphore {
 
 /// Compares two semaphores based on their name. Used on the generic list.
 /// @param d1 a semaphore
-/// @param d2 the semaphore being compared to d1
+/// @param d2 the id of the semaphore being compared to d1
 /// @return 1 if d1 and d2 are the same semaphore, and 0 otherwise
 int compare_semaphores(void *d1, void *d2);

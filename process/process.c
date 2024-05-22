@@ -22,15 +22,19 @@ int compare_processes(void *d1, void *d2) {
 }
 
 Process *create_process(char *program_name) {
-  Process *new_process =
-      malloc(sizeof(Process)); /// allocate memory for the new process
+  /// alocate memory for the new process
+  Process *new_process = malloc(sizeof(Process));
+
   new_process->id = processes_id++;
   new_process->PC = 0;
 
+  /// reads program header and stores in new_process
   long final_header = read_program_header(program_name, new_process);
+
+  /// error occured during the reading of the header or the instructions
   if ((final_header == -1) ||
       (read_program_instructions(program_name, new_process, final_header) ==
-       -1)) { /// if the file cannot be opened
+       -1)) {
     exit(1);
   }
 
@@ -40,6 +44,7 @@ Process *create_process(char *program_name) {
 }
 
 long read_program_header(char *program_name, Process *process) {
+  /// opens given file
   FILE *fp = fopen(program_name, "r");
 
   if (!fp) { /// cannot open the file
