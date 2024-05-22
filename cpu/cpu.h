@@ -88,6 +88,7 @@ void memory_unload_segment(Segment *segment);
 ///  @details finds the first used page of the process and frees it
 void memory_delete_page(int id);
 
-///  @brief swaps a segment 
-///  @details uses the second chance algorithm to choose the process being swapped
+///  @brief swaps a segment
+///  @details uses the second chance algorithm to choose the segment being
+///  swapped
 void swap_segment();

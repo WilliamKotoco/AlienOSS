@@ -202,12 +202,13 @@ void process_finish_syscall(Process *process) {
 void memory_load_syscall(Process *process) {
   process->status = WAITING;
 
+  /// loads segment
   memory_load_requisition(process);
 
   process->segment->present_bit = 1;
+
   /// change process status and calls forward_scheduling to remove it
   /// and schedule the next running process
-  /// OBS process interrupt qur mantem ready e reescalona
   process_interrupt(MEMORY_INTERRPUTION);
 }
 
@@ -224,7 +225,7 @@ void process_create_syscall(char *filename) {
 
 void memory_load_requisition(Process *process) {
   /// not enough space, swapping needed
-  while(memory->num_free_pages < process->segment->num_pages){
+  while (memory->num_free_pages < process->segment->num_pages) {
     swap_segment();
   }
 
@@ -235,7 +236,7 @@ void memory_load_requisition(Process *process) {
   push(memory->segments, process->segment);
 }
 
-void load_segment(Process *process){
+void load_segment(Process *process) {
   /// creates the pages and inserts them into memory's page table
   for (int i = 0; i < process->segment->num_pages; i++) {
     Page *new_page = malloc(sizeof(Page));
@@ -273,6 +274,7 @@ void memory_unload_segment(Segment *segment) {
   segment->present_bit = 0;
   segment->used_bit = 0;
 
+  /// remove segment from the list, as it is not loaded anymore
   delete_list(memory->segments, &segment->id);
 }
 
@@ -295,26 +297,32 @@ void memory_delete_page(int id) {
   memory->num_free_pages++;
 }
 
-void swap_segment(){
+void swap_segment() {
   Node *tmp = memory->segments->header;
 
-  while(tmp){
+  /// circular search in the list
+  while (tmp) {
     Segment *tmp_seg = (Segment *)tmp->data;
 
-    if(tmp_seg->used_bit == 0){
+    /// if the segment has not been used, it is unloaded
+    if (tmp_seg->used_bit == 0) {
       memory_unload_segment(tmp_seg);
 
       return;
-    } else{
+    } else {
+      /// gives a used segment a second chance
       tmp_seg->used_bit = 0;
     }
 
-    if(! tmp->next){
+    /// last node
+    if (!tmp->next) {
+      /// makes the search ciruclar
       tmp = memory->segments->header;
-    } else{
-      tmp = tmp->next; 
+    } else {
+      tmp = tmp->next;
     }
   }
 
+  /// uploades the next segment to be unloaded
   memory->segments->header = tmp;
 }
