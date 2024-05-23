@@ -17,6 +17,21 @@ int compare_pages(void *d1, void *d2) {
   }
 }
 
+int compare_segments(void *d1, void *d2) {
+  Segment *s1 = (Segment *)d1;
+
+  int s11 = s1->id;
+
+  int *s22 = (int *)d2;
+  int s23 = *s22;
+
+  if (s11 == s23) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
 Memory *init_memory() {
   Memory *memory = malloc(sizeof(Memory));
 
@@ -28,6 +43,8 @@ Memory *init_memory() {
     memory->pages[i].number = i;
     memory->pages[i].free = 1;
   }
+
+  memory->segments = create_list(sizeof(Segment), compare_segments);
 
   memory->semaphores = create_list(sizeof(Semaphore), compare_semaphores);
 

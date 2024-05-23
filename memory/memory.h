@@ -8,7 +8,8 @@
 
 #define MEMORY_SIZE 1073742000
 #define PAGE_SIZE 8192
-#define NUM_PAGES 131072
+// #define NUM_PAGES 131072
+#define NUM_PAGES 5
 
 #define KBYTE 1024
 
@@ -29,7 +30,10 @@ typedef struct page {
 typedef struct memory {
   Page *pages;        ///< memory table, array of its pages
   int num_free_pages; //!< number of free pages, NUM_PAGES - List *pages length
-  List *semaphores;   //!<
+
+  List *segments; //!< segments used for swapping
+
+  List *semaphores; //!< semaphores managed by the OS
 } Memory;
 
 /// Represents a process segment, with its size, pages and instructions.
