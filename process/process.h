@@ -1,3 +1,6 @@
+#ifndef PROCESS_H
+#define PROCESS_H
+
 #include "../memory/memory.h"
 #include <math.h>
 #include <stdio.h>
@@ -51,3 +54,5 @@ long read_program_header(char *program_name, Process *process);
 /// of the program from the file and stores it in the process segment.
 int read_program_instructions(char *program_name, Process *process,
                               long final_header);
+
+#endif

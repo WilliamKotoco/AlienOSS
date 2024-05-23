@@ -1,3 +1,6 @@
+#ifndef SEMAPHORE_H
+#define SEMAPHORE_H
+
 #include "../list/list.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,3 +19,5 @@ typedef struct semaphore {
 /// @param d2 the id of the semaphore being compared to d1
 /// @return 1 if d1 and d2 are the same semaphore, and 0 otherwise
 int compare_semaphores(void *d1, void *d2);
+
+#endif

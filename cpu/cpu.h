@@ -1,6 +1,10 @@
+#ifndef CPU_H
+#define CPU_H
+#include "../log/log.h"
 #include "../scheduler/scheduler.h"
 #include <pthread.h>
 #include <semaphore.h>
+#include <time.h>
 
 extern Memory *memory;
 
@@ -83,3 +87,5 @@ void memory_unload_segment(Process *process);
 ///  @param id of the owner process
 ///  @details finds the first used page of the process and frees it
 void memory_delete_page(int id);
+
+#endif

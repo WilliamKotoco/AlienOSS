@@ -1,3 +1,6 @@
+#ifndef SCHEDULER_H
+#define SCHEDULER_H
+
 #include "../process/process.h"
 #include <semaphore.h>
 #include <stdio.h>
@@ -30,3 +33,4 @@ Node *last_process_priority(List *list, int priority);
 ///  @details Given the new process and the scheduler's list, adds the process
 /// after the others with the same priority
 void add_process_scheduler(Process *new_process);
+#endif

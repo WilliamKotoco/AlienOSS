@@ -1,3 +1,6 @@
+#ifndef MEMORY_H
+#define MEMORY_H
+
 #include "../process/instruction.h"
 #include "../semaphore/semaphore.h"
 #include <stdio.h>
@@ -53,3 +56,5 @@ int compare_pages(void *d1, void *d2);
 /// @brief Initializes the system's memory
 /// @return the memory structure initialized
 Memory *init_memory();
+
+#endif

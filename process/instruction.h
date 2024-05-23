@@ -1,3 +1,6 @@
+#ifndef INSTRUCTION_H
+#define INSTRUCTION_H
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -10,3 +13,5 @@ typedef struct instruction {
   int operand;
   char semaphore;
 } Instruction;
+
+#endif

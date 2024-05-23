@@ -20,6 +20,7 @@ void init_cpu() {
 }
 
 void cpu() {
+
   while (1) {
     while (!scheduler->running_process) /// no scheduled process
       ;
@@ -70,6 +71,9 @@ void cpu() {
 }
 
 FLAGS process_instruction(Process *process, Instruction instruction) {
+  char message[256];
+  sleep(1);
+
   switch (instruction.opcode) {
   case EXEC:
     /// EXEC has the format EXEC X, where X is the necessary time to execute
@@ -77,6 +81,10 @@ FLAGS process_instruction(Process *process, Instruction instruction) {
 
     /// updates program counter
     process->PC++;
+
+    snprintf(message, sizeof(message), "Process %d executed for %d seconds",
+             process->id, instruction.operand);
+    append_log_message(message, PROCESS_LOG);
 
     return SUCCESS;
 
@@ -104,9 +112,18 @@ FLAGS process_instruction(Process *process, Instruction instruction) {
       scheduler->running_process->remaining_time -=
           200; /// 200 time required to acquire
       scheduler->running_process->PC++;
+      snprintf(
+          message, sizeof(message),
+          "Process %d acquired the semaphore %c and executed for 200 seconds",
+          process->id, semaphore_p->name, instruction.operand);
+      append_log_message(message, PROCESS_LOG);
 
       return SUCCESS;
     } else {
+      snprintf(message, sizeof(message),
+               "Process %d is waiting for the semaphore %c", process->id,
+               semaphore_p->name);
+      append_log_message(message, PROCESS_LOG);
       process_interrupt(SEMAPHORE_INTERRUPTION);
 
       return FAILURE;
@@ -125,6 +142,10 @@ FLAGS process_instruction(Process *process, Instruction instruction) {
 
     scheduler->running_process->PC++;
 
+    char message[256];
+    snprintf(message, sizeof(message), "Process %d released the semaphore %c",
+             process->id, semaphore_v->name);
+    append_log_message(message, PROCESS_LOG);
     return SUCCESS;
 
   case PRINT:
@@ -217,6 +238,11 @@ void process_create_syscall(char *filename) {
   /// adds the new process to the OS's PCB list and scheduler's list
   push(PCB, new_process);
   add_process_scheduler(new_process);
+
+  char message[256];
+  snprintf(message, sizeof(message), "Process %d created at ", new_process->id);
+
+  append_log_message(message, PROCESS_LOG);
 
   /// interrupts running process
   process_interrupt(NEW_PROCESS_INTERRUPTION);

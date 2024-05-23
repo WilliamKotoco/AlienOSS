@@ -29,6 +29,8 @@ add_executable(AlienOS
   cpu/cpu.c 
   scheduler/scheduler.h 
   scheduler/scheduler.c 
+  log/log.h
+  log/log.c 
   )
 
 

@@ -1,3 +1,6 @@
+#ifndef LIST_H
+#define LIST_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -57,3 +60,5 @@ Node *find(List *list, void *data);
 ///  @details This function finds the node that matches the given key and
 /// deletes it from the list.
 void delete_list(List *list, void *data);
+
+#endif

@@ -9,6 +9,9 @@
         "memory.h": "c",
         "instruction.h": "c",
         "list.h": "c",
-        "utils.h": "c"
+        "utils.h": "c",
+        "log.h": "c",
+        "stdlib.h": "c",
+        "window-log.h": "c"
     }
 }

@@ -1,27 +1,33 @@
 #include "ui/main-window.h"
 #include <semaphore.h>
 
+#include <time.h>
 /// creating global variables
 List *PCB;
 Memory *memory;
 Scheduler *scheduler;
 sem_t process_semaphore; /// Read-write semaphore for the current running
                          /// process in the scheduler.
+
+sem_t log_semaphore; /// semaphore responsible for controlling the logging.
+
+List *LOGS;
 int processes_id = 0;
 
 int main(int argc, char *argv[]) {
 
   /// inicializing global variables
   sem_init(&process_semaphore, 1, 1);
+  sem_init(&log_semaphore, 1, 0);
 
   PCB = create_list(sizeof(Process), compare_processes);
+  LOGS = create_list(sizeof(LogMessage), compare_log);
 
   memory = init_memory();
+  init_log();
   init_scheduler();
   init_cpu();
   show_and_run();
-
-  // create_process("test/programa_sintetico.txt");
 
   // printf("Após ler programa sintético:\n");
 
