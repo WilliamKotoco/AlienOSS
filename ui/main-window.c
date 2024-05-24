@@ -1,4 +1,6 @@
 #include "main-window.h"
+#include <curses.h>
+#include <time.h>
 
 extern List *PCB;
 extern List *LOGS;
@@ -9,9 +11,10 @@ WINDOW *option_window;
 /// secondary windows
 WINDOW *process_state_window;
 WINDOW *memory_state_window;
+WINDOW *file_name_window;
 Node *current_log;
-void show_and_run() {
 
+void show_and_run() {
   initscr();
   cbreak();
 
@@ -26,7 +29,7 @@ void show_and_run() {
 
   //  load_memory_window(memory_state_window);
   /// get the maximum from the standard screen
-  option_window = newwin(getmaxy(stdscr), getmaxx(stdscr) / 4, 0, 0);
+  option_window = newwin(getmaxy(stdscr) * 3 / 4, getmaxx(stdscr) / 4, 0, 0);
 
   /// colloring the window
   wbkgd(option_window, COLOR_PAIR(1));
@@ -36,71 +39,10 @@ void show_and_run() {
 
   box(option_window, 0, 0);
 
-  /// Options inside the option_window
-  keypad(option_window, TRUE);
-  char options[3][100] = {"Create a new process",
-                          "Toggle semaphore aquisition (?)", "Exit"};
-  int choice;
-
-  int highlight = 0;
-
-  while (1) {
-    for (int i = 0; i < 3; i++) {
-      if (highlight == i) {
-        wattron(option_window, A_REVERSE);
-      }
-      mvwprintw(option_window, 30 + i + 1, 1, options[i]);
-      wattroff(option_window, A_REVERSE);
-    }
-    choice = wgetch(option_window);
-
-    switch (choice) {
-
-    case KEY_UP:
-      highlight--;
-      if (highlight == -1)
-        highlight = 0;
-      break;
-
-    case KEY_DOWN:
-      highlight++;
-      if (highlight == 3)
-        highlight = 2;
-      break;
-
-      /// Enter key
-    case '\n':
-      if (highlight == 0) {
-        char *input = get_process_filename();
-        load_process_window(&process_state_window);
-
-        load_memory_window(&memory_state_window);
-        wrefresh(process_state_window); /// redrawing updated process window
-        wrefresh(memory_state_window);
-        display_ascii_art(option_window); /// reloading option window
-        box(option_window, 0, 0);
-        // rebuild_all_log();
-
-        process_create_syscall(input);
-
-      } else if (highlight == 1) {
-        mvwprintw(option_window, 35, 1, "Toggled"); /// temporary
-
-      } else {
-        // delwin(stdscr);
-        delwin(option_window);
-        delwin(process_state_window);
-        return;
-      }
-
-      break;
-
-    default:
-      break;
-    }
-  }
-
   wrefresh(option_window);
+  while (1) {
+    load_file_name_window(&file_name_window);
+  }
 
   endwin();
 }
@@ -119,6 +61,32 @@ void load_process_window(WINDOW **win) {
   wattron(*win, A_BOLD);
   mvwprintw(*win, 0, 2, "Process window");
   wattroff(*win, A_BOLD);
+  wrefresh(*win);
+}
+
+void load_file_name_window(WINDOW **win) {
+  char filename[245];
+
+  *win = newwin(getmaxy(stdscr) * 1 / 4, getmaxx(stdscr) / 4,
+                getmaxy(stdscr) - (getmaxy(stdscr) * 1 / 4), 0);
+
+  wbkgd(*win, COLOR_PAIR(1));
+  wattron(*win, COLOR_PAIR(2));
+
+  box(*win, 0, 0);
+
+  wattron(*win, A_BOLD);
+  mvwprintw(*win, 0, 2, "File");
+  wattroff(*win, A_BOLD);
+
+  mvwprintw(*win, 2, 2, "Ctrl - C to exit");
+  mvwprintw(*win, 5, 2, "Insert file name: ");
+  echo();
+  wgetnstr(*win, filename, sizeof(filename) - 1);
+  noecho();
+
+  process_create_syscall(filename);
+
   wrefresh(*win);
 }
 
@@ -141,8 +109,10 @@ void load_memory_window(WINDOW **win) {
   wattron(*win, A_BOLD);
   mvwprintw(*win, 0, 2, "Memory window");
   wattroff(*win, A_BOLD);
+
   wrefresh(*win);
 }
+
 char *get_process_filename() {
   int maxy, maxx;
   getmaxyx(stdscr, maxy, maxx);
@@ -197,6 +167,7 @@ void refresh_log() {
 
   int start_processy = 2;
   int start_memoryy = 2;
+  wprintw(process_state_window, "\n");
   while (1) {
 
     int sem_val;
@@ -204,20 +175,29 @@ void refresh_log() {
     sem_wait(&log_semaphore);
     /// semaphored liberated so there is a new log message
 
-    while (current_log != LOGS->tail) {
+    while (current_log->next) {
       LogMessage *curr = (LogMessage *)current_log->data;
       switch (curr->log_type) {
       case PROCESS_LOG:
-        // mvprintw(process_state_window,start_processy, 5, curr->log_message);
+
+        if (start_processy == getmaxy(stdscr) / 2) {
+          delwin(process_state_window);
+          load_process_window(&process_state_window);
+          start_processy = 2;
+        }
         mvwprintw(process_state_window, start_processy, 8, curr->log_message);
         wrefresh(process_state_window);
         start_processy++;
         break;
 
       case MEMORY_LOG:
-        // mvprintw(memory_state_window,start_memoryy, 5, curr->log_message);
-        mvwprintw(memory_state_window, start_memoryy, 8, curr->log_message);
 
+        if (start_memoryy == getmaxy(stdscr) / 2) {
+          delwin(memory_state_window);
+          load_memory_window(&memory_state_window);
+          start_memoryy = 2;
+        }
+        mvwprintw(memory_state_window, start_memoryy, 8, curr->log_message);
         wrefresh(memory_state_window);
         start_memoryy++;
         break;

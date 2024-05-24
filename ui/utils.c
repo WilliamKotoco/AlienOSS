@@ -1,4 +1,5 @@
 #include "utils.h"
+#include <curses.h>
 
 void display_ascii_art(WINDOW *win) {
   FILE *file = fopen("assets/alien.txt", "r");
@@ -13,7 +14,7 @@ void display_ascii_art(WINDOW *win) {
 
   int y = 5;
   while (fgets(line, sizeof(line), file)) {
-    mvwprintw(win, y, 1, line);
+    mvwprintw(win, y, getmaxx(win) / 4 - 4, line);
     y++;
   }
 }
