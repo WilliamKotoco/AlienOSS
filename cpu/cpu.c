@@ -20,7 +20,6 @@ void init_cpu() {
 }
 
 void cpu() {
-
   while (1) {
     while (!scheduler->running_process) /// no scheduled process
       ;
@@ -65,6 +64,12 @@ void cpu() {
 
     else if (scheduler->running_process->remaining_time <= 0) {
       /// completed the quantum time
+
+      char message[256];
+      snprintf(message, sizeof(message), "Process %d interrupted by quantum time",
+             scheduler->running_process->id);
+      append_log_message(message, PROCESS_LOG);
+
       process_interrupt(QUANTUM_TIME_INTERRUPTION);
     }
   }
@@ -78,6 +83,8 @@ FLAGS process_instruction(Process *process, Instruction instruction) {
   case EXEC:
     /// EXEC has the format EXEC X, where X is the necessary time to execute
     process->remaining_time -= instruction.operand;
+
+    //sleep(instruction.operand/100);
 
     /// updates program counter
     process->PC++;
@@ -108,14 +115,17 @@ FLAGS process_instruction(Process *process, Instruction instruction) {
 
     FLAGS result = semaphore_p_syscall(process, semaphore_p);
 
+    process->PC++;
+
     if (result == SUCCESS) {
       scheduler->running_process->remaining_time -=
           200; /// 200 time required to acquire
-      scheduler->running_process->PC++;
+
+      //sleep(0.2);
+      
       snprintf(
           message, sizeof(message),
-          "Process %d acquired the semaphore %c and executed for 200 seconds",
-          process->id, semaphore_p->name, instruction.operand);
+          "Process %d acquired the semaphore %c", process->id, semaphore_p->name, instruction.operand);
       append_log_message(message, PROCESS_LOG);
 
       return SUCCESS;
@@ -142,10 +152,10 @@ FLAGS process_instruction(Process *process, Instruction instruction) {
 
     scheduler->running_process->PC++;
 
-    char message[256];
     snprintf(message, sizeof(message), "Process %d released the semaphore %c",
              process->id, semaphore_v->name);
     append_log_message(message, PROCESS_LOG);
+
     return SUCCESS;
 
   case PRINT:
@@ -155,6 +165,7 @@ FLAGS process_instruction(Process *process, Instruction instruction) {
 
   default:
     printf("Error: the opcode is invalid");
+
     exit(0);
   }
 }
@@ -174,6 +185,8 @@ void process_interrupt(INTERRUPTION_TYPE TYPE) {
     else
       scheduler->running_process->status = READY;
   }
+
+  append_log_message("entrou na interrupção", PROCESS_LOG);
 
   /// re-schedules
   forward_scheduling();
@@ -216,6 +229,10 @@ void process_finish_syscall(Process *process) {
   /// unloads segment from the memory
   memory_unload_segment(process->segment);
 
+  char message[256];
+  snprintf(message, sizeof(message), "Process %d finished", process->id);
+  append_log_message(message, PROCESS_LOG);
+
   /// calls the scheduler to advance scheduling
   forward_scheduling();
 }
@@ -223,10 +240,24 @@ void process_finish_syscall(Process *process) {
 void memory_load_syscall(Process *process) {
   process->status = WAITING;
 
+  char message[256];
+  snprintf(message, sizeof(message), "Memory load requisition for process %d",
+             process->id);
+  append_log_message(message, MEMORY_LOG);
+
   /// loads segment
   memory_load_requisition(process);
 
   process->segment->present_bit = 1;
+  process->status = READY;
+
+  snprintf(message, sizeof(message), "Memory load of process %d finished",
+             process->id);
+  append_log_message(message, MEMORY_LOG);
+
+  snprintf(message, sizeof(message), "Process %d interrupted by memory request",
+             process->id);
+  append_log_message(message, PROCESS_LOG);
 
   /// change process status and calls forward_scheduling to remove it
   /// and schedule the next running process
@@ -241,7 +272,7 @@ void process_create_syscall(char *filename) {
   add_process_scheduler(new_process);
 
   char message[256];
-  snprintf(message, sizeof(message), "Process %d created at ", new_process->id);
+  snprintf(message, sizeof(message), "Process %d created", new_process->id);
 
   append_log_message(message, PROCESS_LOG);
 
@@ -257,6 +288,7 @@ void memory_load_requisition(Process *process) {
 
   /// there is enough space available in the memory
   load_segment(process);
+  sleep(0.5);
 
   /// inserts segment in the segments list
   push(memory->segments, process->segment);

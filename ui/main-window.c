@@ -168,8 +168,8 @@ void refresh_log() {
   int start_processy = 2;
   int start_memoryy = 2;
   wprintw(process_state_window, "\n");
-  while (1) {
 
+  while (1) {
     int sem_val;
     sem_getvalue(&log_semaphore, &sem_val);
     sem_wait(&log_semaphore);

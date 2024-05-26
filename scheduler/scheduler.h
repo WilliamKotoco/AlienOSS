@@ -5,6 +5,7 @@
 #include <semaphore.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "../log/log.h"
 
 #define QUANTUM_TIME_TOTAL 5000
 
@@ -22,15 +23,9 @@ void init_scheduler();
 /// time
 void forward_scheduling();
 
-///  @brief Finds the last process in a list with a given priority
-///  @param list scheduler's list of ready processes
-///  @param priority process's priority
-///  @return the last node of the scheduler's list with the given priority
-Node *last_process_priority(List *list, int priority);
-
 ///  @brief Adds a process to the scheduler's ready process's list
 ///  @param new_process the process to be added
 ///  @details Given the new process and the scheduler's list, adds the process
-/// after the others with the same priority
+/// in a priority queue manner
 void add_process_scheduler(Process *new_process);
 #endif

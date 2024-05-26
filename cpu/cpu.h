@@ -1,10 +1,11 @@
 #ifndef CPU_H
 #define CPU_H
-#include "../log/log.h"
+//#include "../log/log.h"
 #include "../scheduler/scheduler.h"
 #include <pthread.h>
 #include <semaphore.h>
 #include <time.h>
+#include<unistd.h>
 
 extern Memory *memory;
 
