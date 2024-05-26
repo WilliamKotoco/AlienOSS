@@ -1,3 +1,0 @@
-/home/bibi/Documentos/GitHub/AlienOSS/CMakeFiles/AlienOS.dir
-/home/bibi/Documentos/GitHub/AlienOSS/CMakeFiles/edit_cache.dir
-/home/bibi/Documentos/GitHub/AlienOSS/CMakeFiles/rebuild_cache.dir

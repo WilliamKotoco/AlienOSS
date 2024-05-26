@@ -8,9 +8,8 @@ Memory *memory;
 Scheduler *scheduler;
 sem_t process_semaphore; /// Read-write semaphore for the current running
                          /// process in the scheduler.
-
+bool new_process;
 sem_t log_semaphore; /// semaphore responsible for controlling the logging.
-
 List *LOGS;
 int processes_id = 0;
 
@@ -19,6 +18,7 @@ int main(int argc, char *argv[]) {
   /// inicializing global variables
   sem_init(&process_semaphore, 1, 1);
   sem_init(&log_semaphore, 1, 0);
+  new_process = false;
 
   PCB = create_list(sizeof(Process), compare_processes);
   LOGS = create_list(sizeof(LogMessage), compare_log);

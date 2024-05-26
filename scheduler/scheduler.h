@@ -1,11 +1,11 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
+#include "../log/log.h"
 #include "../process/process.h"
 #include <semaphore.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "../log/log.h"
 
 #define QUANTUM_TIME_TOTAL 5000
 

@@ -1,11 +1,12 @@
 #ifndef CPU_H
 #define CPU_H
-//#include "../log/log.h"
+// #include "../log/log.h"
 #include "../scheduler/scheduler.h"
 #include <pthread.h>
 #include <semaphore.h>
+#include <stdbool.h>
 #include <time.h>
-#include<unistd.h>
+#include <unistd.h>
 
 extern Memory *memory;
 
@@ -29,10 +30,9 @@ void cpu();
 ///  @brief  Emulates the execution of a given instruction
 ///  @param process process being executed
 ///  @param instruction instruction to be executed
-///  @return SUCCESS if the instruction has been successfully executed; FAILLURE
-///  otherwise
+///
 ///  @details identifies the given instruction and calls the specific syscall
-FLAGS process_instruction(Process *process, Instruction instruction);
+void process_instruction(Process *process, Instruction instruction);
 
 ///  @brief the interruption of a process
 ///  @param INTERRUPTION_TYPE enum that represents the interruption
@@ -97,4 +97,8 @@ void memory_delete_page(int id);
 ///  @details uses the second chance algorithm to choose the segment being
 ///  swapped
 void swap_segment();
+
+/// @brief update global variable using a mutex
+/// @param val  true or false
+void update_new_process_flag(bool val);
 #endif

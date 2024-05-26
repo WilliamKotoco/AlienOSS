@@ -1,11 +1,11 @@
 #include "cpu.h"
 #include <semaphore.h>
-
 /// Necessary for global variables
 extern Scheduler *scheduler;
 extern sem_t process_semaphore;
 extern Memory *memory;
 extern List *PCB;
+extern bool new_process;
 
 void init_cpu() {
   pthread_t cpu_id;
@@ -21,19 +21,25 @@ void init_cpu() {
 
 void cpu() {
   while (1) {
-    while (!scheduler->running_process) /// no scheduled process
+    while (!scheduler->running_process &&
+           new_process == false) /// no scheduled process
       ;
 
+    if (new_process) {
+      process_interrupt(NEW_PROCESS_INTERRUPTION);
+      update_new_process_flag(false);
+    }
     //// there is a scheduled process
     /// it will continue running until it has used its quantum time, it has
     /// finished, or it has been forcebly taken out of the CPU
     while (scheduler->running_process &&
            scheduler->running_process->PC <
                scheduler->running_process->segment->num_instructions &&
-           scheduler->running_process->remaining_time > 0) {
-      sem_wait(&process_semaphore); /// ensures that the running process does
-                                    /// not change in the middle of executing a
-                                    /// instruction
+           scheduler->running_process->remaining_time > 0 &&
+           new_process == false) {
+      // sem_wait(&process_semaphore); /// ensures that the running process does
+      /// not change in the middle of executing a
+      /// instruction
 
       Process *running = scheduler->running_process;
 
@@ -41,17 +47,10 @@ void cpu() {
         memory_load_syscall(running);
       } else {
         running->segment->used_bit = 1; /// segment's data has been used
-
-        if (process_instruction(running,
-                                running->segment->instructions[running->PC]) ==
-            SUCCESS) {
-          sem_post(&process_semaphore); /// the instruction was executed, can
-                                        /// now change the running process
-                                        /// safely (if desired)
-        }
+        process_instruction(running,
+                            running->segment->instructions[running->PC]);
       }
     }
-
     /// exited while, that means the process stopped running, either because
     /// it was interrupted, because it has finished running, or because it
     /// used all of its quantum time
@@ -66,8 +65,9 @@ void cpu() {
       /// completed the quantum time
 
       char message[256];
-      snprintf(message, sizeof(message), "Process %d interrupted by quantum time",
-             scheduler->running_process->id);
+      snprintf(message, sizeof(message),
+               "Process %d interrupted by quantum time",
+               scheduler->running_process->id);
       append_log_message(message, PROCESS_LOG);
 
       process_interrupt(QUANTUM_TIME_INTERRUPTION);
@@ -75,35 +75,30 @@ void cpu() {
   }
 }
 
-FLAGS process_instruction(Process *process, Instruction instruction) {
+void process_instruction(Process *process, Instruction instruction) {
   char message[256];
-  sleep(1);
 
   switch (instruction.opcode) {
   case EXEC:
     /// EXEC has the format EXEC X, where X is the necessary time to execute
     process->remaining_time -= instruction.operand;
 
-    //sleep(instruction.operand/100);
-
     /// updates program counter
     process->PC++;
 
+    sleep(1);
     snprintf(message, sizeof(message), "Process %d executed for %d seconds",
              process->id, instruction.operand);
     append_log_message(message, PROCESS_LOG);
 
-    return SUCCESS;
-
+    break;
   case READ:
     process->PC++;
-
-    return SUCCESS;
+    break;
 
   case WRITE:
     process->PC++;
-
-    return SUCCESS;
+    break;
 
   case P:
     /// P(s), where s is the semaphore the process is waiting for
@@ -121,23 +116,20 @@ FLAGS process_instruction(Process *process, Instruction instruction) {
       scheduler->running_process->remaining_time -=
           200; /// 200 time required to acquire
 
-      //sleep(0.2);
-      
-      snprintf(
-          message, sizeof(message),
-          "Process %d acquired the semaphore %c", process->id, semaphore_p->name, instruction.operand);
+      sleep(2);
+
+      snprintf(message, sizeof(message), "Process %d acquired the semaphore %c",
+               process->id, semaphore_p->name, instruction.operand);
       append_log_message(message, PROCESS_LOG);
 
-      return SUCCESS;
     } else {
       snprintf(message, sizeof(message),
                "Process %d is waiting for the semaphore %c", process->id,
                semaphore_p->name);
       append_log_message(message, PROCESS_LOG);
       process_interrupt(SEMAPHORE_INTERRUPTION);
-
-      return FAILURE;
     }
+    break;
 
   case V:
     /// V(s), where s is the semaphore the process is posting
@@ -151,17 +143,15 @@ FLAGS process_instruction(Process *process, Instruction instruction) {
     semaphore_v_syscall(semaphore_v);
 
     scheduler->running_process->PC++;
-
     snprintf(message, sizeof(message), "Process %d released the semaphore %c",
              process->id, semaphore_v->name);
     append_log_message(message, PROCESS_LOG);
 
-    return SUCCESS;
+    break;
 
   case PRINT:
     process->PC++;
-
-    return SUCCESS;
+    break;
 
   default:
     printf("Error: the opcode is invalid");
@@ -171,13 +161,11 @@ FLAGS process_instruction(Process *process, Instruction instruction) {
 }
 
 void process_interrupt(INTERRUPTION_TYPE TYPE) {
+  sleep(1);
   if (scheduler->running_process) {
     /// any interruption created by the running process will make it stop
     /// running mid execution
     if (TYPE != NEW_PROCESS_INTERRUPTION) {
-      /// makes it possible to reeschedule while the process has not finished
-      /// executing the instruction
-      sem_post(&process_semaphore);
     }
 
     if (TYPE == SEMAPHORE_INTERRUPTION)
@@ -190,6 +178,8 @@ void process_interrupt(INTERRUPTION_TYPE TYPE) {
 
   /// re-schedules
   forward_scheduling();
+  if (new_process)
+    update_new_process_flag(false);
 }
 
 FLAGS semaphore_p_syscall(Process *process, Semaphore *semaphore) {
@@ -229,6 +219,7 @@ void process_finish_syscall(Process *process) {
   /// unloads segment from the memory
   memory_unload_segment(process->segment);
 
+  sleep(1);
   char message[256];
   snprintf(message, sizeof(message), "Process %d finished", process->id);
   append_log_message(message, PROCESS_LOG);
@@ -240,9 +231,10 @@ void process_finish_syscall(Process *process) {
 void memory_load_syscall(Process *process) {
   process->status = WAITING;
 
+  sleep(1);
   char message[256];
   snprintf(message, sizeof(message), "Memory load requisition for process %d",
-             process->id);
+           process->id);
   append_log_message(message, MEMORY_LOG);
 
   /// loads segment
@@ -250,13 +242,15 @@ void memory_load_syscall(Process *process) {
 
   process->segment->present_bit = 1;
   process->status = READY;
+  sleep(1);
 
   snprintf(message, sizeof(message), "Memory load of process %d finished",
-             process->id);
+           process->id);
   append_log_message(message, MEMORY_LOG);
+  sleep(1);
 
   snprintf(message, sizeof(message), "Process %d interrupted by memory request",
-             process->id);
+           process->id);
   append_log_message(message, PROCESS_LOG);
 
   /// change process status and calls forward_scheduling to remove it
@@ -271,13 +265,14 @@ void process_create_syscall(char *filename) {
   push(PCB, new_process);
   add_process_scheduler(new_process);
 
+  sleep(1);
   char message[256];
   snprintf(message, sizeof(message), "Process %d created", new_process->id);
 
   append_log_message(message, PROCESS_LOG);
 
   /// interrupts running process
-  process_interrupt(NEW_PROCESS_INTERRUPTION);
+  update_new_process_flag(true);
 }
 
 void memory_load_requisition(Process *process) {
@@ -288,7 +283,7 @@ void memory_load_requisition(Process *process) {
 
   /// there is enough space available in the memory
   load_segment(process);
-  sleep(0.5);
+  sleep(1);
 
   /// inserts segment in the segments list
   push(memory->segments, process->segment);
@@ -383,4 +378,10 @@ void swap_segment() {
 
   /// uploades the next segment to be unloaded
   memory->segments->header = tmp;
+}
+
+void update_new_process_flag(bool val) {
+  sem_wait(&process_semaphore);
+  new_process = val;
+  sem_post(&process_semaphore);
 }

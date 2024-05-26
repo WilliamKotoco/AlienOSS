@@ -14,7 +14,7 @@ void init_scheduler() {
 void forward_scheduling() {
   /// ensures that a new process does not interrupt a running process in the
   /// middle of an instruction
-  sem_wait(&process_semaphore);
+  // sem_wait(&process_semaphore);
 
   char message[256];
   append_log_message("entrou pra escalonar", PROCESS_LOG);
@@ -35,7 +35,7 @@ void forward_scheduling() {
     free(scheduler->running_process);
     scheduler->running_process = NULL;
 
-    sem_post(&process_semaphore);
+    // sem_post(&process_semaphore);
 
     return;
   }
@@ -51,12 +51,12 @@ void forward_scheduling() {
 
   scheduler->running_process = scheduled_process;
 
-  //char message[256];
+  // char message[256];
   snprintf(message, sizeof(message), "Process %d scheduled",
-             scheduled_process->id);
+           scheduled_process->id);
   append_log_message(message, PROCESS_LOG);
 
-  sem_post(&process_semaphore);
+  // sem_post(&process_semaphore);
 }
 
 void add_process_scheduler(Process *new_process) {
@@ -66,44 +66,44 @@ void add_process_scheduler(Process *new_process) {
   new_node->prev = new_node->next = NULL;
 
   /// empty list
-  if(! scheduler->ready_processes->header){
+  if (!scheduler->ready_processes->header) {
     new_node->next = scheduler->ready_processes->header;
 
-    scheduler->ready_processes->header = new_node; 
+    scheduler->ready_processes->header = new_node;
     scheduler->ready_processes->tail = new_node;
 
     return;
   }
 
-  Process *header = (Process *) scheduler->ready_processes->header->data;
+  Process *header = (Process *)scheduler->ready_processes->header->data;
 
-  /// new peocess has the biggest priority  
+  /// new peocess has the biggest priority
   if (new_process->priority < header->priority) {
     new_node->next = scheduler->ready_processes->header;
     scheduler->ready_processes->header = new_node;
 
     return;
-  } 
+  }
 
   /// search for the next process with a smaller priority
   Node *aux = scheduler->ready_processes->header;
   Process *next_process;
 
   while (aux->next) {
-    next_process = (Process *) aux->next->data;
+    next_process = (Process *)aux->next->data;
 
-    /// first process with a bigger priority number (smaller priority overall)  
+    /// first process with a bigger priority number (smaller priority overall)
     if (next_process->priority > new_process->priority) {
       break;
     }
-      
+
     aux = aux->next;
   }
-    
+
   new_node->next = aux->next;
   aux->next = new_node;
 
-  if (!new_node->next) {  /// new node is the last
+  if (!new_node->next) { /// new node is the last
     scheduler->ready_processes->tail = new_node;
   }
 }
