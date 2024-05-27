@@ -94,7 +94,7 @@ void add_process_scheduler(Process *new_process) {
 
   if (!new_node->next) { /// new node is the last
     scheduler->ready_processes->tail = new_node;
-  } else{
+  } else {
     aux->next->prev = new_node;
   }
 }

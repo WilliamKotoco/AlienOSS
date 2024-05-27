@@ -43,14 +43,14 @@ void cpu() {
       if (!running->segment->present_bit) { /// data is not loaded in the memory
         char message[256];
         sleep(1);
-        snprintf(message, sizeof(message), "Process %d interrupted by memory request",
-           running->id);
+        snprintf(message, sizeof(message),
+                 "Process %d interrupted by memory request", running->id);
         append_log_message(message, PROCESS_LOG);
 
         memory_load_syscall(running);
       } else {
         running->segment->used_bit = 1; /// segment's data has been used
-        
+
         process_instruction(running,
                             running->segment->instructions[running->PC]);
       }
@@ -169,7 +169,7 @@ void process_instruction(Process *process, Instruction instruction) {
 
 void process_interrupt(INTERRUPTION_TYPE TYPE) {
   sleep(1);
-  
+
   if (scheduler->running_process) {
     if (TYPE == SEMAPHORE_INTERRUPTION)
       scheduler->running_process->status = WAITING;
@@ -212,7 +212,8 @@ void semaphore_v_syscall(Semaphore *semaphore) {
     add_process_scheduler(new_process_data);
 
     char message[256];
-    snprintf(message, sizeof(message), "Process %d is now the owner of semaphore %c",
+    snprintf(message, sizeof(message),
+             "Process %d is now the owner of semaphore %c",
              new_process_data->id, semaphore->name);
     append_log_message(message, PROCESS_LOG);
 
