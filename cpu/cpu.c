@@ -108,6 +108,11 @@ void process_instruction(Process *process, Instruction instruction) {
     Node *semaphore_p_node = find(memory->semaphores, &semaphore_p_id);
     Semaphore *semaphore_p = (Semaphore *)semaphore_p_node->data;
 
+    snprintf(message, sizeof(message),
+               "No P buscava %c e achou %c", instruction.semaphore,
+               semaphore_p->name);
+    append_log_message(message, PROCESS_LOG);
+
     FLAGS result = semaphore_p_syscall(process, semaphore_p);
 
     process->PC++;
@@ -127,6 +132,7 @@ void process_instruction(Process *process, Instruction instruction) {
                "Process %d is waiting for the semaphore %c", process->id,
                semaphore_p->name);
       append_log_message(message, PROCESS_LOG);
+
       process_interrupt(SEMAPHORE_INTERRUPTION);
     }
     break;
@@ -139,10 +145,15 @@ void process_instruction(Process *process, Instruction instruction) {
     Node *semaphore_v_node = find(memory->semaphores, &semaphore_v_id);
     Semaphore *semaphore_v = (Semaphore *)semaphore_v_node->data;
 
+    snprintf(message, sizeof(message),
+               "No V buscava %c e achou %c", instruction.semaphore,
+               semaphore_v->name);
+    append_log_message(message, PROCESS_LOG);
+
     /// frees semaphore
     semaphore_v_syscall(semaphore_v);
 
-    scheduler->running_process->PC++;
+    process->PC++;
     snprintf(message, sizeof(message), "Process %d released the semaphore %c",
              process->id, semaphore_v->name);
     append_log_message(message, PROCESS_LOG);
@@ -184,7 +195,7 @@ void process_interrupt(INTERRUPTION_TYPE TYPE) {
 
 FLAGS semaphore_p_syscall(Process *process, Semaphore *semaphore) {
   /// if there isn't a element in the semaphore
-  if (semaphore->owner_id == -1) {
+  if (semaphore->owner_id == -1 || semaphore->owner_id == process->id) {
     semaphore->owner_id = scheduler->running_process->id;
 
     return SUCCESS;
@@ -200,20 +211,27 @@ void semaphore_v_syscall(Semaphore *semaphore) {
   semaphore->owner_id = -1;
 
   /// checks if there is a process waiting for this semaphore
-  Process *new_process = (Process *)pop(semaphore->processes_waiting);
+  Node *new_process = pop(semaphore->processes_waiting);
 
   if (new_process) {
     /// the process has acquired the semaphore and is ready to run
-    new_process->status = READY;
-    add_process_scheduler(new_process);
+    Process *new_process_data = (Process *)new_process->data;
 
-    semaphore->owner_id = new_process->id;
+    new_process_data->status = READY;
+    add_process_scheduler(new_process_data);
+
+    char message[256];
+    snprintf(message, sizeof(message), "Process %d is now the owner of semaphore %c",
+             new_process_data->id, semaphore->name);
+    append_log_message(message, PROCESS_LOG);
+
+    semaphore->owner_id = new_process_data->id;
   }
 }
 
 void process_finish_syscall(Process *process) {
   /// changes status and deletes from the PCB
-  scheduler->running_process->status = FINISHED;
+  process->status = FINISHED;
   delete_list(PCB, &process->id);
 
   /// unloads segment from the memory

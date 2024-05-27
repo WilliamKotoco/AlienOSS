@@ -1,0 +1,15 @@
+aaaa
+10
+1
+32
+s
+
+exec 1000
+exec 400
+exec 500
+P(s)
+exec 200
+exec 20000
+write 20
+V(s)
+exec 500

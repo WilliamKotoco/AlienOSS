@@ -67,8 +67,6 @@ void add_process_scheduler(Process *new_process) {
 
   /// empty list
   if (!scheduler->ready_processes->header) {
-    new_node->next = scheduler->ready_processes->header;
-
     scheduler->ready_processes->header = new_node;
     scheduler->ready_processes->tail = new_node;
 
@@ -77,7 +75,7 @@ void add_process_scheduler(Process *new_process) {
 
   Process *header = (Process *)scheduler->ready_processes->header->data;
 
-  /// new peocess has the biggest priority
+  /// new process has the biggest priority
   if (new_process->priority < header->priority) {
     new_node->next = scheduler->ready_processes->header;
     scheduler->ready_processes->header = new_node;
@@ -101,9 +99,13 @@ void add_process_scheduler(Process *new_process) {
   }
 
   new_node->next = aux->next;
+  new_node->prev = aux;
+
   aux->next = new_node;
 
   if (!new_node->next) { /// new node is the last
     scheduler->ready_processes->tail = new_node;
+  } else{
+    aux->next->prev = new_node;
   }
 }

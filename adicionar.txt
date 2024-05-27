@@ -1,0 +1,3 @@
+- mais detalhes sobre memória - por ex, depois de carregar processo, colocar quanto da memória está sendo usado
+
+- criar sintéticos que competem por semáforo
