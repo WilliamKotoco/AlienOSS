@@ -12,13 +12,6 @@ void init_scheduler() {
 }
 
 void forward_scheduling() {
-  /// ensures that a new process does not interrupt a running process in the
-  /// middle of an instruction
-  // sem_wait(&process_semaphore);
-
-  char message[256];
-  append_log_message("entrou pra escalonar", PROCESS_LOG);
-
   Process *old_process = scheduler->running_process;
 
   /// if the process is still ready, it is added again in the list
@@ -31,11 +24,9 @@ void forward_scheduling() {
 
   /// there isn't a process to schedule
   if (!scheduled) {
-    /// frees the current running process since it won't be replaced
+    /// frees the current running process since there isn't a scheduled process
     free(scheduler->running_process);
     scheduler->running_process = NULL;
-
-    // sem_post(&process_semaphore);
 
     return;
   }
@@ -51,12 +42,10 @@ void forward_scheduling() {
 
   scheduler->running_process = scheduled_process;
 
-  // char message[256];
+  char message[256];
   snprintf(message, sizeof(message), "Process %d scheduled",
            scheduled_process->id);
   append_log_message(message, PROCESS_LOG);
-
-  // sem_post(&process_semaphore);
 }
 
 void add_process_scheduler(Process *new_process) {

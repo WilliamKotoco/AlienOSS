@@ -1,3 +1,4 @@
 - mais detalhes sobre memória - por ex, depois de carregar processo, colocar quanto da memória está sendo usado
 
-- criar sintéticos que competem por semáforo
+- criar sintéticos que competem por semáforo OK
+- criar sintéticos com prioridades diferentes OK

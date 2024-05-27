@@ -25,10 +25,11 @@ void cpu() {
            new_process == false) /// no scheduled process
       ;
 
-    if (new_process) {
+    if (new_process) { /// new process created
       process_interrupt(NEW_PROCESS_INTERRUPTION);
       update_new_process_flag(false);
     }
+
     //// there is a scheduled process
     /// it will continue running until it has used its quantum time, it has
     /// finished, or it has been forcebly taken out of the CPU
@@ -37,32 +38,36 @@ void cpu() {
                scheduler->running_process->segment->num_instructions &&
            scheduler->running_process->remaining_time > 0 &&
            new_process == false) {
-      // sem_wait(&process_semaphore); /// ensures that the running process does
-      /// not change in the middle of executing a
-      /// instruction
-
       Process *running = scheduler->running_process;
 
       if (!running->segment->present_bit) { /// data is not loaded in the memory
+        char message[256];
+        sleep(1);
+        snprintf(message, sizeof(message), "Process %d interrupted by memory request",
+           running->id);
+        append_log_message(message, PROCESS_LOG);
+
         memory_load_syscall(running);
       } else {
         running->segment->used_bit = 1; /// segment's data has been used
+        
         process_instruction(running,
                             running->segment->instructions[running->PC]);
       }
     }
-    /// exited while, that means the process stopped running, either because
-    /// it was interrupted, because it has finished running, or because it
-    /// used all of its quantum time
 
+    /// exited while, that means the process stopped running, either because
+    /// it was interrupted, because it has finished, or because it used all
+    /// of its quantum time
+
+    /// all inscructions were executed
     if (scheduler->running_process->PC >=
         scheduler->running_process->segment->num_instructions) {
-      /// all inscructions were executed
       process_finish_syscall(scheduler->running_process); /// process finished
     }
 
+    /// completed the quantum time
     else if (scheduler->running_process->remaining_time <= 0) {
-      /// completed the quantum time
 
       char message[256];
       snprintf(message, sizeof(message),
@@ -92,6 +97,7 @@ void process_instruction(Process *process, Instruction instruction) {
     append_log_message(message, PROCESS_LOG);
 
     break;
+
   case READ:
     process->PC++;
     break;
@@ -108,23 +114,18 @@ void process_instruction(Process *process, Instruction instruction) {
     Node *semaphore_p_node = find(memory->semaphores, &semaphore_p_id);
     Semaphore *semaphore_p = (Semaphore *)semaphore_p_node->data;
 
-    snprintf(message, sizeof(message),
-               "No P buscava %c e achou %c", instruction.semaphore,
-               semaphore_p->name);
-    append_log_message(message, PROCESS_LOG);
-
     FLAGS result = semaphore_p_syscall(process, semaphore_p);
 
     process->PC++;
 
     if (result == SUCCESS) {
       scheduler->running_process->remaining_time -=
-          200; /// 200 time required to acquire
+          200; /// time required to acquire
 
       sleep(2);
 
       snprintf(message, sizeof(message), "Process %d acquired the semaphore %c",
-               process->id, semaphore_p->name, instruction.operand);
+               process->id, semaphore_p->name);
       append_log_message(message, PROCESS_LOG);
 
     } else {
@@ -145,18 +146,13 @@ void process_instruction(Process *process, Instruction instruction) {
     Node *semaphore_v_node = find(memory->semaphores, &semaphore_v_id);
     Semaphore *semaphore_v = (Semaphore *)semaphore_v_node->data;
 
-    snprintf(message, sizeof(message),
-               "No V buscava %c e achou %c", instruction.semaphore,
-               semaphore_v->name);
-    append_log_message(message, PROCESS_LOG);
-
-    /// frees semaphore
-    semaphore_v_syscall(semaphore_v);
-
     process->PC++;
     snprintf(message, sizeof(message), "Process %d released the semaphore %c",
              process->id, semaphore_v->name);
     append_log_message(message, PROCESS_LOG);
+
+    /// frees semaphore
+    semaphore_v_syscall(semaphore_v);
 
     break;
 
@@ -173,22 +169,17 @@ void process_instruction(Process *process, Instruction instruction) {
 
 void process_interrupt(INTERRUPTION_TYPE TYPE) {
   sleep(1);
+  
   if (scheduler->running_process) {
-    /// any interruption created by the running process will make it stop
-    /// running mid execution
-    if (TYPE != NEW_PROCESS_INTERRUPTION) {
-    }
-
     if (TYPE == SEMAPHORE_INTERRUPTION)
       scheduler->running_process->status = WAITING;
     else
       scheduler->running_process->status = READY;
   }
 
-  append_log_message("entrou na interrupção", PROCESS_LOG);
-
   /// re-schedules
   forward_scheduling();
+
   if (new_process)
     update_new_process_flag(false);
 }
@@ -260,16 +251,11 @@ void memory_load_syscall(Process *process) {
 
   process->segment->present_bit = 1;
   process->status = READY;
-  sleep(1);
 
+  sleep(1);
   snprintf(message, sizeof(message), "Memory load of process %d finished",
            process->id);
   append_log_message(message, MEMORY_LOG);
-  sleep(1);
-
-  snprintf(message, sizeof(message), "Process %d interrupted by memory request",
-           process->id);
-  append_log_message(message, PROCESS_LOG);
 
   /// change process status and calls forward_scheduling to remove it
   /// and schedule the next running process
