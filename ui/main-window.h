@@ -37,9 +37,6 @@ void init_log();
 /// Thread sleeps until receive information of new log message available
 void refresh_log();
 
-/// @brief Rebuild the entire logging present in the system.
-void rebuild_all_log();
-
 void load_file_name_window(WINDOW **win);
 
 #endif

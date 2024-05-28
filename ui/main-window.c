@@ -25,6 +25,11 @@ void show_and_run() {
   bkgd(COLOR_PAIR(1));
 
   load_process_window(&process_state_window);
+  /// @FIX: it is impossible to print the log header within the LOG thread
+  /// without the ncurses exploding and the reason is, as the beach boys said:
+  /// god only knows
+  mvwprintw(process_state_window, 2, 8, "Process 0 created");
+  
   load_memory_window(&memory_state_window);
 
   //  load_memory_window(memory_state_window);
@@ -164,19 +169,18 @@ void refresh_log() {
     ;
 
   current_log = LOGS->header;
+  LogMessage *curr = (LogMessage *)current_log->data;
 
-  int start_processy = 2;
+  int start_processy = 3;
   int start_memoryy = 2;
-  wprintw(process_state_window, "\n");
 
   while (1) {
-    int sem_val;
-    sem_getvalue(&log_semaphore, &sem_val);
     sem_wait(&log_semaphore);
     /// semaphored liberated so there is a new log message
 
-    while (current_log->next) {
-      LogMessage *curr = (LogMessage *)current_log->data;
+    while (current_log != LOGS->tail) {
+      current_log = current_log->next;
+      curr = (LogMessage *)current_log->data;
       switch (curr->log_type) {
       case PROCESS_LOG:
 
@@ -205,39 +209,6 @@ void refresh_log() {
       default:
         exit(1);
       }
-      current_log = current_log->next;
     }
   }
-}
-
-void rebuild_all_log() {
-
-  // Node *node = LOGS->header;
-  // int start_processy = 2;
-  // int start_memoryy = 2;
-  //   while (node != LOGS->tail)
-  //   {
-  //     LogMessage *curr = (LogMessage *)node->data;
-  //     switch(curr->log_type)
-  //     {
-  //       case PROCESS_LOG:
-  //       mvwprintw(process_state_window,start_processy, 5, curr->log_message);
-  //       wrefresh(process_state_window);
-  //       start_processy++;
-  //       break;
-
-  //       case MEMORY_LOG:
-  //       mvwprintw(memory_state_window,start_memoryy, 5, curr->log_message);
-  //       wrefresh(memory_state_window);
-  //       start_memoryy++;
-  //       break;
-
-  //       default:
-  //       exit(1);
-
-  //     }
-
-  //     free(curr);
-  //     node = node->next;
-  //   }
 }
