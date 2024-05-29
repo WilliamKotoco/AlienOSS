@@ -1,5 +1,6 @@
 #include "main-window.h"
 #include <curses.h>
+#include <string.h>
 #include <time.h>
 
 extern List *PCB;
@@ -12,7 +13,6 @@ WINDOW *option_window;
 WINDOW *process_state_window;
 WINDOW *memory_state_window;
 WINDOW *file_name_window;
-Node *current_log;
 
 void show_and_run() {
   initscr();
@@ -22,6 +22,7 @@ void show_and_run() {
   init_pair(1, COLOR_BLACK, COLOR_BLACK); /// background color
   init_pair(2, COLOR_GREEN, COLOR_BLACK); /// Alien green color
   init_pair(3, COLOR_GREEN, COLOR_WHITE); /// Color for inputting from user
+  init_pair(4, COLOR_CYAN, COLOR_BLACK);
   bkgd(COLOR_PAIR(1));
 
   load_process_window(&process_state_window);
@@ -153,62 +154,101 @@ char *get_process_filename() {
   return filename;
 }
 
-void init_log() {
-  pthread_t log_id;
-  pthread_attr_t log_attr;
+// void init_log() {
+// pthread_t log_id;
+// pthread_attr_t log_attr;
 
-  pthread_attr_init(&log_attr);
+// pthread_attr_init(&log_attr);
+//
+// pthread_attr_setscope(&log_attr, PTHREAD_SCOPE_SYSTEM);
+//
+// pthread_create(&log_id, NULL, (void *)refresh_log, NULL);
+// }
 
-  pthread_attr_setscope(&log_attr, PTHREAD_SCOPE_SYSTEM);
-
-  pthread_create(&log_id, NULL, (void *)refresh_log, NULL);
-}
-
+// void refresh_log() {
+//   while (!LOGS->header)
+//     ;
+//
+//   current_log = LOGS->header;
+//   LogMessage *curr = (LogMessage *)current_log->data;
+//
+//   int start_processy = 3;
+//   int start_memoryy = 2;
+//
+//   while (1) {
+//     sem_wait(&log_semaphore);
+//     /// semaphored liberated so there is a new log message
+//
+//     while (current_log != LOGS->tail) {
+//       current_log = current_log->next;
+//       curr = (LogMessage *)current_log->data;
+//       switch (curr->log_type) {
+//       case PROCESS_LOG:
+//
+//         if (start_processy == getmaxy(stdscr) / 2) {
+//           delwin(process_state_window);
+//           load_process_window(&process_state_window);
+//           start_processy = 2;
+//         }
+//         mvwprintw(process_state_window, start_processy, 8,
+//         curr->log_message); wrefresh(process_state_window); start_processy++;
+//         break;
+//
+//       case MEMORY_LOG:
+//
+//         if (start_memoryy == getmaxy(stdscr) / 2) {
+//           delwin(memory_state_window);
+//           load_memory_window(&memory_state_window);
+//           start_memoryy = 2;
+//         }
+//         mvwprintw(memory_state_window, start_memoryy, 8, curr->log_message);
+//         wrefresh(memory_state_window);
+//         start_memoryy++;
+//         break;
+//
+//       default:
+//         exit(1);
+//       }
+//     }
+//   }
+// }
+//
 void refresh_log() {
-  while (!LOGS->header)
-    ;
+  static int start_processy = 2;
+  static int start_memoryy = 2;
 
-  current_log = LOGS->header;
+  Node *current_log = LOGS->tail;
+
   LogMessage *curr = (LogMessage *)current_log->data;
 
-  int start_processy = 3;
-  int start_memoryy = 2;
+  switch (curr->log_type) {
 
-  while (1) {
-    sem_wait(&log_semaphore);
-    /// semaphored liberated so there is a new log message
+  case PROCESS_LOG:
 
-    while (current_log != LOGS->tail) {
-      current_log = current_log->next;
-      curr = (LogMessage *)current_log->data;
-      switch (curr->log_type) {
-      case PROCESS_LOG:
-
-        if (start_processy == getmaxy(stdscr) / 2) {
-          delwin(process_state_window);
-          load_process_window(&process_state_window);
-          start_processy = 2;
-        }
-        mvwprintw(process_state_window, start_processy, 8, curr->log_message);
-        wrefresh(process_state_window);
-        start_processy++;
-        break;
-
-      case MEMORY_LOG:
-
-        if (start_memoryy == getmaxy(stdscr) / 2) {
-          delwin(memory_state_window);
-          load_memory_window(&memory_state_window);
-          start_memoryy = 2;
-        }
-        mvwprintw(memory_state_window, start_memoryy, 8, curr->log_message);
-        wrefresh(memory_state_window);
-        start_memoryy++;
-        break;
-
-      default:
-        exit(1);
-      }
+    if (start_processy == getmaxy(stdscr) / 2) {
+      delwin(process_state_window);
+      load_process_window(&process_state_window);
+      start_processy = 2;
     }
+
+    mvwprintw(process_state_window, start_processy, 8, curr->log_message);
+    wrefresh(process_state_window);
+    start_processy++;
+    break;
+  case MEMORY_LOG:
+
+    if (start_memoryy == getmaxy(stdscr) / 2) {
+      delwin(memory_state_window);
+      load_memory_window(&memory_state_window);
+      start_memoryy = 2;
+    }
+
+    mvwprintw(memory_state_window, start_memoryy, 8, curr->log_message);
+    wrefresh(memory_state_window);
+    start_memoryy++;
+    break;
+
+  default:
+    exit(1);
   }
 }

@@ -1,7 +1,7 @@
 #include "log.h"
+#include "../ui/main-window.h"
 #include <semaphore.h>
 #include <string.h>
-
 extern List *LOGS;
 extern sem_t log_semaphore;
 
@@ -13,8 +13,7 @@ void append_log_message(char *message, LOG_TYPE log_type) {
 
   push(LOGS, log_message);
 
-  /// wake up the thread responsible for printing new messages
-  sem_post(&log_semaphore);
+  refresh_log();
 }
 
 int compare_log(void *d1, void *d2) { return 1; }

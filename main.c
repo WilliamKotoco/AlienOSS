@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
   LOGS = create_list(sizeof(LogMessage), compare_log);
 
   memory = init_memory();
-  init_log();
+
   init_scheduler();
   init_cpu();
   show_and_run();
