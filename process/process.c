@@ -109,6 +109,7 @@ long read_program_header(char *program_name, Process *process) {
   process_segment->num_pages = ceil(
       process_segment->size / PAGE_SIZE); /// calculating the number of pages
                                           /// needed to store the program data
+  process_segment->exec = 0;
 
   process->segment = process_segment;
 

@@ -39,7 +39,7 @@ int compare_log(void *d1, void *d2);
 
 void print_interruption(INTERRUPTION_TYPE type, Process *process_interrupted);
 
-void print_execution(Opcode opcode, Process *process, Instruction instruction,
+void print_execution(Opcode opcode, Process *process, Instruction *instruction,
                      FLAGS flag);
 
 void print_syscall(SYSCALL syscall, Process *process, char semaphore_name);

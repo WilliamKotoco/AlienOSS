@@ -21,10 +21,25 @@ int compare_log(void *d1, void *d2) { return 1; }
 void print_interruption(INTERRUPTION_TYPE type, Process *process_interrupted) {
   char message[256];
 
+  /// considering the execution of a process can only be externally interrupted
+  /// by a new process
+
+  /// if a process was interrupted in the middle of a exec block
+  Instruction instr_interrupted =
+      process_interrupted->segment->instructions[process_interrupted->PC];
+
   sleep(1);
 
   switch (type) {
   case NEW_PROCESS_INTERRUPTION:
+
+    if (instr_interrupted.opcode == EXEC) {
+      instr_interrupted.operand = process_interrupted->segment->exec;
+
+      print_execution(instr_interrupted.opcode, process_interrupted,
+                      &instr_interrupted, SUCCESS);
+    }
+
     snprintf(message, sizeof(message), "Process %s interrupted by new process",
              process_interrupted->name);
 
@@ -38,6 +53,15 @@ void print_interruption(INTERRUPTION_TYPE type, Process *process_interrupted) {
     break;
 
   case QUANTUM_TIME_INTERRUPTION:
+    /// if a process was interrupted in the middle of a exec block
+
+    if (instr_interrupted.opcode == EXEC) {
+      instr_interrupted.operand = process_interrupted->segment->exec;
+
+      print_execution(instr_interrupted.opcode, process_interrupted,
+                      &instr_interrupted, SUCCESS);
+    }
+
     snprintf(message, sizeof(message), "Process %s interrupted by quantum time",
              process_interrupted->name);
 
@@ -53,17 +77,19 @@ void print_interruption(INTERRUPTION_TYPE type, Process *process_interrupted) {
   append_log_message(message, PROCESS_LOG, "interrupted");
 }
 
-void print_execution(Opcode opcode, Process *process, Instruction instruction,
+void print_execution(Opcode opcode, Process *process, Instruction *instruction,
                      FLAGS flag) {
   char message[256];
   char highlight[15];
 
   sleep(3);
 
-  switch (instruction.opcode) {
+  switch (instruction->opcode) {
   case EXEC:
     snprintf(message, sizeof(message), "Process %s executed for %d seconds",
-             process->name, instruction.operand);
+             process->name, instruction->operand);
+                 process->segment->exec = 0;
+
     strcpy(highlight, "executed");
     break;
 
@@ -71,12 +97,12 @@ void print_execution(Opcode opcode, Process *process, Instruction instruction,
     if (flag == SUCCESS) {
 
       snprintf(message, sizeof(message), "Process %s acquired the semaphore %c",
-               process->name, instruction.semaphore);
+               process->name, instruction->semaphore);
       strcpy(highlight, "acquired");
     } else {
       snprintf(message, sizeof(message),
                "Process %s is waiting for the semaphore %c", process->name,
-               instruction.semaphore);
+               instruction->semaphore);
       strcpy(highlight, "waiting");
     }
 
@@ -84,7 +110,7 @@ void print_execution(Opcode opcode, Process *process, Instruction instruction,
 
   case V:
     snprintf(message, sizeof(message), "Process %s released the semaphore %c",
-             process->name, instruction.semaphore);
+             process->name, instruction->semaphore);
     strcpy(highlight, "released");
 
     break;

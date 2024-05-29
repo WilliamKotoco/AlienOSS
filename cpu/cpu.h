@@ -41,7 +41,7 @@ void cpu();
 ///  @param instruction instruction to be executed
 ///
 ///  @details identifies the given instruction and calls the specific syscall
-void process_instruction(Process *process, Instruction instruction);
+void process_instruction(Process *process, Instruction *instruction);
 
 ///  @brief the interruption of a process
 ///  @param INTERRUPTION_TYPE enum that represents the interruption

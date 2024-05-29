@@ -48,7 +48,7 @@ void cpu() {
 
         /// process current instruction is processed
         process_instruction(running,
-                            running->segment->instructions[running->PC]);
+                            &(running->segment->instructions[running->PC]));
       }
     }
 
@@ -69,17 +69,29 @@ void cpu() {
   }
 }
 
-void process_instruction(Process *process, Instruction instruction) {
+void process_instruction(Process *process, Instruction *instruction) {
   FLAGS flag = SUCCESS;
 
-  switch (instruction.opcode) {
+  switch (instruction->opcode) {
   case EXEC:
     /// EXEC has the format EXEC X, where X is the necessary time to execute
-    process->remaining_time -= instruction.operand;
-    /// updates program counter
-    process->PC++;
 
-    print_execution(EXEC, process, instruction, flag);
+    /// for each call, it executes one unit of the exec block
+    process->remaining_time--;
+    instruction->operand--;
+
+    process->segment->exec++;
+    // process->remaining_time -= instruction->operand;
+
+    /// execution of exec block is over
+    if (instruction->operand == 0) {
+      /// updates program counter
+      process->PC++;
+
+      instruction->operand = process->segment->exec;
+
+      print_execution(EXEC, process, instruction, flag);
+    }
 
     break;
 
@@ -93,7 +105,7 @@ void process_instruction(Process *process, Instruction instruction) {
 
   case P:
     /// P(s), where s is the semaphore the process is waiting for
-    char semaphore_p_id = instruction.semaphore;
+    char semaphore_p_id = instruction->semaphore;
 
     /// searches for the semaphore in the semaphores list
     Node *semaphore_p_node = find(memory->semaphores, &semaphore_p_id);
@@ -115,7 +127,7 @@ void process_instruction(Process *process, Instruction instruction) {
 
   case V:
     /// V(s), where s is the semaphore the process is posting
-    char semaphore_v_id = instruction.semaphore;
+    char semaphore_v_id = instruction->semaphore;
 
     /// searches for the semaphore in the semaphores list
     Node *semaphore_v_node = find(memory->semaphores, &semaphore_v_id);
