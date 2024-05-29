@@ -76,7 +76,6 @@ void process_instruction(Process *process, Instruction instruction) {
   case EXEC:
     /// EXEC has the format EXEC X, where X is the necessary time to execute
     process->remaining_time -= instruction.operand;
-
     /// updates program counter
     process->PC++;
 
@@ -162,7 +161,6 @@ void process_interrupt(INTERRUPTION_TYPE TYPE) {
   if (new_process)
     update_new_process_flag(false);
 }
-
 FLAGS semaphore_p_syscall(Process *process, Semaphore *semaphore) {
 
   /// if there isn't a element with the semaphore
@@ -222,6 +220,8 @@ void memory_load_syscall(Process *process) {
 
   process->segment->present_bit = 1;
   process->segment->dirty_bit = 0;
+
+  print_syscall(MEMORY_FINISH_SYSCALL, process, ' ');
 
   /// change process status and calls forward_scheduling to remove it
   /// and schedule the next running process

@@ -22,14 +22,10 @@ void show_and_run() {
   init_pair(1, COLOR_BLACK, COLOR_BLACK); /// background color
   init_pair(2, COLOR_GREEN, COLOR_BLACK); /// Alien green color
   init_pair(3, COLOR_GREEN, COLOR_WHITE); /// Color for inputting from user
-  init_pair(4, COLOR_CYAN, COLOR_BLACK);
+  init_pair(4, COLOR_WHITE, COLOR_BLACK);
   bkgd(COLOR_PAIR(1));
 
   load_process_window(&process_state_window);
-  /// @FIX: it is impossible to print the log header within the LOG thread
-  /// without the ncurses exploding and the reason is, as the beach boys said:
-  /// god only knows
-  mvwprintw(process_state_window, 2, 8, "Process 0 created");
 
   load_memory_window(&memory_state_window);
 
@@ -154,68 +150,14 @@ char *get_process_filename() {
   return filename;
 }
 
-// void init_log() {
-// pthread_t log_id;
-// pthread_attr_t log_attr;
-
-// pthread_attr_init(&log_attr);
-//
-// pthread_attr_setscope(&log_attr, PTHREAD_SCOPE_SYSTEM);
-//
-// pthread_create(&log_id, NULL, (void *)refresh_log, NULL);
-// }
-
-// void refresh_log() {
-//   while (!LOGS->header)
-//     ;
-//
-//   current_log = LOGS->header;
-//   LogMessage *curr = (LogMessage *)current_log->data;
-//
-//   int start_processy = 3;
-//   int start_memoryy = 2;
-//
-//   while (1) {
-//     sem_wait(&log_semaphore);
-//     /// semaphored liberated so there is a new log message
-//
-//     while (current_log != LOGS->tail) {
-//       current_log = current_log->next;
-//       curr = (LogMessage *)current_log->data;
-//       switch (curr->log_type) {
-//       case PROCESS_LOG:
-//
-//         if (start_processy == getmaxy(stdscr) / 2) {
-//           delwin(process_state_window);
-//           load_process_window(&process_state_window);
-//           start_processy = 2;
-//         }
-//         mvwprintw(process_state_window, start_processy, 8,
-//         curr->log_message); wrefresh(process_state_window); start_processy++;
-//         break;
-//
-//       case MEMORY_LOG:
-//
-//         if (start_memoryy == getmaxy(stdscr) / 2) {
-//           delwin(memory_state_window);
-//           load_memory_window(&memory_state_window);
-//           start_memoryy = 2;
-//         }
-//         mvwprintw(memory_state_window, start_memoryy, 8, curr->log_message);
-//         wrefresh(memory_state_window);
-//         start_memoryy++;
-//         break;
-//
-//       default:
-//         exit(1);
-//       }
-//     }
-//   }
-// }
-//
-void refresh_log() {
-  static int start_processy = 2;
-  static int start_memoryy = 2;
+void refresh_log(char *highlight) {
+  char *position;   /// stores the position of highlight within the log message
+  char buffer[256]; /// buffer to store substrings in the process of dividing
+                    /// the strings
+  static int start_processy =
+      2; /// current position in the y axis in the memory
+  static int start_memoryy =
+      2; /// current position on the y axis in the process
 
   Node *current_log = LOGS->tail;
 
@@ -230,11 +172,11 @@ void refresh_log() {
       load_process_window(&process_state_window);
       start_processy = 2;
     }
-
-    mvwprintw(process_state_window, start_processy, 8, curr->log_message);
-    wrefresh(process_state_window);
+    print_log(process_state_window, curr->log_message, highlight,
+              start_processy);
     start_processy++;
     break;
+
   case MEMORY_LOG:
 
     if (start_memoryy == getmaxy(stdscr) / 2) {
@@ -243,12 +185,46 @@ void refresh_log() {
       start_memoryy = 2;
     }
 
-    mvwprintw(memory_state_window, start_memoryy, 8, curr->log_message);
-    wrefresh(memory_state_window);
+    print_log(memory_state_window, curr->log_message, highlight, start_memoryy);
+
     start_memoryy++;
     break;
 
   default:
     exit(1);
   }
+}
+void print_log(WINDOW *win, char *log, char *highlight, int pos) {
+  char *position;   /// stores the position of highlight within the log message
+  char buffer[256]; /// buffer to store substrings in the process of dividing
+                    /// the strings
+
+  position = strstr(log, highlight);
+
+  /// stores the lenght of the substring before the word
+  int len_before = position - log;
+
+  strncpy(buffer, log, len_before);
+  buffer[len_before] = '\0';
+
+  wattron(win, COLOR_PAIR(2));
+  mvwprintw(win, pos, 8, buffer);
+  wattroff(win, COLOR_PAIR(2));
+
+  wattron(win, COLOR_PAIR(4));
+  wattron(win, A_BOLD);
+  wprintw(win, highlight);
+  wattroff(win, COLOR_PAIR(4));
+  wattroff(win, A_BOLD);
+
+  char *position_after_highlight = position + strlen(highlight);
+  char *final_position = log + strlen(log);
+
+  if (position_after_highlight < final_position) {
+    wattron(win, COLOR_PAIR(2));
+    wprintw(win, "%s", position_after_highlight);
+    wattroff(win, COLOR_PAIR(2));
+  }
+
+  wrefresh(win);
 }

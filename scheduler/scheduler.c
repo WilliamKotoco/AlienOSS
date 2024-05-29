@@ -41,6 +41,7 @@ void forward_scheduling() {
       QUANTUM_TIME_TOTAL / scheduled_process->priority;
 
   scheduler->running_process = scheduled_process;
+  print_scheduled(scheduled_process);
 }
 
 void add_process_scheduler(Process *new_process) {

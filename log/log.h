@@ -33,10 +33,7 @@ typedef struct log {
 /// @details It calls the function to append on list and, then, posts
 /// the semaphore used in the MainWindow to wake up the thread
 /// responsible for printing log messages.
-void append_log_message(char *message, LOG_TYPE log_type);
-
-/// @brief  Rebuild all the log, printing every log message again
-void rebuild_all_log();
+void append_log_message(char *message, LOG_TYPE log_type, char *highlight);
 
 int compare_log(void *d1, void *d2);
 
@@ -46,5 +43,7 @@ void print_execution(Opcode opcode, Process *process, Instruction instruction,
                      FLAGS flag);
 
 void print_syscall(SYSCALL syscall, Process *process, char semaphore_name);
+
+void print_scheduled(Process *process);
 
 #endif

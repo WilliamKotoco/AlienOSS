@@ -1,7 +1,7 @@
 #ifndef MAIN_WINDOW_H
 #define MAIN_WINDOW_H
 
-#include "../cpu/cpu.h"
+#include "../log/log.h"
 #include "utils.h"
 #include <curses.h>
 #include <ncurses.h>
@@ -31,12 +31,22 @@ void load_memory_window(WINDOW **);
 /// @details It creates a new window to receive the input string from the user.
 char *get_process_filename();
 
-/// @brief Initializes the log thread
-void init_log();
+/// @brief Prints the message on the log screen, highlithing
+/// @param highlight string to be highlited
+///
+/// @details Reads the last log message and move the message to the respective
+/// window based on the `log_type`
+void refresh_log(char *highlight);
 
-/// Thread sleeps until receive information of new log message available
-void refresh_log();
-
+/// @brief Get the file name from the user
+/// @param win
 void load_file_name_window(WINDOW **win);
+
+/// @brief  Prints the specific log message
+/// @param win  window to be forwared the message
+/// @param log the message to be print
+/// @param highlight the subtring of the message that will be hilighted
+/// @param pos position in the y axis of the window
+void print_log(WINDOW *win, char *log, char *highlight, int pos);
 
 #endif

@@ -1,6 +1,7 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
+#include "../log/log.h"
 #include "../process/process.h"
 #include <semaphore.h>
 #include <stdio.h>
