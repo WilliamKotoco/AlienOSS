@@ -79,36 +79,6 @@ void process_finish_syscall();
 ///  requisition and, after that, a memory interruption
 void memory_load_syscall();
 
-///  @brief Executes a memory load operation
-///  @param process the process requisiting the operation
-///  @details Creates the pages of the process's segment and inserts them into
-/// memory
-void memory_load_requisition(Process *);
-
-///  @brief Loads a process' segment into memory
-///  @param process given process
-void load_segment(Process *);
-
-///  @brief Adds a page into the memory's page table
-///  @details Inserts a new page into the memory page table and performs the
-/// swapping if there aren't enough pages free
-void add_page_memory(Page *new_page);
-
-///  @brief Unloads a process' segment
-///  @param segment segment to be unloaded
-///  @details removes each of the segment's pages and updates the segment's bits
-void memory_unload_segment(Segment *segment);
-
-///  @brief deletes a page of the memory
-///  @param id of the owner process
-///  @details finds the first used page of the process and frees it
-void memory_delete_page(int id);
-
-///  @brief swaps a segment
-///  @details uses the second chance algorithm to choose the segment being
-///  swapped
-void swap_segment();
-
 /// @brief update global variable using a mutex
 /// @param val  true or false
 void update_new_process_flag(bool val);

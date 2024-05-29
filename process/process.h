@@ -1,6 +1,8 @@
 #ifndef PROCESS_H
 #define PROCESS_H
 
+typedef struct segment Segment;
+
 #include "../memory/memory.h"
 #include <math.h>
 #include <stdio.h>

@@ -27,7 +27,7 @@ void print_interruption(INTERRUPTION_TYPE type, Process *process_interrupted) {
   Instruction instr_interrupted =
       process_interrupted->segment->instructions[process_interrupted->PC];
 
-  sleep(3);
+  sleep(1);
 
   /// for each interruption type, prints a message with the format
   /// process <name> was interrupted by <interruption type>

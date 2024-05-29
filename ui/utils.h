@@ -1,3 +1,5 @@
+#ifndef UTILS_H
+#define UTILS_H
 
 #include <curses.h>
 #include <ncurses.h>
@@ -9,3 +11,5 @@
 ///
 /// Go through each line and prints it inside the window
 void display_ascii_art(WINDOW *win);
+
+#endif
