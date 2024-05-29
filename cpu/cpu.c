@@ -21,8 +21,8 @@ void init_cpu() {
 
 void cpu() {
   while (1) {
-    while (!scheduler->running_process &&
-           new_process == false) /// no scheduled process
+    /// waits until there is a scheduled or a new process
+    while (!scheduler->running_process && new_process == false)
       ;
 
     if (new_process) { /// new process created
@@ -38,9 +38,10 @@ void cpu() {
                scheduler->running_process->segment->num_instructions &&
            scheduler->running_process->remaining_time > 0 &&
            new_process == false) {
+
       Process *running = scheduler->running_process;
 
-      if (!running->segment->present_bit) { /// data is not loaded in the memory
+      if (!running->segment->present_bit) { /// data is not loaded
         char message[256];
         sleep(1);
         snprintf(message, sizeof(message),
@@ -51,6 +52,7 @@ void cpu() {
       } else {
         running->segment->used_bit = 1; /// segment's data has been used
 
+        /// process current instruction is processed
         process_instruction(running,
                             running->segment->instructions[running->PC]);
       }
@@ -185,7 +187,8 @@ void process_interrupt(INTERRUPTION_TYPE TYPE) {
 }
 
 FLAGS semaphore_p_syscall(Process *process, Semaphore *semaphore) {
-  /// if there isn't a element in the semaphore
+
+  /// if there isn't a element with the semaphore
   if (semaphore->owner_id == -1 || semaphore->owner_id == process->id) {
     semaphore->owner_id = scheduler->running_process->id;
 
@@ -199,6 +202,7 @@ FLAGS semaphore_p_syscall(Process *process, Semaphore *semaphore) {
 }
 
 void semaphore_v_syscall(Semaphore *semaphore) {
+  /// frees semaphore
   semaphore->owner_id = -1;
 
   /// checks if there is a process waiting for this semaphore
@@ -290,8 +294,6 @@ void memory_load_requisition(Process *process) {
 
   /// there is enough space available in the memory
   load_segment(process);
-  process->segment->present_bit = 1;
-  sleep(1);
 
   /// inserts segment in the segments list
   push(memory->segments, process->segment);
@@ -359,7 +361,8 @@ void memory_delete_page(int id) {
 }
 
 void swap_segment() {
-  Node *tmp = memory->next_swapped == NULL ? memory->segments->header : memory->next_swapped;
+  Node *tmp = memory->next_swapped == NULL ? memory->segments->header
+                                           : memory->next_swapped;
 
   /// circular search in the list
   while (tmp) {
@@ -371,20 +374,12 @@ void swap_segment() {
 
       sleep(1);
       char message[256];
-      snprintf(message, sizeof(message),
-                 "Swapping tirou %d", tmp_seg->id);
-        append_log_message(message, MEMORY_LOG);
+      snprintf(message, sizeof(message), "Swapping tirou %d", tmp_seg->id);
+      append_log_message(message, MEMORY_LOG);
 
       return;
     } else {
       /// gives a used segment a second chance
-
-      sleep(1);
-      char message[256];
-      snprintf(message, sizeof(message),
-                 "Achei %d com used 1 e troquei pra 0", tmp_seg->id);
-        append_log_message(message, MEMORY_LOG);
-
       tmp_seg->used_bit = 0;
     }
 

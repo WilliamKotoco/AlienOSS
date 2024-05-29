@@ -15,11 +15,7 @@ void push(List *list, void *new_data) {
   /// Memory for the new node
   Node *new_node = malloc(sizeof(Node));
 
-  /// memory space allocated for receive the type
-  //new_node->data = malloc(list->data_size);
-
-  //memcpy(new_node->data, new_data, list->data_size);
-
+  /// pointer to data is stored in the node
   new_node->data = new_data;
 
   /// if the list is empty

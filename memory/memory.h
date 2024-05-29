@@ -9,7 +9,6 @@
 #define MEMORY_SIZE 1073742000
 #define PAGE_SIZE 8192
 #define NUM_PAGES 131072
-//#define NUM_PAGES 8
 
 #define KBYTE 1024
 
