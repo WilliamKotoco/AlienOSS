@@ -13,9 +13,6 @@ void append_log_message(char *message, LOG_TYPE log_type) {
 
   push(LOGS, log_message);
 
-  int sem_value;
-  sem_getvalue(&log_semaphore, &sem_value);
-
   /// wake up the thread responsible for printing new messages
   sem_post(&log_semaphore);
 }
