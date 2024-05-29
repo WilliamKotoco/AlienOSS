@@ -29,7 +29,7 @@ void show_and_run() {
   /// without the ncurses exploding and the reason is, as the beach boys said:
   /// god only knows
   mvwprintw(process_state_window, 2, 8, "Process 0 created");
-  
+
   load_memory_window(&memory_state_window);
 
   //  load_memory_window(memory_state_window);

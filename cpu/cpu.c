@@ -82,7 +82,7 @@ void cpu() {
 
 void process_instruction(Process *process, Instruction instruction) {
   char message[256];
-
+  sleep(3);
   switch (instruction.opcode) {
   case EXEC:
     /// EXEC has the format EXEC X, where X is the necessary time to execute
