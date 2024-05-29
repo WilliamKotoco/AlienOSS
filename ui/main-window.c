@@ -191,6 +191,7 @@ void refresh_log(char *highlight) {
     exit(1);
   }
 }
+
 void print_log(WINDOW *win, char *log, char *highlight, int pos) {
   char *position;   /// stores the position of highlight within the log message
   char buffer[256]; /// buffer to store substrings in the process of dividing

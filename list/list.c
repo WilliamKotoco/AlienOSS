@@ -90,3 +90,23 @@ Node *pop(List *list) {
 
   return NULL;
 }
+
+void free_list(List *list) {
+    if (list == NULL) {
+        return;
+    }
+
+    Node *current_node = list->header;
+    Node *next_node;
+
+    while (current_node) {
+        next_node = current_node->next;
+
+        free(current_node->data);
+        free(current_node);
+        
+        current_node = next_node;
+    }
+
+    free(list);
+}

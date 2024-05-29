@@ -61,4 +61,8 @@ Node *find(List *list, void *data);
 /// deletes it from the list.
 void delete_list(List *list, void *data);
 
+/// @brief Deletes the list, freeing the memory
+/// @param list the list to be deleted
+void free_list(List *list);
+
 #endif

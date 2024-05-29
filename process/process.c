@@ -113,7 +113,11 @@ long read_program_header(char *program_name, Process *process) {
 
   process->segment = process_segment;
 
-  return ftell(fp); /// position on the file of the end of the program header
+  long ftell_fp = ftell(fp);
+
+  fclose(fp);
+
+  return ftell_fp; /// position on the file of the end of the program header
 }
 
 int read_program_instructions(char *program_name, Process *process,
@@ -181,6 +185,8 @@ int read_program_instructions(char *program_name, Process *process,
 
     i++;
   }
+
+  fclose(fp);
 
   return 1;
 }

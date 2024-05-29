@@ -1,7 +1,7 @@
 #include "ui/main-window.h"
 #include <semaphore.h>
-
 #include <time.h>
+
 /// creating global variables
 List *PCB;
 Memory *memory;
