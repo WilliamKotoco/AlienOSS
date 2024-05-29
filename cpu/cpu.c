@@ -42,12 +42,6 @@ void cpu() {
       Process *running = scheduler->running_process;
 
       if (!running->segment->present_bit) { /// data is not loaded
-        char message[256];
-        sleep(1);
-        snprintf(message, sizeof(message),
-                 "Process %d interrupted by memory request", running->id);
-        append_log_message(message, PROCESS_LOG);
-
         memory_load_syscall(running);
       } else {
         running->segment->used_bit = 1; /// segment's data has been used
@@ -70,20 +64,13 @@ void cpu() {
 
     /// completed the quantum time
     else if (scheduler->running_process->remaining_time <= 0) {
-
-      char message[256];
-      snprintf(message, sizeof(message),
-               "Process %d interrupted by quantum time",
-               scheduler->running_process->id);
-      append_log_message(message, PROCESS_LOG);
-
       process_interrupt(QUANTUM_TIME_INTERRUPTION);
     }
   }
 }
 
 void process_instruction(Process *process, Instruction instruction) {
-  char message[256];
+  FLAGS flag = SUCCESS;
 
   switch (instruction.opcode) {
   case EXEC:
@@ -93,10 +80,7 @@ void process_instruction(Process *process, Instruction instruction) {
     /// updates program counter
     process->PC++;
 
-    sleep(1);
-    snprintf(message, sizeof(message), "Process %d executed for %d seconds",
-             process->id, instruction.operand);
-    append_log_message(message, PROCESS_LOG);
+    print_execution(EXEC, process, instruction, flag);
 
     break;
 
@@ -116,26 +100,16 @@ void process_instruction(Process *process, Instruction instruction) {
     Node *semaphore_p_node = find(memory->semaphores, &semaphore_p_id);
     Semaphore *semaphore_p = (Semaphore *)semaphore_p_node->data;
 
-    FLAGS result = semaphore_p_syscall(process, semaphore_p);
+    flag = semaphore_p_syscall(process, semaphore_p);
 
     process->PC++;
 
-    if (result == SUCCESS) {
+    print_execution(EXEC, process, instruction, flag);
+
+    if (flag == SUCCESS) {
       scheduler->running_process->remaining_time -=
           200; /// time required to acquire
-
-      sleep(2);
-
-      snprintf(message, sizeof(message), "Process %d acquired the semaphore %c",
-               process->id, semaphore_p->name);
-      append_log_message(message, PROCESS_LOG);
-
     } else {
-      snprintf(message, sizeof(message),
-               "Process %d is waiting for the semaphore %c", process->id,
-               semaphore_p->name);
-      append_log_message(message, PROCESS_LOG);
-
       process_interrupt(SEMAPHORE_INTERRUPTION);
     }
     break;
@@ -149,9 +123,8 @@ void process_instruction(Process *process, Instruction instruction) {
     Semaphore *semaphore_v = (Semaphore *)semaphore_v_node->data;
 
     process->PC++;
-    snprintf(message, sizeof(message), "Process %d released the semaphore %c",
-             process->id, semaphore_v->name);
-    append_log_message(message, PROCESS_LOG);
+
+    print_execution(EXEC, process, instruction, flag);
 
     /// frees semaphore
     semaphore_v_syscall(semaphore_v);
@@ -177,6 +150,10 @@ void process_interrupt(INTERRUPTION_TYPE TYPE) {
       scheduler->running_process->status = WAITING;
     else
       scheduler->running_process->status = READY;
+  }
+
+  if (scheduler->running_process) {
+    print_interruption(TYPE, scheduler->running_process);
   }
 
   /// re-schedules
@@ -215,11 +192,7 @@ void semaphore_v_syscall(Semaphore *semaphore) {
     new_process_data->status = READY;
     add_process_scheduler(new_process_data);
 
-    char message[256];
-    snprintf(message, sizeof(message),
-             "Process %d is now the owner of semaphore %c",
-             new_process_data->id, semaphore->name);
-    append_log_message(message, PROCESS_LOG);
+    print_syscall(V_SYSCALL, new_process_data, semaphore->name);
 
     semaphore->owner_id = new_process_data->id;
   }
@@ -233,10 +206,7 @@ void process_finish_syscall(Process *process) {
   /// unloads segment from the memory
   memory_unload_segment(process->segment);
 
-  sleep(1);
-  char message[256];
-  snprintf(message, sizeof(message), "Process %d finished", process->id);
-  append_log_message(message, PROCESS_LOG);
+  print_syscall(FINISH_SYSCALL, process, ' ');
 
   /// calls the scheduler to advance scheduling
   forward_scheduling();
@@ -245,24 +215,13 @@ void process_finish_syscall(Process *process) {
 void memory_load_syscall(Process *process) {
   process->status = WAITING;
 
-  sleep(1);
-  char message[256];
-  snprintf(message, sizeof(message), "Memory load requisition for process %d",
-           process->id);
-  append_log_message(message, MEMORY_LOG);
+  print_syscall(MEMORY_LOAD_SYSCALL, process, ' ');
 
   /// loads segment
   memory_load_requisition(process);
 
   process->segment->present_bit = 1;
   process->segment->dirty_bit = 0;
-
-  process->status = READY;
-
-  sleep(1);
-  snprintf(message, sizeof(message), "Memory load of process %d finished",
-           process->id);
-  append_log_message(message, MEMORY_LOG);
 
   /// change process status and calls forward_scheduling to remove it
   /// and schedule the next running process
@@ -276,11 +235,7 @@ void process_create_syscall(char *filename) {
   push(PCB, new_process);
   add_process_scheduler(new_process);
 
-  sleep(1);
-  char message[256];
-  snprintf(message, sizeof(message), "Process %d created", new_process->id);
-
-  append_log_message(message, PROCESS_LOG);
+  print_syscall(CREATE_PROCESS_SYSCALL, new_process, ' ');
 
   /// interrupts running process
   update_new_process_flag(true);
@@ -372,10 +327,10 @@ void swap_segment() {
     if (tmp_seg->used_bit == 0) {
       memory_unload_segment(tmp_seg);
 
-      sleep(1);
-      char message[256];
-      snprintf(message, sizeof(message), "Swapping tirou %d", tmp_seg->id);
-      append_log_message(message, MEMORY_LOG);
+      // sleep(1);
+      // char message[256];
+      // snprintf(message, sizeof(message), "Swapping tirou %d", tmp_seg->id);
+      // append_log_message(message, MEMORY_LOG);
 
       return;
     } else {

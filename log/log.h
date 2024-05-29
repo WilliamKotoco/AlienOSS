@@ -1,3 +1,14 @@
+#ifndef LOG_H
+#define LOG_H
+
+typedef enum flags FLAGS;
+typedef enum syscall SYSCALL;
+typedef enum interruption_type INTERRUPTION_TYPE;
+typedef struct process Process;
+typedef enum opcode Opcode;
+typedef struct instruction Instruction;
+
+#include "../cpu/cpu.h"
 #include "../list/list.h"
 
 /// @enum Enum to represent the type of logs.
@@ -28,3 +39,12 @@ void append_log_message(char *message, LOG_TYPE log_type);
 void rebuild_all_log();
 
 int compare_log(void *d1, void *d2);
+
+void print_interruption(INTERRUPTION_TYPE type, Process *process_interrupted);
+
+void print_execution(Opcode opcode, Process *process, Instruction instruction,
+                     FLAGS flag);
+
+void print_syscall(SYSCALL syscall, Process *process, char semaphore_name);
+
+#endif

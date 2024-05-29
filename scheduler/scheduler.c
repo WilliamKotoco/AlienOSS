@@ -41,11 +41,6 @@ void forward_scheduling() {
       QUANTUM_TIME_TOTAL / scheduled_process->priority;
 
   scheduler->running_process = scheduled_process;
-
-  char message[256];
-  snprintf(message, sizeof(message), "Process %d scheduled",
-           scheduled_process->id);
-  append_log_message(message, PROCESS_LOG);
 }
 
 void add_process_scheduler(Process *new_process) {

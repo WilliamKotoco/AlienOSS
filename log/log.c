@@ -1,6 +1,7 @@
 #include "log.h"
 #include <semaphore.h>
 #include <string.h>
+
 extern List *LOGS;
 extern sem_t log_semaphore;
 
@@ -20,3 +21,141 @@ void append_log_message(char *message, LOG_TYPE log_type) {
 }
 
 int compare_log(void *d1, void *d2) { return 1; }
+
+void print_interruption(INTERRUPTION_TYPE type, Process *process_interrupted) {
+  char message[256];
+
+  sleep(1);
+
+  switch (type) {
+  case NEW_PROCESS_INTERRUPTION:
+    snprintf(message, sizeof(message), "Process %d interrupted by new process",
+             process_interrupted->id);
+
+    break;
+
+  case MEMORY_INTERRPUTION:
+    snprintf(message, sizeof(message),
+             "Process %d interrupted by memory request",
+             process_interrupted->id);
+
+    break;
+
+  case QUANTUM_TIME_INTERRUPTION:
+    snprintf(message, sizeof(message), "Process %d interrupted by quantum time",
+             process_interrupted->id);
+
+    break;
+
+  case SEMAPHORE_INTERRUPTION:
+    snprintf(message, sizeof(message), "Process %d interrupted by semaphore",
+             process_interrupted->id);
+
+    break;
+  }
+
+  append_log_message(message, PROCESS_LOG);
+}
+
+void print_execution(Opcode opcode, Process *process, Instruction instruction,
+                     FLAGS flag) {
+  char message[256];
+
+  sleep(3);
+
+  switch (instruction.opcode) {
+  case EXEC:
+    snprintf(message, sizeof(message), "Process %d executed for %d seconds",
+             process->id, instruction.operand);
+
+    break;
+
+  case P:
+    if (flag == SUCCESS) {
+
+      snprintf(message, sizeof(message), "Process %d acquired the semaphore %c",
+               process->id, instruction.semaphore);
+    } else {
+      snprintf(message, sizeof(message),
+               "Process %d is waiting for the semaphore %c", process->id,
+               instruction.semaphore);
+    }
+
+    break;
+
+  case V:
+    snprintf(message, sizeof(message), "Process %d released the semaphore %c",
+             process->id, instruction.semaphore);
+
+    break;
+  }
+
+  append_log_message(message, PROCESS_LOG);
+}
+
+void print_ownership(int process_id, char semaphore_name) {
+  char message[256];
+
+  sleep(1);
+
+  snprintf(message, sizeof(message),
+           "Process %d is now the owner of semaphore %c", process_id,
+           semaphore_name);
+
+  append_log_message(message, PROCESS_LOG);
+}
+
+void print_finish(int process_id) {
+  char message[256];
+
+  sleep(1);
+
+  snprintf(message, sizeof(message), "Process %d finished", process_id);
+
+  append_log_message(message, PROCESS_LOG);
+}
+
+void print_syscall(SYSCALL syscall, Process *process, char semaphore_name) {
+  char message[256];
+
+  sleep(1);
+
+  switch (syscall) {
+  case V_SYSCALL:
+    snprintf(message, sizeof(message),
+             "Process %d is now the owner of semaphore %c", process->id,
+             semaphore_name);
+
+    break;
+
+  case FINISH_SYSCALL:
+    snprintf(message, sizeof(message), "Process %d finished", process->id);
+
+    break;
+
+  case MEMORY_LOAD_SYSCALL:
+    snprintf(message, sizeof(message), "Memory load requisition for process %d",
+             process->id);
+
+    append_log_message(message, MEMORY_LOG);
+
+    return;
+
+  case CREATE_PROCESS_SYSCALL:
+    snprintf(message, sizeof(message), "Process %d created", process->id);
+
+    break;
+  }
+
+  append_log_message(message, PROCESS_LOG);
+}
+
+void print_scheduled(Process *process) {
+  char message[256];
+
+  sleep(1);
+
+  snprintf(message, sizeof(message), "Process %d scheduled", process->id);
+
+  append_log_message(message, PROCESS_LOG);
+}

@@ -1,6 +1,6 @@
 #ifndef CPU_H
 #define CPU_H
-// #include "../log/log.h"
+#include "../log/log.h"
 #include "../scheduler/scheduler.h"
 #include <pthread.h>
 #include <semaphore.h>
@@ -10,9 +10,17 @@
 
 extern Memory *memory;
 
-typedef enum { SUCCESS, FAILURE } FLAGS;
+typedef enum flags { SUCCESS, FAILURE } FLAGS;
 
-typedef enum {
+typedef enum syscall {
+  FINISH_SYSCALL,
+  P_SYSCALL,
+  V_SYSCALL,
+  MEMORY_LOAD_SYSCALL,
+  CREATE_PROCESS_SYSCALL
+} SYSCALL;
+
+typedef enum interruption_type {
   SEMAPHORE_INTERRUPTION,
   MEMORY_INTERRPUTION,
   NEW_PROCESS_INTERRUPTION,
@@ -101,4 +109,5 @@ void swap_segment();
 /// @brief update global variable using a mutex
 /// @param val  true or false
 void update_new_process_flag(bool val);
+
 #endif
