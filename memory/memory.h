@@ -33,6 +33,7 @@ typedef struct segment {
   int present_bit; //!< flag that indicates whether the segment is in memory
   Instruction *instructions; //!< array of the process instructions
   int num_instructions;      //!< number of instructions the program posesses
+  long exec;
 
   int dirty_bit; //!< indicates whether the data has been modified since it came
                  //!< to memory
