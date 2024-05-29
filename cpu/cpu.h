@@ -1,6 +1,8 @@
 #ifndef CPU_H
 #define CPU_H
+
 #include "../log/log.h"
+#include "../process/process.h"
 #include "../scheduler/scheduler.h"
 #include <pthread.h>
 #include <semaphore.h>
@@ -14,8 +16,7 @@ typedef enum flags { SUCCESS, FAILURE } FLAGS;
 
 typedef enum syscall {
   FINISH_SYSCALL,
-  P_SYSCALL,
-  V_SYSCALL,
+  SEMAPHORE_SYSCALL,
   MEMORY_LOAD_SYSCALL,
   MEMORY_FINISH_SYSCALL,
   CREATE_PROCESS_SYSCALL
@@ -68,14 +69,15 @@ FLAGS semaphore_p_syscall(Process *, Semaphore *);
 ///  process on the waiting list, if it exists
 void semaphore_v_syscall(Semaphore *);
 
-void memory_load_syscall();
-
-void memory_finish_syscall();
-
 ///  @brief  Finishes running the process
 ///  @details Removes the process from the PCB, frees its pages and calls the
 ///  scheduler to forward scheduling
 void process_finish_syscall();
+
+///  @brief Executes a memory load syscall
+///  @details Makes the running process waits, executes a memory load
+///  requisition and, after that, a memory interruption
+void memory_load_syscall();
 
 ///  @brief Executes a memory load operation
 ///  @param process the process requisiting the operation

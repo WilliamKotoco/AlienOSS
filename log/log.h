@@ -37,13 +37,26 @@ void append_log_message(char *message, LOG_TYPE log_type, char *highlight);
 
 int compare_log(void *d1, void *d2);
 
+/// @brief Prints a interruption message
+/// @param type the type of the interruption
+/// @param process_interrupted the process being interrupted
 void print_interruption(INTERRUPTION_TYPE type, Process *process_interrupted);
 
-void print_execution(Opcode opcode, Process *process, Instruction *instruction,
-                     FLAGS flag);
+/// @brief Prints message about the execution of a instruction
+/// @param process the process that executed
+/// @param instruction the instruction that was executed
+/// @param flag a flag indicating the result of the execution
+void print_execution(Process *process, Instruction *instruction, FLAGS flag);
 
+/// @brief Prints a syscall message
+/// @param syscall syscall made
+/// @param process process that made the syscall
+/// @param semaphore_name name of the semaphore, when the syscall is related to
+/// that
 void print_syscall(SYSCALL syscall, Process *process, char semaphore_name);
 
+/// @brief Prints the scheduled process
+/// @param process process scheduled
 void print_scheduled(Process *process);
 
 #endif

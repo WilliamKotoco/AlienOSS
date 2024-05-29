@@ -1,5 +1,6 @@
 #include "cpu.h"
 #include <semaphore.h>
+
 /// Necessary for global variables
 extern Scheduler *scheduler;
 extern sem_t process_semaphore;
@@ -77,11 +78,10 @@ void process_instruction(Process *process, Instruction *instruction) {
     /// EXEC has the format EXEC X, where X is the necessary time to execute
 
     /// for each call, it executes one unit of the exec block
+    process->segment->exec++;
+
     process->remaining_time--;
     instruction->operand--;
-
-    process->segment->exec++;
-    // process->remaining_time -= instruction->operand;
 
     /// execution of exec block is over
     if (instruction->operand == 0) {
@@ -90,7 +90,7 @@ void process_instruction(Process *process, Instruction *instruction) {
 
       instruction->operand = process->segment->exec;
 
-      print_execution(EXEC, process, instruction, flag);
+      print_execution(process, instruction, flag);
     }
 
     break;
@@ -115,7 +115,7 @@ void process_instruction(Process *process, Instruction *instruction) {
 
     process->PC++;
 
-    print_execution(EXEC, process, instruction, flag);
+    print_execution(process, instruction, flag);
 
     if (flag == SUCCESS) {
       scheduler->running_process->remaining_time -=
@@ -135,7 +135,7 @@ void process_instruction(Process *process, Instruction *instruction) {
 
     process->PC++;
 
-    print_execution(EXEC, process, instruction, flag);
+    print_execution(process, instruction, flag);
 
     /// frees semaphore
     semaphore_v_syscall(semaphore_v);
@@ -154,16 +154,15 @@ void process_instruction(Process *process, Instruction *instruction) {
 }
 
 void process_interrupt(INTERRUPTION_TYPE TYPE) {
-  sleep(1);
+  sleep(3);
 
+  /// if there is a running process, interrupt it
   if (scheduler->running_process) {
     if (TYPE == SEMAPHORE_INTERRUPTION)
       scheduler->running_process->status = WAITING;
     else
       scheduler->running_process->status = READY;
-  }
 
-  if (scheduler->running_process) {
     print_interruption(TYPE, scheduler->running_process);
   }
 
@@ -173,6 +172,20 @@ void process_interrupt(INTERRUPTION_TYPE TYPE) {
   if (new_process)
     update_new_process_flag(false);
 }
+
+void process_create_syscall(char *filename) {
+  Process *new_process = create_process(filename);
+
+  /// adds the new process to the OS's PCB list and scheduler's list
+  push(PCB, new_process);
+  add_process_scheduler(new_process);
+
+  print_syscall(CREATE_PROCESS_SYSCALL, new_process, ' ');
+
+  /// interrupts running process
+  update_new_process_flag(true);
+}
+
 FLAGS semaphore_p_syscall(Process *process, Semaphore *semaphore) {
 
   /// if there isn't a element with the semaphore
@@ -202,7 +215,7 @@ void semaphore_v_syscall(Semaphore *semaphore) {
     new_process_data->status = READY;
     add_process_scheduler(new_process_data);
 
-    print_syscall(V_SYSCALL, new_process_data, semaphore->name);
+    print_syscall(SEMAPHORE_SYSCALL, new_process_data, semaphore->name);
 
     semaphore->owner_id = new_process_data->id;
   }
@@ -238,19 +251,6 @@ void memory_load_syscall(Process *process) {
   /// change process status and calls forward_scheduling to remove it
   /// and schedule the next running process
   process_interrupt(MEMORY_INTERRPUTION);
-}
-
-void process_create_syscall(char *filename) {
-  Process *new_process = create_process(filename);
-
-  /// adds the new process to the OS's PCB list and scheduler's list
-  push(PCB, new_process);
-  add_process_scheduler(new_process);
-
-  print_syscall(CREATE_PROCESS_SYSCALL, new_process, ' ');
-
-  /// interrupts running process
-  update_new_process_flag(true);
 }
 
 void memory_load_requisition(Process *process) {

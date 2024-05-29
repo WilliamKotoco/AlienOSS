@@ -24,20 +24,22 @@ void print_interruption(INTERRUPTION_TYPE type, Process *process_interrupted) {
   /// considering the execution of a process can only be externally interrupted
   /// by a new process
 
-  /// if a process was interrupted in the middle of a exec block
   Instruction instr_interrupted =
       process_interrupted->segment->instructions[process_interrupted->PC];
 
-  sleep(1);
+  sleep(3);
 
+  /// for each interruption type, prints a message with the format
+  /// process <name> was interrupted by <interruption type>
   switch (type) {
   case NEW_PROCESS_INTERRUPTION:
 
+    /// if a process was interrupted in the middle of a exec block
     if (instr_interrupted.opcode == EXEC) {
       instr_interrupted.operand = process_interrupted->segment->exec;
 
-      print_execution(instr_interrupted.opcode, process_interrupted,
-                      &instr_interrupted, SUCCESS);
+      /// prints information about its execution (until being interrupted)
+      print_execution(process_interrupted, &instr_interrupted, SUCCESS);
     }
 
     snprintf(message, sizeof(message), "Process %s interrupted by new process",
@@ -53,13 +55,13 @@ void print_interruption(INTERRUPTION_TYPE type, Process *process_interrupted) {
     break;
 
   case QUANTUM_TIME_INTERRUPTION:
-    /// if a process was interrupted in the middle of a exec block
 
+    /// if a process was interrupted in the middle of a exec block
     if (instr_interrupted.opcode == EXEC) {
       instr_interrupted.operand = process_interrupted->segment->exec;
 
-      print_execution(instr_interrupted.opcode, process_interrupted,
-                      &instr_interrupted, SUCCESS);
+      /// prints information about its execution (until being interrupted)
+      print_execution(process_interrupted, &instr_interrupted, SUCCESS);
     }
 
     snprintf(message, sizeof(message), "Process %s interrupted by quantum time",
@@ -77,25 +79,27 @@ void print_interruption(INTERRUPTION_TYPE type, Process *process_interrupted) {
   append_log_message(message, PROCESS_LOG, "interrupted");
 }
 
-void print_execution(Opcode opcode, Process *process, Instruction *instruction,
-                     FLAGS flag) {
+void print_execution(Process *process, Instruction *instruction, FLAGS flag) {
   char message[256];
   char highlight[15];
 
   sleep(3);
 
+  /// for each instruction executed, prints a message with the format
+  /// process <name> <opcode>
   switch (instruction->opcode) {
   case EXEC:
     snprintf(message, sizeof(message), "Process %s executed for %d seconds",
              process->name, instruction->operand);
-                 process->segment->exec = 0;
-
     strcpy(highlight, "executed");
+
+    /// finished executing a instruction, clears out the auxiliar variable
+    process->segment->exec = 0;
+
     break;
 
   case P:
     if (flag == SUCCESS) {
-
       snprintf(message, sizeof(message), "Process %s acquired the semaphore %c",
                process->name, instruction->semaphore);
       strcpy(highlight, "acquired");
@@ -114,6 +118,11 @@ void print_execution(Opcode opcode, Process *process, Instruction *instruction,
     strcpy(highlight, "released");
 
     break;
+
+  case READ:
+  case WRITE:
+  case PRINT:
+    break;
   }
 
   append_log_message(message, PROCESS_LOG, highlight);
@@ -122,7 +131,7 @@ void print_execution(Opcode opcode, Process *process, Instruction *instruction,
 void print_finish(int process_id) {
   char message[256];
 
-  sleep(1);
+  sleep(3);
 
   snprintf(message, sizeof(message), "Process %d finished", process_id);
 
@@ -134,8 +143,10 @@ void print_syscall(SYSCALL syscall, Process *process, char semaphore_name) {
   char highlight[15];
   sleep(1);
 
+  /// for each syscall, prints a message with the format
+  /// process <name> <syscall>
   switch (syscall) {
-  case V_SYSCALL:
+  case SEMAPHORE_SYSCALL:
     snprintf(message, sizeof(message),
              "Process %s is now the owner of semaphore %c", process->name,
              semaphore_name);

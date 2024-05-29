@@ -151,9 +151,6 @@ char *get_process_filename() {
 }
 
 void refresh_log(char *highlight) {
-  char *position;   /// stores the position of highlight within the log message
-  char buffer[256]; /// buffer to store substrings in the process of dividing
-                    /// the strings
   static int start_processy =
       2; /// current position in the y axis in the memory
   static int start_memoryy =
