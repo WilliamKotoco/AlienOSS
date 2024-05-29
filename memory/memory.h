@@ -21,38 +21,37 @@ typedef struct process Process;
 /// Represents a memory page, identified by its number and that references the
 /// segment and process it belongs to. A tuple on the memory's page table.
 typedef struct page {
-  int number;     //!< page number, identifier
-  int segment_id; //!< reference to the segment this page belongs to
-  int process_id; //!< reference to the process that owns the segment/page
-  int free;       //!< indicates whether the page is free
+  unsigned number;     //!< page number, identifier
+  unsigned segment_id; //!< reference to the segment this page belongs to
+  unsigned process_id; //!< reference to the process that owns the segment/page
+  unsigned free : 1;   //!< indicates whether the page is free
 } Page;
 
 /// Represents a process segment, with its size, pages and instructions.
 typedef struct segment {
-  int id;          //!< segment identifier
-  int size;        //!< size of the program data
-  int num_pages;   ///< number of memory pages the segment occupies, its size /
-                   ///< PAGE_SIZE
-  int present_bit; //!< flag that indicates whether the segment is in memory
+  unsigned id;        //!< segment identifier
+  unsigned size;      //!< size of the program data
+  unsigned num_pages; //!< number of memory pages the segment occupies, its size
+                      //!< / PAGE_SIZE
+  unsigned num_instructions; //!< number of instructions the program possesses
+  long exec;                 //!< execution timestamp or other long data
   Instruction *instructions; //!< array of the process instructions
-  int num_instructions;      //!< number of instructions the program posesses
-  long exec;
-
-  int dirty_bit; //!< indicates whether the data has been modified since it came
-                 //!< to memory
-  int used_bit;  //!< indicates if the data has been read or written
+  unsigned
+      present_bit : 1; //!< flag that indicates whether the segment is in memory
+  unsigned dirty_bit : 1; //!< indicates whether the data has been modified
+                          //!< since it came to memory
+  unsigned used_bit : 1;  //!< indicates if the data has been read or written
 } Segment;
 
 /// Represents the memory of the system, contains the page table, needed for the
 /// OS management.
 typedef struct memory {
-  Page *pages;        ///< memory table, array of its pages
-  int num_free_pages; //!< number of free pages, NUM_PAGES - List *pages length
-
-  List *segments; //!< segments used for swapping
-  Node *next_swapped;
-
-  List *semaphores; //!< semaphores managed by the OS
+  Page *pages; ///< memory table, array of its pages
+  unsigned
+      num_free_pages; //!< number of free pages, NUM_PAGES - List *pages length
+  List *segments;     //!< segments used for swapping
+  Node *next_swapped; //!< pointer to the next swapped node
+  List *semaphores;   //!< semaphores managed by the OS
 } Memory;
 
 /// @brief Compares two pages based on their number. Used on the generic list.
@@ -75,24 +74,9 @@ void memory_load_requisition(Process *);
 ///  @param process given process
 void load_segment(Process *);
 
-///  @brief Adds a page into the memory's page table
-///  @details Inserts a new page into the memory page table and performs the
-/// swapping if there aren't enough pages free
-void add_page_memory(Page *new_page);
-
 ///  @brief Unloads a process' segment
 ///  @param segment segment to be unloaded
 ///  @details removes each of the segment's pages and updates the segment's bits
 void memory_unload_segment(Segment *segment);
-
-///  @brief deletes a page of the memory
-///  @param id of the owner process
-///  @details finds the first used page of the process and frees it
-void memory_delete_page(int id);
-
-///  @brief swaps a segment
-///  @details uses the second chance algorithm to choose the segment being
-///  swapped
-void swap_segment();
 
 #endif

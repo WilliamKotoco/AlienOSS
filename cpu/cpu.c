@@ -20,57 +20,21 @@ void init_cpu() {
   pthread_create(&cpu_id, NULL, (void *)cpu, NULL);
 }
 
-void cpu() {
-  while (1) {
-    /// waits until there is a scheduled or a new process
-    while (!scheduler->running_process && new_process == false)
-      ;
-
-    if (new_process) { /// new process created
-      process_interrupt(NEW_PROCESS_INTERRUPTION);
-      update_new_process_flag(false);
-    }
-
-    //// there is a scheduled process
-    /// it will continue running until it has used its quantum time, it has
-    /// finished, or it has been forcebly taken out of the CPU
-    while (scheduler->running_process &&
-           scheduler->running_process->PC <
-               scheduler->running_process->segment->num_instructions &&
-           scheduler->running_process->remaining_time > 0 &&
-           new_process == false) {
-
-      Process *running = scheduler->running_process;
-
-      if (!running->segment->present_bit) { /// data is not loaded
-        memory_load_syscall(running);
-      } else {
-        running->segment->used_bit = 1; /// segment's data has been used
-
-        /// process current instruction is processed
-        process_instruction(running,
-                            &(running->segment->instructions[running->PC]));
-      }
-    }
-
-    /// exited while, that means the process stopped running, either because
-    /// it was interrupted, because it has finished, or because it used all
-    /// of its quantum time
-
-    /// all inscructions were executed
-    if (scheduler->running_process->PC >=
-        scheduler->running_process->segment->num_instructions) {
-      process_finish_syscall(scheduler->running_process); /// process finished
-    }
-
-    /// completed the quantum time
-    else if (scheduler->running_process->remaining_time <= 0) {
-      process_interrupt(QUANTUM_TIME_INTERRUPTION);
-    }
-  }
+/// @brief update global variable using a mutex
+/// @param val  true or false
+static void update_new_process_flag(bool val) {
+  sem_wait(&process_semaphore);
+  new_process = val;
+  sem_post(&process_semaphore);
 }
 
-void process_instruction(Process *process, Instruction *instruction) {
+///  @brief  Emulates the execution of a given instruction
+///  @param process process being executed
+///  @param instruction instruction to be executed
+///
+///  @details identifies the given instruction and calls the specific syscall
+
+static void process_instruction(Process *process, Instruction *instruction) {
   FLAGS flag = SUCCESS;
 
   switch (instruction->opcode) {
@@ -150,6 +114,56 @@ void process_instruction(Process *process, Instruction *instruction) {
     printf("Error: the opcode is invalid");
 
     exit(0);
+  }
+}
+
+void cpu() {
+  while (1) {
+    /// waits until there is a scheduled or a new process
+    while (!scheduler->running_process && new_process == false)
+      ;
+
+    if (new_process) { /// new process created
+      process_interrupt(NEW_PROCESS_INTERRUPTION);
+      update_new_process_flag(false);
+    }
+
+    //// there is a scheduled process
+    /// it will continue running until it has used its quantum time, it has
+    /// finished, or it has been forcebly taken out of the CPU
+    while (scheduler->running_process &&
+           scheduler->running_process->PC <
+               scheduler->running_process->segment->num_instructions &&
+           scheduler->running_process->remaining_time > 0 &&
+           new_process == false) {
+
+      Process *running = scheduler->running_process;
+
+      if (!running->segment->present_bit) { /// data is not loaded
+        memory_load_syscall(running);
+      } else {
+        running->segment->used_bit = 1; /// segment's data has been used
+
+        /// process current instruction is processed
+        process_instruction(running,
+                            &(running->segment->instructions[running->PC]));
+      }
+    }
+
+    /// exited while, that means the process stopped running, either because
+    /// it was interrupted, because it has finished, or because it used all
+    /// of its quantum time
+
+    /// all inscructions were executed
+    if (scheduler->running_process->PC >=
+        scheduler->running_process->segment->num_instructions) {
+      process_finish_syscall(scheduler->running_process); /// process finished
+    }
+
+    /// completed the quantum time
+    else if (scheduler->running_process->remaining_time <= 0) {
+      process_interrupt(QUANTUM_TIME_INTERRUPTION);
+    }
   }
 }
 
@@ -251,10 +265,4 @@ void memory_load_syscall(Process *process) {
   /// change process status and calls forward_scheduling to remove it
   /// and schedule the next running process
   process_interrupt(MEMORY_INTERRPUTION);
-}
-
-void update_new_process_flag(bool val) {
-  sem_wait(&process_semaphore);
-  new_process = val;
-  sem_post(&process_semaphore);
 }

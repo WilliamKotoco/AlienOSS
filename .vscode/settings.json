@@ -13,6 +13,8 @@
         "log.h": "c",
         "stdlib.h": "c",
         "window-log.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "curses.h": "c",
+        "time.h": "c"
     }
 }

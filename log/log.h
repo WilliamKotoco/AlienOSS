@@ -25,16 +25,6 @@ typedef struct log {
   LOG_TYPE log_type;      ///< enum log type
 } LogMessage;
 
-/// @brief  This function appends a log message into the corresponding
-///         log strucutre
-/// @param message message
-/// @param log_type log type
-///
-/// @details It calls the function to append on list and, then, posts
-/// the semaphore used in the MainWindow to wake up the thread
-/// responsible for printing log messages.
-void append_log_message(char *message, LOG_TYPE log_type, char *highlight);
-
 int compare_log(void *d1, void *d2);
 
 /// @brief Prints a interruption message

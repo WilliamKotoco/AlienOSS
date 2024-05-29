@@ -14,13 +14,14 @@ typedef enum status { READY, WAITING, FINISHED, RUNNING } Status;
 
 ///  info needed from a process, obtained from the synthetic program
 typedef struct process {
-  char *name; //!< program name
-  int id;     //!< process identifier
+  char *name;  //!< program name
+  unsigned id; //!< process identifier
 
   int priority;  ///< process priority, smaller the number, higher the priority
   Status status; //!< @enum process status
   Segment *segment; ///< @struct memory segment, groups the program data
-  int PC; ///< program counter, offset of the next instruction to be executed
+  unsigned
+      PC; ///< program counter, offset of the next instruction to be executed
   long remaining_time;
 } Process;
 

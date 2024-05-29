@@ -37,13 +37,6 @@ void init_cpu();
 /// execute the process's instructions
 void cpu();
 
-///  @brief  Emulates the execution of a given instruction
-///  @param process process being executed
-///  @param instruction instruction to be executed
-///
-///  @details identifies the given instruction and calls the specific syscall
-void process_instruction(Process *process, Instruction *instruction);
-
 ///  @brief the interruption of a process
 ///  @param INTERRUPTION_TYPE enum that represents the interruption
 ///  @details Changes the running process status and reeschedules
@@ -78,9 +71,5 @@ void process_finish_syscall();
 ///  @details Makes the running process waits, executes a memory load
 ///  requisition and, after that, a memory interruption
 void memory_load_syscall();
-
-/// @brief update global variable using a mutex
-/// @param val  true or false
-void update_new_process_flag(bool val);
 
 #endif

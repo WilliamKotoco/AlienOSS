@@ -92,21 +92,21 @@ Node *pop(List *list) {
 }
 
 void free_list(List *list) {
-    if (list == NULL) {
-        return;
-    }
+  if (list == NULL) {
+    return;
+  }
 
-    Node *current_node = list->header;
-    Node *next_node;
+  Node *current_node = list->header;
+  Node *next_node;
 
-    while (current_node) {
-        next_node = current_node->next;
+  while (current_node) {
+    next_node = current_node->next;
 
-        free(current_node->data);
-        free(current_node);
-        
-        current_node = next_node;
-    }
+    free(current_node->data);
+    free(current_node);
 
-    free(list);
+    current_node = next_node;
+  }
+
+  free(list);
 }

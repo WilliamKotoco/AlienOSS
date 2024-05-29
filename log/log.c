@@ -5,7 +5,14 @@
 extern List *LOGS;
 extern sem_t log_semaphore;
 
-void append_log_message(char *message, LOG_TYPE log_type, char *highlight) {
+int compare_log(void *d1, void *d2) { return 1; }
+
+/// @brief  This function appends a log message into the corresponding
+///         log strucutre
+/// @param message message
+/// @param log_type log type
+static void append_log_message(char *message, LOG_TYPE log_type,
+                               char *highlight) {
   LogMessage *log_message = malloc(sizeof(LogMessage));
 
   strcpy(log_message->log_message, message);
@@ -15,8 +22,6 @@ void append_log_message(char *message, LOG_TYPE log_type, char *highlight) {
 
   refresh_log(highlight);
 }
-
-int compare_log(void *d1, void *d2) { return 1; }
 
 void print_interruption(INTERRUPTION_TYPE type, Process *process_interrupted) {
   char message[256];
