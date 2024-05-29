@@ -9,7 +9,7 @@
 #define MEMORY_SIZE 1073742000
 #define PAGE_SIZE 8192
 #define NUM_PAGES 131072
-// #define NUM_PAGES 5
+//#define NUM_PAGES 8
 
 #define KBYTE 1024
 
@@ -25,17 +25,6 @@ typedef struct page {
   int free;       //!< indicates whether the page is free
 } Page;
 
-/// Represents the memory of the system, contains the page table, needed for the
-/// OS management.
-typedef struct memory {
-  Page *pages;        ///< memory table, array of its pages
-  int num_free_pages; //!< number of free pages, NUM_PAGES - List *pages length
-
-  List *segments; //!< segments used for swapping
-
-  List *semaphores; //!< semaphores managed by the OS
-} Memory;
-
 /// Represents a process segment, with its size, pages and instructions.
 typedef struct segment {
   int id;          //!< segment identifier
@@ -50,6 +39,18 @@ typedef struct segment {
                  //!< to memory
   int used_bit;  //!< indicates if the data has been read or written
 } Segment;
+
+/// Represents the memory of the system, contains the page table, needed for the
+/// OS management.
+typedef struct memory {
+  Page *pages;        ///< memory table, array of its pages
+  int num_free_pages; //!< number of free pages, NUM_PAGES - List *pages length
+
+  List *segments; //!< segments used for swapping
+  Node *next_swapped;
+
+  List *semaphores; //!< semaphores managed by the OS
+} Memory;
 
 /// @brief Compares two pages based on their number. Used on the generic list.
 /// @param d1 a page

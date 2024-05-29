@@ -45,6 +45,7 @@ Memory *init_memory() {
   }
 
   memory->segments = create_list(sizeof(Segment), compare_segments);
+  memory->next_swapped = NULL;
 
   memory->semaphores = create_list(sizeof(Semaphore), compare_semaphores);
 

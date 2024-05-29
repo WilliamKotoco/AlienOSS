@@ -251,6 +251,8 @@ void memory_load_syscall(Process *process) {
   memory_load_requisition(process);
 
   process->segment->present_bit = 1;
+  process->segment->dirty_bit = 0;
+
   process->status = READY;
 
   sleep(1);
@@ -288,6 +290,7 @@ void memory_load_requisition(Process *process) {
 
   /// there is enough space available in the memory
   load_segment(process);
+  process->segment->present_bit = 1;
   sleep(1);
 
   /// inserts segment in the segments list
@@ -310,12 +313,12 @@ void add_page_memory(Page *new_page) {
   int i = 0;
 
   /// searches first free page
-  while (memory->pages[i].free == 0 && i < NUM_PAGES) {
+  while (memory->pages[i].free == 1 && i < NUM_PAGES) {
     i++;
   }
 
   /// loads page into memory
-  memory->pages[i].number = new_page->number;
+  memory->pages[i].number = i;
   memory->pages[i].process_id = new_page->process_id;
   memory->pages[i].segment_id = new_page->segment_id;
   memory->pages[i].free = 0;
@@ -356,7 +359,7 @@ void memory_delete_page(int id) {
 }
 
 void swap_segment() {
-  Node *tmp = memory->segments->header;
+  Node *tmp = memory->next_swapped == NULL ? memory->segments->header : memory->next_swapped;
 
   /// circular search in the list
   while (tmp) {
@@ -366,9 +369,22 @@ void swap_segment() {
     if (tmp_seg->used_bit == 0) {
       memory_unload_segment(tmp_seg);
 
+      sleep(1);
+      char message[256];
+      snprintf(message, sizeof(message),
+                 "Swapping tirou %d", tmp_seg->id);
+        append_log_message(message, MEMORY_LOG);
+
       return;
     } else {
       /// gives a used segment a second chance
+
+      sleep(1);
+      char message[256];
+      snprintf(message, sizeof(message),
+                 "Achei %d com used 1 e troquei pra 0", tmp_seg->id);
+        append_log_message(message, MEMORY_LOG);
+
       tmp_seg->used_bit = 0;
     }
 
@@ -382,7 +398,7 @@ void swap_segment() {
   }
 
   /// uploades the next segment to be unloaded
-  memory->segments->header = tmp;
+  memory->next_swapped = tmp->next;
 }
 
 void update_new_process_flag(bool val) {
