@@ -42,6 +42,7 @@ void push(List *list, void *new_data);
 ///  @brief Pops a node from the list
 ///  @param list the list
 ///  @return the first node of the list
+///
 Node *pop(List *list);
 
 ///  @brief  Search in the list given a key

@@ -164,4 +164,6 @@ void memory_unload_segment(Segment *segment) {
 
   /// remove segment from the list, as it is not loaded anymore
   delete_list(memory->segments, &segment->id);
+
+  free(segment->instructions);
 }

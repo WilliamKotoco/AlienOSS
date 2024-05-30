@@ -242,6 +242,7 @@ void process_finish_syscall(Process *process) {
 
   /// unloads segment from the memory
   memory_unload_segment(process->segment);
+  free(process->segment);
 
   print_syscall(FINISH_SYSCALL, process, ' ');
 

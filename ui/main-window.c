@@ -34,7 +34,7 @@ static void load_process_window(WINDOW **win) {
   wrefresh(*win);
 }
 
-static void load_file_name_window(WINDOW **win) {
+static int load_file_name_window(WINDOW **win) {
   char filename[245];
 
   *win = newwin(getmaxy(stdscr) * 1 / 4, getmaxx(stdscr) / 4,
@@ -49,15 +49,18 @@ static void load_file_name_window(WINDOW **win) {
   mvwprintw(*win, 0, 2, "File");
   wattroff(*win, A_BOLD);
 
-  mvwprintw(*win, 2, 2, "Ctrl - C to exit");
+  mvwprintw(*win, 2, 2, "q to exit");
   mvwprintw(*win, 5, 2, "Insert file name: ");
   echo();
   wgetnstr(*win, filename, sizeof(filename) - 1);
   noecho();
 
+  if (filename[0] == 'q')
+    return 0;
   process_create_syscall(filename);
 
   wrefresh(*win);
+  return 1;
 }
 
 /// @brief Load the memory window, which is the window responsible to show
@@ -84,44 +87,6 @@ static void load_memory_window(WINDOW **win) {
   wattroff(*win, A_BOLD);
 
   wrefresh(*win);
-}
-
-/// @brief  Returns the file name to load a new process
-/// @return The file name
-/// @details It creates a new window to receive the input string from the user.
-static char *get_process_filename() {
-  int maxy, maxx;
-  getmaxyx(stdscr, maxy, maxx);
-
-  /// Calcula as coordenadas para posicionar a janela no centro da tela
-  int starty = (maxy - 5) / 2;
-  int startx = (maxx - 40) / 2;
-
-  /// Cria a janela para o nome do arquivo
-  WINDOW *file_win = newwin(5, 40, starty, startx);
-  if (file_win == NULL) {
-    return NULL;
-  }
-
-  char *filename = (char *)malloc(80 * sizeof(char));
-  if (filename == NULL) {
-    delwin(file_win);
-    return NULL;
-  }
-
-  char *input = "File name: ";
-  mvwprintw(file_win, 1, 1, "%s", input);
-  wbkgd(file_win, COLOR_PAIR(3));
-  box(file_win, 0, 0);
-
-  wrefresh(file_win);
-
-  wgetstr(file_win, filename);
-
-  touchwin(stdscr);
-  delwin(file_win);
-  refresh();
-  return filename;
 }
 
 /// @brief  Prints the specific log message
@@ -192,9 +157,13 @@ void show_and_run() {
   box(option_window, 0, 0);
 
   wrefresh(option_window);
-  while (1) {
-    load_file_name_window(&file_name_window);
-  }
+  while (load_file_name_window(&file_name_window))
+    ;
+  delwin(memory_state_window);
+  delwin(process_state_window);
+  delwin(option_window);
+  delwin(file_name_window);
+  endwin();
 
   endwin();
 }
