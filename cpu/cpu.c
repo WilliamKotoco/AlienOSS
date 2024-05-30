@@ -261,9 +261,9 @@ void memory_load_syscall(Process *process) {
   process->segment->present_bit = 1;
   process->segment->dirty_bit = 0;
 
-  print_syscall(MEMORY_FINISH_SYSCALL, process, ' ');
-
   /// change process status and calls forward_scheduling to remove it
   /// and schedule the next running process
   process_interrupt(MEMORY_INTERRPUTION);
+
+  print_syscall(MEMORY_FINISH_SYSCALL, process, ' ');
 }
