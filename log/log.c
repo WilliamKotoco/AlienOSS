@@ -178,6 +178,22 @@ void print_syscall(SYSCALL syscall, Process *process, char semaphore_name) {
              process->name);
     append_log_message(message, MEMORY_LOG, "Memory load finished");
 
+    int total_space_available = memory->num_free_pages * PAGE_SIZE;
+    int total_space_used = MEMORY_SIZE - total_space_available;
+
+    float percentage = ((float)total_space_used / MEMORY_SIZE) * 100;
+
+    snprintf(message, sizeof(message), "Total space available: %d KB",
+             total_space_available);
+    append_log_message(message, MEMORY_SPACE_LOG, "Total space available");
+
+    snprintf(message, sizeof(message), "Using space: %d KB", total_space_used);
+    append_log_message(message, MEMORY_SPACE_LOG, "Using space");
+
+    snprintf(message, sizeof(message), "Using percentage: %0.5f %%",
+             percentage);
+    append_log_message(message, MEMORY_SPACE_LOG, "Using percentage");
+
     return;
 
   case CREATE_PROCESS_SYSCALL:

@@ -10,6 +10,7 @@
 
 #include "utils.h"
 #define ALIEN_GREEN 11
+#define LINES_SPACE_LOG 3
 
 /// \brief Window for displaying information and to user
 ///

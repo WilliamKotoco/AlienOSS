@@ -41,8 +41,8 @@ static void load_process_window(WINDOW **win) {
 static void load_memory_space_window(WINDOW **win) {
   int height = getmaxy(stdscr) - getmaxy(stdscr) / 2;
   int starty = 0 + getmaxy(stdscr) / 2;
-  int width = getmaxx(stdscr) * (1 / 4);
-  int startx = getmaxx(stdscr) * 3 / 4;
+  int width = getmaxx(stdscr) * (1.3 / 4);
+  int startx = getmaxx(stdscr) * 2.8 / 4;
 
   *win = newwin(height, width, starty, startx);
 
@@ -68,8 +68,8 @@ static void load_memory_window(WINDOW **win) {
   int height = getmaxy(stdscr) - getmaxy(stdscr) / 2;
   int starty = 0 + getmaxy(stdscr) / 2;
   int width = getmaxx(stdscr) *
-              ((1.99 / 4)); /// FIXME: i swear to god it was the only option to
-                            /// give a space between the memories window.
+              ((1.8 / 4)); /// FIXME: i swear to god it was the only option to
+                           /// give a space between the memories window.
   int startx = getmaxx(stdscr) * 1 / 4;
 
   *win = newwin(height, width, starty, startx);
@@ -235,16 +235,16 @@ void refresh_log(char *highlight) {
 
   case MEMORY_SPACE_LOG:
 
-    if (start_memory_spacey == getmaxy(stdscr) / 2) {
+    if (start_memory_spacey == 2 + LINES_SPACE_LOG) {
       delwin(memory_space_window);
       load_memory_space_window(&memory_space_window);
       start_memory_spacey = 2;
     }
 
-    /// TODO: print_log
+    print_log(memory_space_window, curr->log_message, highlight,
+              start_memory_spacey);
 
-    start_memory_spacey++;
+    start_memory_spacey++; /// space information overlaps
   default:
-    exit(1);
   }
 }
