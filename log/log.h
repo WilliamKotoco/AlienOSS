@@ -49,4 +49,6 @@ void print_syscall(SYSCALL syscall, Process *process, char semaphore_name);
 /// @param process process scheduled
 void print_scheduled(Process *process);
 
+void print_memory_state_changed();
+
 #endif

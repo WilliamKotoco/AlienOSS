@@ -9,7 +9,7 @@ typedef struct process Process;
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MEMORY_SIZE 1073742000
+#define MEMORY_SIZE 1073741824
 #define PAGE_SIZE 8192
 #define NUM_PAGES 131072
 

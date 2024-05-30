@@ -133,16 +133,6 @@ void print_execution(Process *process, Instruction *instruction, FLAGS flag) {
   append_log_message(message, PROCESS_LOG, highlight);
 }
 
-void print_finish(int process_id) {
-  char message[256];
-
-  sleep(3);
-
-  snprintf(message, sizeof(message), "Process %d finished", process_id);
-
-  append_log_message(message, PROCESS_LOG, "finished");
-}
-
 void print_syscall(SYSCALL syscall, Process *process, char semaphore_name) {
   char message[256];
   char highlight[15];
@@ -177,22 +167,7 @@ void print_syscall(SYSCALL syscall, Process *process, char semaphore_name) {
     snprintf(message, sizeof(message), "Memory load finished for process %s",
              process->name);
     append_log_message(message, MEMORY_LOG, "Memory load finished");
-
-    int total_space_available = memory->num_free_pages * PAGE_SIZE;
-    int total_space_used = MEMORY_SIZE - total_space_available;
-
-    float percentage = ((float)total_space_used / MEMORY_SIZE) * 100;
-
-    snprintf(message, sizeof(message), "Total space available: %d KB",
-             total_space_available);
-    append_log_message(message, MEMORY_SPACE_LOG, "Total space available");
-
-    snprintf(message, sizeof(message), "Using space: %d KB", total_space_used);
-    append_log_message(message, MEMORY_SPACE_LOG, "Using space");
-
-    snprintf(message, sizeof(message), "Using percentage: %0.5f %%",
-             percentage);
-    append_log_message(message, MEMORY_SPACE_LOG, "Using percentage");
+    print_memory_state_changed();
 
     return;
 
@@ -213,4 +188,23 @@ void print_scheduled(Process *process) {
   snprintf(message, sizeof(message), "Process %s scheduled", process->name);
 
   append_log_message(message, PROCESS_LOG, "scheduled");
+}
+
+void print_memory_state_changed() {
+  char message[256];
+
+  int total_space_available = memory->num_free_pages * PAGE_SIZE;
+  int total_space_used = MEMORY_SIZE - total_space_available;
+
+  float percentage = ((float)total_space_used / MEMORY_SIZE) * 100;
+
+  snprintf(message, sizeof(message), "Total space available: %d KB",
+           total_space_available);
+  append_log_message(message, MEMORY_SPACE_LOG, "Total space available");
+
+  snprintf(message, sizeof(message), "Using space: %d KB", total_space_used);
+  append_log_message(message, MEMORY_SPACE_LOG, "Using space");
+
+  snprintf(message, sizeof(message), "Using percentage: %0.5f %%", percentage);
+  append_log_message(message, MEMORY_SPACE_LOG, "Using percentage");
 }

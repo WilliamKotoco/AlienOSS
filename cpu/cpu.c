@@ -248,6 +248,8 @@ void process_finish_syscall(Process *process) {
 
   /// calls the scheduler to advance scheduling
   forward_scheduling();
+
+  print_memory_state_changed();
 }
 
 void memory_load_syscall(Process *process) {
