@@ -193,16 +193,17 @@ void print_scheduled(Process *process) {
 void print_memory_state_changed() {
   char message[256];
 
-  int total_space_available = memory->num_free_pages * PAGE_SIZE;
-  int total_space_used = MEMORY_SIZE - total_space_available;
+  float total_space_available = (memory->num_free_pages * PAGE_SIZE);
+  float total_space_used = (MEMORY_SIZE - total_space_available);
 
   float percentage = ((float)total_space_used / MEMORY_SIZE) * 100;
 
-  snprintf(message, sizeof(message), "Total space available: %d KB",
-           total_space_available);
+  snprintf(message, sizeof(message), "Total space available: %0.2f KB",
+           total_space_available / KBYTE);
   append_log_message(message, MEMORY_SPACE_LOG, "Total space available");
 
-  snprintf(message, sizeof(message), "Using space: %d KB", total_space_used);
+  snprintf(message, sizeof(message), "Using space: %0.2f KB",
+           total_space_used / KBYTE);
   append_log_message(message, MEMORY_SPACE_LOG, "Using space");
 
   snprintf(message, sizeof(message), "Using percentage: %0.5f %%", percentage);

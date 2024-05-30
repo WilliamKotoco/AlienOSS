@@ -15,9 +15,6 @@ typedef struct process Process;
 
 #define KBYTE 1024
 
-#define INSTR_SIZE 64
-#define INSTR_PER_PAGE 128
-
 /// Represents a memory page, identified by its number and that references the
 /// segment and process it belongs to. A tuple on the memory's page table.
 typedef struct page {
