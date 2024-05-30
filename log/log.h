@@ -15,7 +15,7 @@ typedef struct instruction Instruction;
 ///
 /// The log type will be used to redirect the message to
 /// its corresponding window in the user interface
-typedef enum { PROCESS_LOG, MEMORY_LOG } LOG_TYPE;
+typedef enum { PROCESS_LOG, MEMORY_LOG, MEMORY_SPACE_LOG } LOG_TYPE;
 
 /// @brief Log structure used to represent a single message of log
 ///

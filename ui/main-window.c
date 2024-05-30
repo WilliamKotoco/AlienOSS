@@ -13,6 +13,7 @@ WINDOW *option_window;
 WINDOW *process_state_window;
 WINDOW *memory_state_window;
 WINDOW *file_name_window;
+WINDOW *memory_space_window;
 
 /// @brief Load the process window, which is the window responsible to show
 /// information about the processes running on the system.
@@ -31,6 +32,59 @@ static void load_process_window(WINDOW **win) {
   wattron(*win, A_BOLD);
   mvwprintw(*win, 0, 2, "Process window");
   wattroff(*win, A_BOLD);
+  wrefresh(*win);
+}
+
+/// @brief Load the memory space window, which is the window responsible for
+/// showing the amount of space being used by the simulation's state.
+/// @param win
+static void load_memory_space_window(WINDOW **win) {
+  int height = getmaxy(stdscr) - getmaxy(stdscr) / 2;
+  int starty = 0 + getmaxy(stdscr) / 2;
+  int width = getmaxx(stdscr) * (1 / 4);
+  int startx = getmaxx(stdscr) * 3 / 4;
+
+  *win = newwin(height, width, starty, startx);
+
+  wbkgd(*win, COLOR_PAIR(1));
+  wattron(*win, COLOR_PAIR(2));
+
+  scrollok(*win, TRUE);
+
+  box(*win, 0, 0);
+
+  wattron(*win, A_BOLD);
+  mvwprintw(*win, 0, 2, "Memory space information");
+  wattroff(*win, A_BOLD);
+
+  wrefresh(*win);
+}
+
+/// @brief Load the memory window, which is the window responsible to show
+/// information about the system memory state.
+/// @param   The window do be loades
+static void load_memory_window(WINDOW **win) {
+
+  int height = getmaxy(stdscr) - getmaxy(stdscr) / 2;
+  int starty = 0 + getmaxy(stdscr) / 2;
+  int width = getmaxx(stdscr) *
+              ((1.99 / 4)); /// FIXME: i swear to god it was the only option to
+                            /// give a space between the memories window.
+  int startx = getmaxx(stdscr) * 1 / 4;
+
+  *win = newwin(height, width, starty, startx);
+
+  wbkgd(*win, COLOR_PAIR(1));
+  wattron(*win, COLOR_PAIR(2));
+
+  scrollok(*win, TRUE);
+
+  box(*win, 0, 0);
+
+  wattron(*win, A_BOLD);
+  mvwprintw(*win, 0, 2, "Memory state");
+  wattroff(*win, A_BOLD);
+
   wrefresh(*win);
 }
 
@@ -61,32 +115,6 @@ static int load_file_name_window(WINDOW **win) {
 
   wrefresh(*win);
   return 1;
-}
-
-/// @brief Load the memory window, which is the window responsible to show
-/// information about the system memory state.
-/// @param   The window do be loades
-static void load_memory_window(WINDOW **win) {
-
-  int height = getmaxy(stdscr) - getmaxy(stdscr) / 2;
-  int starty = 0 + getmaxy(stdscr) / 2;
-  int width = getmaxx(stdscr) * (3 / 4);
-  int startx = getmaxx(stdscr) * 1 / 4;
-
-  *win = newwin(height, width, starty, startx);
-
-  wbkgd(*win, COLOR_PAIR(1));
-  wattron(*win, COLOR_PAIR(2));
-
-  scrollok(*win, TRUE);
-
-  box(*win, 0, 0);
-
-  wattron(*win, A_BOLD);
-  mvwprintw(*win, 0, 2, "Memory window");
-  wattroff(*win, A_BOLD);
-
-  wrefresh(*win);
 }
 
 /// @brief  Prints the specific log message
@@ -144,7 +172,7 @@ void show_and_run() {
 
   load_memory_window(&memory_state_window);
 
-  //  load_memory_window(memory_state_window);
+  load_memory_space_window(&memory_space_window);
   /// get the maximum from the standard screen
   option_window = newwin(getmaxy(stdscr) * 3 / 4, getmaxx(stdscr) / 4, 0, 0);
 
@@ -170,10 +198,10 @@ void show_and_run() {
 
 void refresh_log(char *highlight) {
   static int start_processy =
-      2; /// current position in the y axis in the memory
-  static int start_memoryy =
-      2; /// current position on the y axis in the process
-
+      2; /// current position in the y axis in the process
+  static int start_memoryy = 2; /// current position on the y axis in the memory
+  static int start_memory_spacey =
+      2; /// current position in the y axis in the mermoy space.
   Node *current_log = LOGS->tail;
 
   LogMessage *curr = (LogMessage *)current_log->data;
@@ -205,6 +233,17 @@ void refresh_log(char *highlight) {
     start_memoryy++;
     break;
 
+  case MEMORY_SPACE_LOG:
+
+    if (start_memory_spacey == getmaxy(stdscr) / 2) {
+      delwin(memory_space_window);
+      load_memory_space_window(&memory_space_window);
+      start_memory_spacey = 2;
+    }
+
+    /// TODO: print_log
+
+    start_memory_spacey++;
   default:
     exit(1);
   }
