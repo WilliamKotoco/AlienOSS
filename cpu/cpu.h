@@ -18,9 +18,9 @@ typedef enum syscall {
   FINISH_SYSCALL,
   SEMAPHORE_SYSCALL,
   MEMORY_LOAD_SYSCALL,
+  MEMORY_UNLOAD_SYSCALL,
   MEMORY_FINISH_SYSCALL,
   CREATE_PROCESS_SYSCALL,
-  MEMORY_SPACE_CHANGED
 } SYSCALL;
 
 typedef enum interruption_type {
@@ -69,8 +69,13 @@ void semaphore_v_syscall(Semaphore *);
 void process_finish_syscall();
 
 ///  @brief Executes a memory load syscall
-///  @details Makes the running process waits, executes a memory load
+///  @details Makes the running process wait, executes a memory load
 ///  requisition and, after that, a memory interruption
 void memory_load_syscall();
+
+///  @brief Executes a memory load syscall
+///  @details Makes the running process wait and executes a segment unload
+///  requisition
+void memory_unload_syscall(Process *process);
 
 #endif
