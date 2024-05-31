@@ -33,7 +33,6 @@ static void update_new_process_flag(bool val) {
 ///  @param instruction instruction to be executed
 ///
 ///  @details identifies the given instruction and calls the specific syscall
-
 static void process_instruction(Process *process, Instruction *instruction) {
   FLAGS flag = SUCCESS;
 
@@ -236,20 +235,18 @@ void semaphore_v_syscall(Semaphore *semaphore) {
 }
 
 void process_finish_syscall(Process *process) {
+  /// unloads segment from the memory
+  memory_unload_syscall(process);
+  free(process->segment);
+
   /// changes status and deletes from the PCB
   process->status = FINISHED;
   delete_list(PCB, &process->id);
-
-  /// unloads segment from the memory
-  memory_unload_segment(process->segment);
-  free(process->segment);
 
   print_syscall(FINISH_SYSCALL, process, ' ');
 
   /// calls the scheduler to advance scheduling
   forward_scheduling();
-
-  print_memory_state_changed();
 }
 
 void memory_load_syscall(Process *process) {
@@ -268,4 +265,14 @@ void memory_load_syscall(Process *process) {
   process_interrupt(MEMORY_INTERRPUTION);
 
   print_syscall(MEMORY_FINISH_SYSCALL, process, ' ');
+}
+
+void memory_unload_syscall(Process *process) {
+  process->status = WAITING;
+
+  memory_unload_segment(process->segment);
+
+  process->status = READY;
+
+  print_syscall(MEMORY_UNLOAD_SYSCALL, process, ' ');
 }
