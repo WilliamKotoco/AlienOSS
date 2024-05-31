@@ -2,6 +2,7 @@
 
 /// Necessary for using global variables defined in main.c
 extern Memory *memory;
+extern List *PCB;
 
 ///  @brief deletes a page of the memory
 ///  @param id of the owner process
@@ -23,6 +24,29 @@ static void memory_delete_page(int id) {
   memory->pages[i].segment_id = -1;
 
   memory->num_free_pages++;
+}
+
+/// @brief Finds a process based on its segment
+/// @param seg the segment of the process being searched
+/// @return the process found, and NULL if there isn't one
+static Process *find_process(Segment *seg){
+  Node *aux = PCB->header;
+  Process *aux_process;
+
+  /// iterates through all of the processes 
+  while(aux){
+    aux_process = (Process *)aux->data;
+
+    /// if the owner of the segment is found, it is returned
+    if(aux_process->id == seg->id_process){
+      return aux_process;
+    }
+
+    aux = aux->next;
+  }
+
+  /// if no process is found, returns NULL
+  return NULL;
 }
 
 ///  @brief Adds a page into the memory's page table
@@ -58,7 +82,8 @@ static void swap_segment() {
 
     /// if the segment has not been used, it is unloaded
     if (tmp_seg->used_bit == 0) {
-      memory_unload_segment(tmp_seg);
+      Process *process = find_process(tmp_seg);
+      memory_unload_syscall(process);
 
       return;
     } else {

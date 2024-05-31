@@ -1,6 +1,8 @@
 #ifndef CPU_H
 #define CPU_H
 
+typedef struct memory Memory;
+
 #include "../log/log.h"
 #include "../process/process.h"
 #include "../scheduler/scheduler.h"

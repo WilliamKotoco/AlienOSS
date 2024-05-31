@@ -30,6 +30,7 @@ Process *create_process(char *program_name) {
 
   /// reads program header and stores in new_process
   long final_header = read_program_header(program_name, new_process);
+  new_process->segment->id_process = new_process->id;
 
   /// error occured during the reading of the header or the instructions
   if ((final_header == -1) ||
