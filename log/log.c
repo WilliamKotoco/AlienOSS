@@ -171,14 +171,6 @@ void print_syscall(SYSCALL syscall, Process *process, char semaphore_name) {
 
     return;
 
-  case MEMORY_UNLOAD_SYSCALL:
-    snprintf(message, sizeof(message), "Memory unloaded for process %s",
-             process->name);
-    append_log_message(message, MEMORY_LOG, "Memory unloaded");
-    print_memory_state_changed();
-
-    return;
-
   case CREATE_PROCESS_SYSCALL:
     snprintf(message, sizeof(message), "Process %s created", process->name);
     strcpy(highlight, "created");
