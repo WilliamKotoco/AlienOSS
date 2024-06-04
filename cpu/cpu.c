@@ -128,7 +128,7 @@ void cpu() {
       update_new_process_flag(false);
     }
 
-    //// there is a scheduled process
+    /// there is a scheduled process
     /// it will continue running until it has used its quantum time, it has
     /// finished, or it has been forcebly taken out of the CPU
     while (scheduler->running_process &&

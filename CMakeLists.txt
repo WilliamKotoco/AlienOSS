@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.12)
 
 
 
@@ -8,6 +8,8 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -pthread -Wall -lncurses")
 
 project(AlienOS C)
 
+find_package(Curses REQUIRED)
+include_directories(${CURSES_INCLUDE_DIR})
 
 add_executable(AlienOS 
   main.c
