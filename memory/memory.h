@@ -3,18 +3,18 @@
 
 typedef struct process Process;
 
+#include "../cpu/cpu.h"
 #include "../process/instruction.h"
 #include "../process/process.h"
 #include "../semaphore/semaphore.h"
-#include "../cpu/cpu.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 #define MEMORY_SIZE 1073741824
-//#define MEMORY_SIZE 73728
+// #define MEMORY_SIZE 73728
 #define PAGE_SIZE 8192
 #define NUM_PAGES 131072
-//#define NUM_PAGES 9
+// #define NUM_PAGES 9
 
 #define KBYTE 1024
 
@@ -29,7 +29,7 @@ typedef struct page {
 
 /// Represents a process segment, with its size, pages and instructions.
 typedef struct segment {
-  unsigned id;        //!< segment identifier
+  unsigned id; //!< segment identifier
   unsigned id_process;
   unsigned size;      //!< size of the program data
   unsigned num_pages; //!< number of memory pages the segment occupies, its size

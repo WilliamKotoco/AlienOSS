@@ -1,6 +1,7 @@
 #include "log.h"
 #include "../ui/main-window.h"
 #include <semaphore.h>
+#include <stdio.h>
 #include <string.h>
 extern List *LOGS;
 extern sem_t log_semaphore;
@@ -78,6 +79,12 @@ void print_interruption(INTERRUPTION_TYPE type, Process *process_interrupted) {
     snprintf(message, sizeof(message), "Process %s interrupted by semaphore",
              process_interrupted->name);
 
+    break;
+
+  case DISK_REQUEST_INTERRUPTION:
+    /// @TEMP not sure if my girl will like this message
+    snprintf(message, sizeof(message), "Process %s interrupted by I/O",
+             process_interrupted->name);
     break;
   }
 

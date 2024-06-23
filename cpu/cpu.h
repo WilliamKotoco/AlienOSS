@@ -4,6 +4,7 @@
 typedef struct memory Memory;
 
 #include "../log/log.h"
+#include "../process/instruction.h"
 #include "../process/process.h"
 #include "../scheduler/scheduler.h"
 #include <pthread.h>
@@ -29,7 +30,8 @@ typedef enum interruption_type {
   SEMAPHORE_INTERRUPTION,
   MEMORY_INTERRPUTION,
   NEW_PROCESS_INTERRUPTION,
-  QUANTUM_TIME_INTERRUPTION
+  QUANTUM_TIME_INTERRUPTION,
+  DISK_REQUEST_INTERRUPTION,
 } INTERRUPTION_TYPE;
 
 ///  @brief  Initializes the CPU thread
@@ -80,4 +82,7 @@ void memory_load_syscall();
 ///  requisition
 void memory_unload_syscall(Process *process);
 
+/// @brief Creates an I/O request
+/// @details Create a request and adds it into the disk request list
+void create_IO_request(unsigned int process_id, Instruction *instruction);
 #endif

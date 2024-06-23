@@ -29,16 +29,16 @@ static void memory_delete_page(int id) {
 /// @brief Finds a process based on its segment
 /// @param seg the segment of the process being searched
 /// @return the process found, and NULL if there isn't one
-static Process *find_process(Segment *seg){
+static Process *find_process(Segment *seg) {
   Node *aux = PCB->header;
   Process *aux_process;
 
-  /// iterates through all of the processes 
-  while(aux){
+  /// iterates through all of the processes
+  while (aux) {
     aux_process = (Process *)aux->data;
 
     /// if the owner of the segment is found, it is returned
-    if(aux_process->id == seg->id_process){
+    if (aux_process->id == seg->id_process) {
       return aux_process;
     }
 

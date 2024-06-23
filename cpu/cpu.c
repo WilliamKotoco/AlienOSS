@@ -1,5 +1,6 @@
 #include "cpu.h"
 #include <semaphore.h>
+#include <stdio.h>
 
 /// Necessary for global variables
 extern Scheduler *scheduler;
@@ -58,15 +59,16 @@ static void process_instruction(Process *process, Instruction *instruction) {
     }
 
     break;
-
-  case READ:
-    process->PC++;
-    break;
-
   case WRITE:
-    process->PC++;
-    break;
+  case PRINT:
+  case READ:
+    create_IO_request(process->id, instruction);
 
+    /// @TEMP uncoment when finish disk
+    //      process_interrupt(DISK_REQUEST_INTERRUPTION);
+    process->PC++;
+
+    break;
   case P:
     /// P(s), where s is the semaphore the process is waiting for
     char semaphore_p_id = instruction->semaphore;
@@ -104,10 +106,6 @@ static void process_instruction(Process *process, Instruction *instruction) {
     /// frees semaphore
     semaphore_v_syscall(semaphore_v);
 
-    break;
-
-  case PRINT:
-    process->PC++;
     break;
 
   default:
@@ -172,7 +170,9 @@ void process_interrupt(INTERRUPTION_TYPE TYPE) {
 
   /// if there is a running process, interrupt it
   if (scheduler->running_process) {
-    if (TYPE == SEMAPHORE_INTERRUPTION)
+    /// interruption by trying to access a sempahore or I/O moves the process
+    /// to WAIT status.
+    if (TYPE == SEMAPHORE_INTERRUPTION || TYPE == DISK_REQUEST_INTERRUPTION)
       scheduler->running_process->status = WAITING;
     else
       scheduler->running_process->status = READY;
@@ -279,4 +279,13 @@ void memory_unload_syscall(Process *process) {
   process->status = READY;
 
   print_syscall(MEMORY_FINISH_SYSCALL, process, ' ');
+}
+
+void create_IO_request(unsigned int process_id, Instruction *instruction) {
+  /// here create the request structure and calls the function to add
+  /// within the DISK requisition
+  ///
+  ///
+  printf("%u requested a %s \n", process_id,
+         get_opcode_string(instruction->opcode));
 }

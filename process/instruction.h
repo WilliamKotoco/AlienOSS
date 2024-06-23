@@ -14,4 +14,6 @@ typedef struct instruction {
   char semaphore;
 } Instruction;
 
+/// @brief Returns the string of a given opcode
+const char *get_opcode_string(Opcode opcode);
 #endif
