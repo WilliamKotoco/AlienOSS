@@ -163,10 +163,19 @@ void print_syscall(SYSCALL syscall, Process *process, char semaphore_name) {
 
     return;
 
+  case MEMORY_UNLOAD_SYSCALL:
+    snprintf(message, sizeof(message),
+             "Memory unload requisition for process %s", process->name);
+
+    append_log_message(message, MEMORY_LOG, "Memory unload requisition");
+
+    return;
+
   case MEMORY_FINISH_SYSCALL:
-    snprintf(message, sizeof(message), "Memory load finished for process %s",
-             process->name);
-    append_log_message(message, MEMORY_LOG, "Memory load finished");
+    snprintf(message, sizeof(message),
+             "Memory operation finished for process %s", process->name);
+    append_log_message(message, MEMORY_LOG, "Memory operation finished");
+
     print_memory_state_changed();
 
     return;
