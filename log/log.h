@@ -15,7 +15,7 @@ typedef struct instruction Instruction;
 ///
 /// The log type will be used to redirect the message to
 /// its corresponding window in the user interface
-typedef enum { PROCESS_LOG, MEMORY_LOG, MEMORY_SPACE_LOG } LOG_TYPE;
+typedef enum { PROCESS_LOG, MEMORY_LOG, MEMORY_SPACE_LOG, DISK_LOG } LOG_TYPE;
 
 /// @brief Log structure used to represent a single message of log
 ///
@@ -51,4 +51,7 @@ void print_scheduled(Process *process);
 
 void print_memory_state_changed();
 
+/// TEMPORARY LOG FOR DISK
+/// @TEMP
+void print_disk_execution(Process *process, Instruction *instruction);
 #endif

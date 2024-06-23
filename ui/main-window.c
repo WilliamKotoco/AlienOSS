@@ -14,14 +14,20 @@ WINDOW *process_state_window;
 WINDOW *memory_state_window;
 WINDOW *file_name_window;
 WINDOW *memory_space_window;
-
+WINDOW *disk_state_window;
 /// @brief Load the process window, which is the window responsible to show
 /// information about the processes running on the system.
 /// @param  The window to be refhrased
 static void load_process_window(WINDOW **win) {
-  *win = newwin(getmaxy(stdscr) / 2, getmaxx(stdscr) * (3 / 4), 0,
-                getmaxx(stdscr) * 1 / 4);
 
+  int height = getmaxy(stdscr) / 2;
+  int starty = 0;
+  int width = getmaxx(stdscr) *
+              ((1.8 / 4)); /// FIXME: i swear to god it was the only option to
+                           /// give a space between the memories window.
+  int startx = getmaxx(stdscr) * 1 / 4;
+
+  *win = newwin(height, width, starty, startx);
   wbkgd(*win, COLOR_PAIR(1));
   wattron(*win, COLOR_PAIR(2));
 
@@ -32,6 +38,29 @@ static void load_process_window(WINDOW **win) {
   wattron(*win, A_BOLD);
   mvwprintw(*win, 0, 2, "Process window");
   wattroff(*win, A_BOLD);
+  wrefresh(*win);
+}
+
+/// @brief Load the disk state window, which is the window reponsible for
+/// showing the operatings happenings on disk
+/// @param win
+static void load_disk_state_window(WINDOW **win) {
+  int height = getmaxy(stdscr) / 2;
+  int starty = 0;
+  int width = getmaxx(stdscr) * (1.3 / 4);
+  int startx = getmaxx(stdscr) * 2.8 / 4;
+
+  *win = newwin(height, width, starty, startx);
+
+  wbkgd(*win, COLOR_PAIR(1));
+  wattron(*win, COLOR_PAIR(2));
+
+  box(*win, 0, 0);
+
+  wattron(*win, A_BOLD);
+  mvwprintw(*win, 0, 2, "Disk state");
+  wattroff(*win, A_BOLD);
+
   wrefresh(*win);
 }
 
@@ -173,6 +202,8 @@ void show_and_run() {
   load_memory_window(&memory_state_window);
 
   load_memory_space_window(&memory_space_window);
+
+  load_disk_state_window(&disk_state_window);
   /// get the maximum from the standard screen
   option_window = newwin(getmaxy(stdscr) * 3 / 4, getmaxx(stdscr) / 4, 0, 0);
 
@@ -202,6 +233,9 @@ void refresh_log(char *highlight) {
   static int start_memoryy = 2; /// current position on the y axis in the memory
   static int start_memory_spacey =
       2; /// current position in the y axis in the mermoy space.
+
+  static int start_disk_spacey =
+      2; /// current position in the y axis in the disk window
   Node *current_log = LOGS->tail;
 
   LogMessage *curr = (LogMessage *)current_log->data;
@@ -245,6 +279,21 @@ void refresh_log(char *highlight) {
               start_memory_spacey);
 
     start_memory_spacey++; /// space information overlaps
+    break;
+
+  case DISK_LOG:
+
+    if (start_disk_spacey == getmaxy(stdscr) / 2) {
+      delwin(disk_state_window);
+      load_disk_state_window(&disk_state_window);
+      start_disk_spacey = 2;
+    }
+
+    print_log(disk_state_window, curr->log_message, highlight,
+              start_disk_spacey);
+
+    start_disk_spacey++;
+    break;
   default:
   }
 }

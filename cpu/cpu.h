@@ -7,6 +7,7 @@ typedef struct memory Memory;
 #include "../process/instruction.h"
 #include "../process/process.h"
 #include "../scheduler/scheduler.h"
+#include "../semaphore/semaphore.h"
 #include <pthread.h>
 #include <semaphore.h>
 #include <stdbool.h>

@@ -225,3 +225,13 @@ void print_memory_state_changed() {
   snprintf(message, sizeof(message), "Using percentage: %0.5f %%", percentage);
   append_log_message(message, MEMORY_SPACE_LOG, "Using percentage");
 }
+
+/// @TEMP NOT DEFINED YET
+void print_disk_execution(Process *process, Instruction *instruction) {
+  char message[256];
+
+  snprintf(message, sizeof(message), "Disk IO requisition for %s on track %d ",
+           get_opcode_string(instruction->opcode), instruction->operand);
+
+  append_log_message(message, DISK_LOG, get_opcode_string(instruction->opcode));
+}

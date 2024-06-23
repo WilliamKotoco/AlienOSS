@@ -286,6 +286,7 @@ void create_IO_request(unsigned int process_id, Instruction *instruction) {
   /// within the DISK requisition
   ///
   ///
-  printf("%u requested a %s \n", process_id,
-         get_opcode_string(instruction->opcode));
+
+  /// @TEMP log only to debugging reasons
+  print_disk_execution(scheduler->running_process, instruction);
 }
