@@ -13,11 +13,15 @@ sem_t log_semaphore; /// semaphore responsible for controlling the logging.
 List *LOGS;
 int processes_id = 0;
 
+Disk *disk_scheduler;
+sem_t disk_semaphore;
+
 int main(int argc, char *argv[]) {
 
   /// inicializing global variables
   sem_init(&process_semaphore, 1, 1);
   sem_init(&log_semaphore, 1, 0);
+  sem_init(&disk_semaphore, 1, 1);
   new_process = false;
 
   PCB = create_list(sizeof(Process), compare_processes);
@@ -27,6 +31,8 @@ int main(int argc, char *argv[]) {
 
   init_scheduler();
   init_cpu();
+  init_disk();
+
   show_and_run();
 
   // printf("Após ler programa sintético:\n");

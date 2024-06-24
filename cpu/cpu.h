@@ -3,6 +3,7 @@
 
 typedef struct memory Memory;
 
+#include "../disk/disk.h"
 #include "../log/log.h"
 #include "../process/instruction.h"
 #include "../process/process.h"
@@ -83,7 +84,11 @@ void memory_load_syscall();
 ///  requisition
 void memory_unload_syscall(Process *process);
 
-/// @brief Creates an I/O request
-/// @details Create a request and adds it into the disk request list
-void create_IO_request(unsigned int process_id, Instruction *instruction);
+///  @brief Executes a disk requisition
+///  @details Creates a disk requisition, adds it to the disk scheduler and
+///  interrupts the process
+///  @param process process that made the requisition
+///  @param instruction instruction
+void disk_requisition(Process *process, Instruction *instruction);
+
 #endif

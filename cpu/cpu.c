@@ -65,7 +65,7 @@ static void process_instruction(Process *process, Instruction *instruction) {
 
   case WRITE:
   case READ:
-    create_IO_request(process->id, instruction);
+    disk_requisition(process, instruction);
 
     /// @TEMP uncoment when finish disk
     //      process_interrupt(DISK_REQUEST_INTERRUPTION);
@@ -285,11 +285,10 @@ void memory_unload_syscall(Process *process) {
   print_syscall(MEMORY_FINISH_SYSCALL, process, ' ');
 }
 
-void create_IO_request(unsigned int process_id, Instruction *instruction) {
-  /// here create the request structure and calls the function to add
-  /// within the DISK requisition
-  ///
-  ///
+void disk_requisition(Process *process, Instruction *instruction) {
+  create_IO_request(process, instruction);
+
+  process_interrupt(DISK_REQUEST_INTERRUPTION);
 
   /// @TEMP log only to debugging reasons
   print_disk_execution(scheduler->running_process, instruction);
