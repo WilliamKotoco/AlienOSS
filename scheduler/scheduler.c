@@ -3,6 +3,7 @@
 
 extern Scheduler *scheduler;
 extern sem_t process_semaphore;
+extern sem_t scheduler_semaphore;
 
 void init_scheduler() {
   scheduler = malloc(sizeof(Scheduler));
@@ -12,6 +13,9 @@ void init_scheduler() {
 }
 
 void forward_scheduling() {
+  sem_wait(
+      &scheduler_semaphore); // necessário para alterar a lista de ready process
+
   Process *old_process = scheduler->running_process;
 
   /// if the process is still ready, it is added again in the list
@@ -41,7 +45,10 @@ void forward_scheduling() {
       QUANTUM_TIME_TOTAL / scheduled_process->priority;
 
   scheduler->running_process = scheduled_process;
+
   print_scheduled(scheduled_process);
+
+  sem_post(&scheduler_semaphore);
 }
 
 void add_process_scheduler(Process *new_process) {

@@ -1,7 +1,14 @@
 #include "disk.h"
+#include "../log/log.h"
+#include "../ui/main-window.h"
 
 extern Disk *disk_scheduler;
 extern sem_t disk_semaphore;
+
+extern Scheduler *scheduler;
+extern sem_t scheduler_semaphore;
+
+extern sem_t interrupt_semaphore;
 
 static int compare_disk_resquests(void *d1, void *d2) {
   DiskRequest *p1 = (DiskRequest *)d1;
@@ -34,8 +41,57 @@ void init_disk() {
   pthread_create(&disk_id, NULL, (void *)disk, NULL);
 }
 
+void disk_request_finished(DiskRequest *request) {
+  request->process->status = READY;
+
+  sem_wait(&scheduler_semaphore); // mais de uma thread muda a lista
+  add_process_scheduler(request->process);
+  sem_post(&scheduler_semaphore);
+}
+
+static void fulfill_disk_request(DiskRequest *request) {
+  print_disk_execution(request->process, request->type, request->track);
+
+  delete_list(disk_scheduler->requests, &request->track);
+
+  /// muda request->process pra ready e adiciona na lista do escalonador
+  disk_request_finished(request);
+
+  sem_wait(&interrupt_semaphore); // mais de uma thread chama
+  process_interrupt(DISK_FINISHED_INTERRUPTION);
+  sem_post(&interrupt_semaphore);
+}
+
+static void disk_sweep() {
+  disk_scheduler->curr_track = 0;
+
+  Node *request_fulfilled = disk_scheduler->requests->header;
+  DiskRequest *request_fulfilled_data;
+
+  while (request_fulfilled) {
+    request_fulfilled_data = (DiskRequest *)request_fulfilled->data;
+
+    int track_distance =
+        request_fulfilled_data->track - disk_scheduler->curr_track;
+    int time = track_distance * DISK_TRACK_MOVE_TIME + DISK_OPERATION_TIME;
+
+    // sleep(time);
+
+    sem_wait(&disk_semaphore);
+    fulfill_disk_request(request_fulfilled_data);
+    sem_post(&disk_semaphore);
+
+    disk_scheduler->curr_track = request_fulfilled_data->track;
+
+    request_fulfilled = request_fulfilled->next;
+  }
+}
+
 void disk() {
   while (1) {
+    if (disk_scheduler->requests->header) {
+      disk_sweep();
+    }
   }
 }
 
@@ -91,7 +147,9 @@ static void add_disk_request(DiskRequest *new_request) {
 }
 
 void create_IO_request(Process *process, Instruction *instruction) {
-  DiskRequest *disk_request = malloc(sizeof(DiskRequest));
+  DiskRequest *disk_request;
+
+  disk_request = malloc(sizeof(DiskRequest));
   disk_request->process = process;
   disk_request->type = instruction->opcode;
   disk_request->track = instruction->operand;

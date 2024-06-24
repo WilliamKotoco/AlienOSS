@@ -34,6 +34,7 @@ typedef enum interruption_type {
   NEW_PROCESS_INTERRUPTION,
   QUANTUM_TIME_INTERRUPTION,
   DISK_REQUEST_INTERRUPTION,
+  DISK_FINISHED_INTERRUPTION,
 } INTERRUPTION_TYPE;
 
 ///  @brief  Initializes the CPU thread

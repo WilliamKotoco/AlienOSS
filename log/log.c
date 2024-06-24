@@ -14,6 +14,7 @@ int compare_log(void *d1, void *d2) { return 1; }
 /// @param log_type log type
 static void append_log_message(char *message, LOG_TYPE log_type,
                                char *highlight) {
+  sem_wait(&log_semaphore);
   LogMessage *log_message = malloc(sizeof(LogMessage));
 
   strcpy(log_message->log_message, message);
@@ -22,6 +23,7 @@ static void append_log_message(char *message, LOG_TYPE log_type,
   push(LOGS, log_message);
 
   refresh_log(highlight);
+  sem_post(&log_semaphore);
 }
 
 void print_interruption(INTERRUPTION_TYPE type, Process *process_interrupted) {
@@ -82,9 +84,11 @@ void print_interruption(INTERRUPTION_TYPE type, Process *process_interrupted) {
     break;
 
   case DISK_REQUEST_INTERRUPTION:
+  case DISK_FINISHED_INTERRUPTION:
     /// @TEMP not sure if my girl will like this message
     snprintf(message, sizeof(message), "Process %s interrupted by I/O",
              process_interrupted->name);
+
     break;
   }
 
@@ -104,9 +108,6 @@ void print_execution(Process *process, Instruction *instruction, FLAGS flag) {
     snprintf(message, sizeof(message), "Process %s executed for %d seconds",
              process->name, instruction->operand);
     strcpy(highlight, "executed");
-
-    /// finished executing a instruction, clears out the auxiliar variable
-    process->segment->exec = 0;
 
     break;
 
@@ -227,11 +228,11 @@ void print_memory_state_changed() {
 }
 
 /// @TEMP NOT DEFINED YET
-void print_disk_execution(Process *process, Instruction *instruction) {
+void print_disk_execution(Process *process, Opcode type, int track) {
   char message[256];
 
   snprintf(message, sizeof(message), "Disk IO requisition for %s on track %d ",
-           get_opcode_string(instruction->opcode), instruction->operand);
+           get_opcode_string(type), track);
 
-  append_log_message(message, DISK_LOG, get_opcode_string(instruction->opcode));
+  append_log_message(message, DISK_LOG, get_opcode_string(type));
 }

@@ -53,5 +53,6 @@ void print_memory_state_changed();
 
 /// TEMPORARY LOG FOR DISK
 /// @TEMP
-void print_disk_execution(Process *process, Instruction *instruction);
+void print_disk_execution(Process *process, Opcode type, int track);
+
 #endif

@@ -2,8 +2,8 @@
 #define DISK_H
 
 #include "../list/list.h"
-#include "../process/process.h"
 #include "../process/instruction.h"
+#include "../process/process.h"
 
 #define MAX_DISK_TRACK 200
 
@@ -25,7 +25,6 @@ typedef struct diskRequest {
 
   int turnaround;
 } DiskRequest;
-
 
 void init_disk();
 

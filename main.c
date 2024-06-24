@@ -6,6 +6,7 @@
 List *PCB;
 Memory *memory;
 Scheduler *scheduler;
+sem_t scheduler_semaphore;
 sem_t process_semaphore; /// Read-write semaphore for the current running
                          /// process in the scheduler.
 bool new_process;
@@ -16,12 +17,16 @@ int processes_id = 0;
 Disk *disk_scheduler;
 sem_t disk_semaphore;
 
+sem_t interrupt_semaphore;
+
 int main(int argc, char *argv[]) {
 
   /// inicializing global variables
   sem_init(&process_semaphore, 1, 1);
-  sem_init(&log_semaphore, 1, 0);
+  sem_init(&log_semaphore, 1, 1);
   sem_init(&disk_semaphore, 1, 1);
+  sem_init(&scheduler_semaphore, 1, 1);
+  sem_init(&interrupt_semaphore, 1, 1);
   new_process = false;
 
   PCB = create_list(sizeof(Process), compare_processes);

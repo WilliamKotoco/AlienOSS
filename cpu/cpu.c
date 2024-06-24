@@ -8,6 +8,8 @@ extern sem_t process_semaphore;
 extern Memory *memory;
 extern List *PCB;
 extern bool new_process;
+extern sem_t scheduler_semaphore;
+extern sem_t interrupt_semaphore;
 
 void init_cpu() {
   pthread_t cpu_id;
@@ -54,6 +56,7 @@ static void process_instruction(Process *process, Instruction *instruction) {
       process->PC++;
 
       instruction->operand = process->segment->exec;
+      process->segment->exec = 0;
 
       print_execution(process, instruction, flag);
     }
@@ -91,7 +94,9 @@ static void process_instruction(Process *process, Instruction *instruction) {
       scheduler->running_process->remaining_time -=
           200; /// time required to acquire
     } else {
+      sem_wait(&interrupt_semaphore); // mais de uma thread chama
       process_interrupt(SEMAPHORE_INTERRUPTION);
+      sem_post(&interrupt_semaphore);
     }
     break;
 
@@ -125,8 +130,10 @@ void cpu() {
     while (!scheduler->running_process && new_process == false)
       ;
 
-    if (new_process) { /// new process created
+    if (new_process) {                /// new process created
+      sem_wait(&interrupt_semaphore); // mais de uma thread chama
       process_interrupt(NEW_PROCESS_INTERRUPTION);
+      sem_post(&interrupt_semaphore);
       update_new_process_flag(false);
     }
 
@@ -156,6 +163,11 @@ void cpu() {
     /// it was interrupted, because it has finished, or because it used all
     /// of its quantum time
 
+    /// process was interrupted and there is no other process to run
+    if (!scheduler->running_process) {
+      continue;
+    }
+
     /// all inscructions were executed
     if (scheduler->running_process->PC >=
         scheduler->running_process->segment->num_instructions) {
@@ -164,7 +176,9 @@ void cpu() {
 
     /// completed the quantum time
     else if (scheduler->running_process->remaining_time <= 0) {
+      sem_wait(&interrupt_semaphore); // mais de uma thread chama
       process_interrupt(QUANTUM_TIME_INTERRUPTION);
+      sem_post(&interrupt_semaphore);
     }
   }
 }
@@ -196,7 +210,11 @@ void process_create_syscall(char *filename) {
 
   /// adds the new process to the OS's PCB list and scheduler's list
   push(PCB, new_process);
+
+  sem_wait(
+      &scheduler_semaphore); // necessário para alterar a lista de ready process
   add_process_scheduler(new_process);
+  sem_post(&scheduler_semaphore);
 
   print_syscall(CREATE_PROCESS_SYSCALL, new_process, ' ');
 
@@ -231,7 +249,11 @@ void semaphore_v_syscall(Semaphore *semaphore) {
     Process *new_process_data = (Process *)new_process->data;
 
     new_process_data->status = READY;
+
+    sem_wait(&scheduler_semaphore); // necessário para alterar a lista de ready
+                                    // process
     add_process_scheduler(new_process_data);
+    sem_post(&scheduler_semaphore);
 
     print_syscall(SEMAPHORE_SYSCALL, new_process_data, semaphore->name);
 
@@ -267,7 +289,9 @@ void memory_load_syscall(Process *process) {
 
   /// change process status and calls forward_scheduling to remove it
   /// and schedule the next running process
+  sem_wait(&interrupt_semaphore); // mais de uma thread chama
   process_interrupt(MEMORY_INTERRPUTION);
+  sem_post(&interrupt_semaphore);
 
   print_syscall(MEMORY_FINISH_SYSCALL, process, ' ');
 }
@@ -286,10 +310,9 @@ void memory_unload_syscall(Process *process) {
 }
 
 void disk_requisition(Process *process, Instruction *instruction) {
-  create_IO_request(process, instruction);
-
+  sem_wait(&interrupt_semaphore); // mais de uma thread chama
   process_interrupt(DISK_REQUEST_INTERRUPTION);
+  sem_post(&interrupt_semaphore);
 
-  /// @TEMP log only to debugging reasons
-  print_disk_execution(scheduler->running_process, instruction);
+  create_IO_request(process, instruction);
 }

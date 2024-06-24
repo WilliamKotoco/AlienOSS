@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
 
-
-
-
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -pthread -Wall -lncurses")
 
@@ -33,7 +30,8 @@ add_executable(AlienOS
   scheduler/scheduler.c 
   log/log.h
   log/log.c 
+  disk/disk.h
+  disk/disk.c
   )
-
 
 target_link_libraries(AlienOS ${CURSES_LIBRARIES})
