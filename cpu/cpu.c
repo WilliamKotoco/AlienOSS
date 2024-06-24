@@ -59,8 +59,11 @@ static void process_instruction(Process *process, Instruction *instruction) {
     }
 
     break;
-  case WRITE:
+
   case PRINT:
+    break;
+
+  case WRITE:
   case READ:
     create_IO_request(process->id, instruction);
 
@@ -69,6 +72,7 @@ static void process_instruction(Process *process, Instruction *instruction) {
     process->PC++;
 
     break;
+
   case P:
     /// P(s), where s is the semaphore the process is waiting for
     char semaphore_p_id = instruction->semaphore;
