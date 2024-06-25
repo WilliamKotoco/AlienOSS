@@ -49,10 +49,14 @@ void print_syscall(SYSCALL syscall, Process *process, char semaphore_name);
 /// @param process process scheduled
 void print_scheduled(Process *process);
 
+/// @brief Prints information about the memory ocupation
+/// @details Presents the total space available, used and percentage
 void print_memory_state_changed();
 
-/// TEMPORARY LOG FOR DISK
-/// @TEMP
+/// @brief Prints a disk requisition execution message
+/// @param process the process that made the request
+/// @param type type of operation, read or write
+/// @param track track of the disk
 void print_disk_execution(Process *process, Opcode type, int track);
 
 #endif

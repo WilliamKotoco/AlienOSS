@@ -36,7 +36,6 @@ static void update_new_process_flag(bool val) {
 ///  @param instruction instruction to be executed
 ///
 ///  @details identifies the given instruction and calls the specific syscall
-
 static void process_instruction(Process *process, Instruction *instruction) {
   FLAGS flag = SUCCESS;
 
@@ -69,10 +68,9 @@ static void process_instruction(Process *process, Instruction *instruction) {
 
   case WRITE:
   case READ:
+    /// creates a requisition based on the instruction
     disk_requisition(process, instruction);
 
-    /// @TEMP uncoment when finish disk
-    //      process_interrupt(DISK_REQUEST_INTERRUPTION);
     process->PC++;
 
     break;
@@ -212,8 +210,7 @@ void process_create_syscall(char *filename) {
   /// adds the new process to the OS's PCB list and scheduler's list
   push(PCB, new_process);
 
-  sem_wait(
-      &scheduler_semaphore); // necessário para alterar a lista de ready process
+  sem_wait(&scheduler_semaphore);
   add_process_scheduler(new_process);
   sem_post(&scheduler_semaphore);
 
@@ -251,8 +248,9 @@ void semaphore_v_syscall(Semaphore *semaphore) {
 
     new_process_data->status = READY;
 
-    sem_wait(&scheduler_semaphore); // necessário para alterar a lista de ready
-                                    // process
+    /// as it is ready to run, it needs to be added again to the ready processes
+    /// list on the scheduler
+    sem_wait(&scheduler_semaphore); /// two different threads change this list
     add_process_scheduler(new_process_data);
     sem_post(&scheduler_semaphore);
 
@@ -311,9 +309,10 @@ void memory_unload_syscall(Process *process) {
 }
 
 void disk_requisition(Process *process, Instruction *instruction) {
-  sem_wait(&interrupt_semaphore); // mais de uma thread chama
+  sem_wait(&interrupt_semaphore); /// two threads call this function
   process_interrupt(DISK_REQUEST_INTERRUPTION);
   sem_post(&interrupt_semaphore);
 
+  /// creates request based on the instruction
   create_IO_request(process, instruction);
 }

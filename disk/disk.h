@@ -26,8 +26,15 @@ typedef struct diskRequest {
   int turnaround;
 } DiskRequest;
 
+/// @brief initializes the disk structure and creates the disk thread
 void init_disk();
 
+/// @brief Emulates the disk operation using the SCAN algorithm to serve
+/// requests
+/// @details whenever there is a requisition pending on the disk's list, it
+/// performs a scan, serving the requests in ascending order of the tracks. When
+/// fulfilling a request, it prints a run message, changes the process status to
+/// ready, and creates an interrupt
 void disk();
 
 /// @brief Creates an I/O request

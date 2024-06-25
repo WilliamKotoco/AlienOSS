@@ -227,7 +227,6 @@ void print_memory_state_changed() {
   append_log_message(message, MEMORY_SPACE_LOG, "Using percentage");
 }
 
-/// @TEMP NOT DEFINED YET
 void print_disk_execution(Process *process, Opcode type, int track) {
   char message[256];
 

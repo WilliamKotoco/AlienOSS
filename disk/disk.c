@@ -41,7 +41,11 @@ void init_disk() {
   pthread_create(&disk_id, NULL, (void *)disk, NULL);
 }
 
-void disk_request_finished(DiskRequest *request) {
+/// @brief Finishes a disk request
+/// @param request the request being finished
+/// @details changes the status of the process that made the request to ready
+/// and reinserts it to the scheduler's list
+static void disk_request_finished(DiskRequest *request) {
   request->process->status = READY;
 
   sem_wait(&scheduler_semaphore); // mais de uma thread muda a lista
@@ -49,35 +53,50 @@ void disk_request_finished(DiskRequest *request) {
   sem_post(&scheduler_semaphore);
 }
 
+/// @brief Fulfills a disk request
+/// @param request the request being fulfilled
+/// @details Prints the disk execution, deletes the request from the list,
+/// finishes it and calls an interrupt
 static void fulfill_disk_request(DiskRequest *request) {
+  /// prints the execution
   print_disk_execution(request->process, request->type, request->track);
 
-  delete_list(disk_scheduler->requests, &request->track);
-
-  /// muda request->process pra ready e adiciona na lista do escalonador
+  /// finished the request
   disk_request_finished(request);
 
-  sem_wait(&interrupt_semaphore); // mais de uma thread chama
+  /// deletes the request from the list, as it has been fulfilled
+  delete_list(disk_scheduler->requests, &request->track);
+
+  /// interrupts the current process on the CPU
+  sem_wait(&interrupt_semaphore);
   process_interrupt(DISK_FINISHED_INTERRUPTION);
   sem_post(&interrupt_semaphore);
 }
 
+/// @brief Performs a disk scan
+/// @details Scroll through the list of requests in ascending order of tracks,
+/// attending them
 static void disk_sweep() {
   disk_scheduler->curr_track = 0;
 
   Node *request_fulfilled = disk_scheduler->requests->header;
   DiskRequest *request_fulfilled_data;
 
-  while (request_fulfilled) {
+  /// for all requests
+  while (request_fulfilled && disk_scheduler->curr_track < MAX_DISK_TRACK) {
     request_fulfilled_data = (DiskRequest *)request_fulfilled->data;
+    request_fulfilled = request_fulfilled->next;
 
+    /// calculates the travelled distance and time necessary
     int track_distance =
         request_fulfilled_data->track - disk_scheduler->curr_track;
     int time = track_distance * DISK_TRACK_MOVE_TIME + DISK_OPERATION_TIME;
 
-    disk_scheduler->curr_track = request_fulfilled_data->track;
-    request_fulfilled = request_fulfilled->next;
+    sleep(time / 1000);
 
+    disk_scheduler->curr_track = request_fulfilled_data->track;
+
+    /// fulfills the request
     sem_wait(&disk_semaphore);
     fulfill_disk_request(request_fulfilled_data);
     sem_post(&disk_semaphore);
@@ -86,6 +105,7 @@ static void disk_sweep() {
 
 void disk() {
   while (1) {
+    /// there is a pending request
     if (disk_scheduler->requests->header) {
       disk_sweep();
     }
@@ -151,6 +171,7 @@ void create_IO_request(Process *process, Instruction *instruction) {
   disk_request->type = instruction->opcode;
   disk_request->track = instruction->operand;
 
+  /// inserts the request into the disk's list of request
   sem_wait(&disk_semaphore);
   add_disk_request(disk_request);
   sem_post(&disk_semaphore);

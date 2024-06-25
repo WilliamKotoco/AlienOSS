@@ -1,0 +1,8 @@
+dadasilva
+11
+1
+32
+s
+
+write 40
+exec 1000

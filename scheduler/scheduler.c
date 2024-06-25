@@ -13,8 +13,8 @@ void init_scheduler() {
 }
 
 void forward_scheduling() {
-  sem_wait(
-      &scheduler_semaphore); // necessário para alterar a lista de ready process
+  /// the ready processes list will be modified
+  sem_wait(&scheduler_semaphore);
 
   Process *old_process = scheduler->running_process;
 
@@ -28,11 +28,11 @@ void forward_scheduling() {
 
   /// there isn't a process to schedule
   if (!scheduled) {
-    /// frees the current running process since there isn't a scheduled process
-    //    free(scheduler->running_process);
+    /// no process running
     scheduler->running_process = NULL;
 
     sem_post(&scheduler_semaphore);
+
     return;
   }
 
