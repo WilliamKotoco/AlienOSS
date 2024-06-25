@@ -29,9 +29,10 @@ void forward_scheduling() {
   /// there isn't a process to schedule
   if (!scheduled) {
     /// frees the current running process since there isn't a scheduled process
-    free(scheduler->running_process);
+//    free(scheduler->running_process);
     scheduler->running_process = NULL;
-
+    
+    sem_post(&scheduler_semaphore);
     return;
   }
 

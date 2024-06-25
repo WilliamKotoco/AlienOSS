@@ -64,6 +64,7 @@ static void process_instruction(Process *process, Instruction *instruction) {
     break;
 
   case PRINT:
+      process->PC++;
     break;
 
   case WRITE:
