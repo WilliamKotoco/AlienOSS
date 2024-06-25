@@ -75,15 +75,12 @@ static void disk_sweep() {
         request_fulfilled_data->track - disk_scheduler->curr_track;
     int time = track_distance * DISK_TRACK_MOVE_TIME + DISK_OPERATION_TIME;
 
-    // sleep(time);
+    disk_scheduler->curr_track = request_fulfilled_data->track;
+    request_fulfilled = request_fulfilled->next;
 
     sem_wait(&disk_semaphore);
     fulfill_disk_request(request_fulfilled_data);
     sem_post(&disk_semaphore);
-
-    disk_scheduler->curr_track = request_fulfilled_data->track;
-
-    request_fulfilled = request_fulfilled->next;
   }
 }
 
