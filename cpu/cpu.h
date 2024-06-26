@@ -5,11 +5,11 @@ typedef struct memory Memory;
 
 #include "../disk/disk.h"
 #include "../log/log.h"
+#include "../print/print.h"
 #include "../process/instruction.h"
 #include "../process/process.h"
 #include "../scheduler/scheduler.h"
 #include "../semaphore/semaphore.h"
-#include "../print/print.h"
 #include <pthread.h>
 #include <semaphore.h>
 #include <stdbool.h>

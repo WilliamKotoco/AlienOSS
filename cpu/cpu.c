@@ -192,7 +192,8 @@ void process_interrupt(INTERRUPTION_TYPE TYPE) {
   if (scheduler->running_process) {
     /// interruption by trying to access a sempahore or I/O moves the process
     /// to WAIT status.
-    if (TYPE == SEMAPHORE_INTERRUPTION || TYPE == DISK_REQUEST_INTERRUPTION || TYPE == PRINT_REQUEST_INTERRUPTION)
+    if (TYPE == SEMAPHORE_INTERRUPTION || TYPE == DISK_REQUEST_INTERRUPTION ||
+        TYPE == PRINT_REQUEST_INTERRUPTION)
       scheduler->running_process->status = WAITING;
     else
       scheduler->running_process->status = READY;

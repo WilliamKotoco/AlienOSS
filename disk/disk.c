@@ -96,7 +96,7 @@ static void disk_sweep() {
         request_fulfilled_data->track - disk_scheduler->curr_track;
     int time = track_distance * DISK_TRACK_MOVE_TIME + DISK_OPERATION_TIME;
 
-    //sleep(time / 1000);
+    // sleep(time / 1000);
 
     disk_scheduler->curr_track = request_fulfilled_data->track;
 

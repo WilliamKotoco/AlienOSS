@@ -25,7 +25,7 @@ static int compare_print_resquests(void *d1, void *d2) {
   }
 }
 
-void init_print(){
+void init_print() {
   print_requests = create_list(sizeof(PrintRequest), compare_print_resquests);
 
   pthread_t print_id;
@@ -53,7 +53,8 @@ void create_print_request(Process *process, Instruction *instruction) {
 
 /// @brief Finishes a print request
 /// @param request the request being finished
-/// @details makes the process that made the request ready and inserts it again into the scheduler's list
+/// @details makes the process that made the request ready and inserts it again
+/// into the scheduler's list
 static void print_request_finished(PrintRequest *request) {
   request->process->status = READY;
 
@@ -66,12 +67,14 @@ static void print_request_finished(PrintRequest *request) {
 /// @details Prints it execution, finishes it and interrupts the current process
 static void fulfill_print() {
   Node *request_fulfilled = print_requests->header;
-  PrintRequest *request_fulfilled_data = (PrintRequest *) request_fulfilled->data;
-  
-  //sleep(request_fulfilled_data->time / 1000);
+  PrintRequest *request_fulfilled_data =
+      (PrintRequest *)request_fulfilled->data;
+
+  // sleep(request_fulfilled_data->time / 1000);
 
   /// prints the execution
-  print_print_execution(request_fulfilled_data->process, request_fulfilled_data->time);
+  print_print_execution(request_fulfilled_data->process,
+                        request_fulfilled_data->time);
 
   /// finished the request
   print_request_finished(request_fulfilled_data);
@@ -86,7 +89,6 @@ static void fulfill_print() {
   process_interrupt(PRINT_FINISHED_INTERRUPTION);
   sem_post(&interrupt_semaphore);
 }
-
 
 void print() {
   while (1) {

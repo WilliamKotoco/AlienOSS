@@ -55,7 +55,7 @@ void delete_list(List *list, void *data) {
   /// searches for the node
   Node *place = find(list, data);
 
-  if(!place){
+  if (!place) {
     return;
   }
 
