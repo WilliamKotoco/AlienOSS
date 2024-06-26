@@ -55,6 +55,10 @@ void delete_list(List *list, void *data) {
   /// searches for the node
   Node *place = find(list, data);
 
+  if(!place){
+    return;
+  }
+
   /// if the element to be removed is the head of the list
   if (list->header == place) {
     if (place->prev) {

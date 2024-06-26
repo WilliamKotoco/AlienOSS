@@ -19,7 +19,7 @@ void forward_scheduling() {
   Process *old_process = scheduler->running_process;
 
   /// if the process is still ready, it is added again in the list
-  if (old_process && old_process->status == READY) {
+  if (old_process && (old_process->status == READY || old_process->status == RUNNING)) {
     add_process_scheduler(old_process);
   }
 

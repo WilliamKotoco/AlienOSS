@@ -10,6 +10,10 @@ extern sem_t scheduler_semaphore;
 
 extern sem_t interrupt_semaphore;
 
+/// @brief Compares two disk requests
+/// @param d1 the fist disk request
+/// @param d2 the track of the second disk request
+/// @return 1 if both disks have the same track and 0 if they don't
 static int compare_disk_resquests(void *d1, void *d2) {
   DiskRequest *p1 = (DiskRequest *)d1;
 
@@ -92,7 +96,7 @@ static void disk_sweep() {
         request_fulfilled_data->track - disk_scheduler->curr_track;
     int time = track_distance * DISK_TRACK_MOVE_TIME + DISK_OPERATION_TIME;
 
-    sleep(time / 1000);
+    //sleep(time / 1000);
 
     disk_scheduler->curr_track = request_fulfilled_data->track;
 

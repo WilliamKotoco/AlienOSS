@@ -19,6 +19,10 @@ sem_t disk_semaphore;
 
 sem_t interrupt_semaphore;
 
+List *print_requests;
+int prints_id = 0;
+sem_t print_semaphore;
+
 int main(int argc, char *argv[]) {
 
   /// inicializing global variables
@@ -27,6 +31,7 @@ int main(int argc, char *argv[]) {
   sem_init(&disk_semaphore, 1, 1);
   sem_init(&scheduler_semaphore, 1, 1);
   sem_init(&interrupt_semaphore, 1, 1);
+  sem_init(&print_semaphore, 1, 1);
   new_process = false;
 
   PCB = create_list(sizeof(Process), compare_processes);
@@ -37,6 +42,7 @@ int main(int argc, char *argv[]) {
   init_scheduler();
   init_cpu();
   init_disk();
+  init_print();
 
   show_and_run();
 

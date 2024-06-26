@@ -86,10 +86,15 @@ void print_interruption(INTERRUPTION_TYPE type, Process *process_interrupted) {
   case DISK_REQUEST_INTERRUPTION:
   case DISK_FINISHED_INTERRUPTION:
     /// @TEMP not sure if my girl will like this message
-    snprintf(message, sizeof(message), "Process %s interrupted by I/O",
+    snprintf(message, sizeof(message), "Process %s interrupted by I/O - disk",
              process_interrupted->name);
 
     break;
+
+  case PRINT_REQUEST_INTERRUPTION:
+  case PRINT_FINISHED_INTERRUPTION:
+    snprintf(message, sizeof(message), "Process %s interrupted by I/O - print",
+             process_interrupted->name);
   }
 
   append_log_message(message, PROCESS_LOG, "interrupted");
@@ -234,4 +239,13 @@ void print_disk_execution(Process *process, Opcode type, int track) {
            get_opcode_string(type), track);
 
   append_log_message(message, DISK_LOG, get_opcode_string(type));
+}
+
+void print_print_execution(Process *process, int time) {
+  char message[256];
+
+  snprintf(message, sizeof(message), "Print requisition from %s for %d seconds",
+           process->name, time);
+
+  append_log_message(message, DISK_LOG, "Print");
 }

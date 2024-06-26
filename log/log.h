@@ -59,4 +59,9 @@ void print_memory_state_changed();
 /// @param track track of the disk
 void print_disk_execution(Process *process, Opcode type, int track);
 
+/// @brief Prints a print requisition execution message
+/// @param process the process that made the request
+/// @param time time of print execution
+void print_print_execution(Process *process, int time);
+
 #endif

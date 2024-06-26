@@ -32,6 +32,8 @@ add_executable(AlienOS
   log/log.c 
   disk/disk.h
   disk/disk.c
+  print/print.h
+  print/print.c
   )
 
 target_link_libraries(AlienOS ${CURSES_LIBRARIES})

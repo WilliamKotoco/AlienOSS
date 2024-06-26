@@ -63,7 +63,10 @@ static void process_instruction(Process *process, Instruction *instruction) {
     break;
 
   case PRINT:
+    print_requisition(process, instruction);
+
     process->PC++;
+
     break;
 
   case WRITE:
@@ -189,7 +192,7 @@ void process_interrupt(INTERRUPTION_TYPE TYPE) {
   if (scheduler->running_process) {
     /// interruption by trying to access a sempahore or I/O moves the process
     /// to WAIT status.
-    if (TYPE == SEMAPHORE_INTERRUPTION || TYPE == DISK_REQUEST_INTERRUPTION)
+    if (TYPE == SEMAPHORE_INTERRUPTION || TYPE == DISK_REQUEST_INTERRUPTION || TYPE == PRINT_REQUEST_INTERRUPTION)
       scheduler->running_process->status = WAITING;
     else
       scheduler->running_process->status = READY;
@@ -269,6 +272,12 @@ void process_finish_syscall(Process *process) {
 
   /// changes status and deletes from the PCB
   process->status = FINISHED;
+
+  /// deletes from the scheduler's list in case it was in there
+  sem_wait(&scheduler_semaphore);
+  delete_list(scheduler->ready_processes, &process->id);
+  sem_post(&scheduler_semaphore);
+
   delete_list(PCB, &process->id);
 
   /// calls the scheduler to advance scheduling
@@ -309,10 +318,21 @@ void memory_unload_syscall(Process *process) {
 }
 
 void disk_requisition(Process *process, Instruction *instruction) {
+  /// interrupts the process running
   sem_wait(&interrupt_semaphore); /// two threads call this function
   process_interrupt(DISK_REQUEST_INTERRUPTION);
   sem_post(&interrupt_semaphore);
 
   /// creates request based on the instruction
   create_IO_request(process, instruction);
+}
+
+void print_requisition(Process *process, Instruction *instruction) {
+  /// interrupts the process running
+  sem_wait(&interrupt_semaphore); /// two threads call this function
+  process_interrupt(PRINT_REQUEST_INTERRUPTION);
+  sem_post(&interrupt_semaphore);
+
+  /// creates request based on the instruction
+  create_print_request(process, instruction);
 }

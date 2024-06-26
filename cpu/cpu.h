@@ -9,6 +9,7 @@ typedef struct memory Memory;
 #include "../process/process.h"
 #include "../scheduler/scheduler.h"
 #include "../semaphore/semaphore.h"
+#include "../print/print.h"
 #include <pthread.h>
 #include <semaphore.h>
 #include <stdbool.h>
@@ -35,6 +36,8 @@ typedef enum interruption_type {
   QUANTUM_TIME_INTERRUPTION,
   DISK_REQUEST_INTERRUPTION,
   DISK_FINISHED_INTERRUPTION,
+  PRINT_REQUEST_INTERRUPTION,
+  PRINT_FINISHED_INTERRUPTION,
 } INTERRUPTION_TYPE;
 
 ///  @brief  Initializes the CPU thread
@@ -91,5 +94,12 @@ void memory_unload_syscall(Process *process);
 ///  @param process process that made the requisition
 ///  @param instruction instruction
 void disk_requisition(Process *process, Instruction *instruction);
+
+/// @brief Executes a print requisition
+///  @details Creates a print requisition, adds it to the print list and
+///  interrupts the process
+/// @param process process that made the requisition
+/// @param instruction instruction
+void print_requisition(Process *process, Instruction *instruction);
 
 #endif

@@ -4,5 +4,6 @@ dadasilva
 32
 s
 
-write 40
 exec 1000
+P(s)
+exec 500
