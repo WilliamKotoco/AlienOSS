@@ -58,7 +58,7 @@ static void load_disk_state_window(WINDOW **win) {
   box(*win, 0, 0);
 
   wattron(*win, A_BOLD);
-  mvwprintw(*win, 0, 2, "Disk state");
+  mvwprintw(*win, 0, 2, "I/O state");
   wattroff(*win, A_BOLD);
 
   wrefresh(*win);
