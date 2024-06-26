@@ -50,7 +50,7 @@ long read_program_header(char *program_name, Process *process) {
 
   if (!fp) { /// cannot open the file
     printf("Error opening the program named %s", program_name);
-    return -1;
+    exit(1);
   }
 
   char buffer[100];
