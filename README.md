@@ -7,14 +7,15 @@ sudo apt-get install libncurses5-dev libncursesw5-dev
 ## Rodar
 Para rodar o projeto, basta executar os seguintes comandos:
 
+```
 cmake .
 make 
 ./AlienOs
-
+```
 
 
 Caso não dê certo, copiar e colar o seguinte comando para compilar: 
-
+```
 gcc -g -pthread -Wall  \
   main.c \
   ui/main-window.h ui/main-window.c \
@@ -28,3 +29,4 @@ gcc -g -pthread -Wall  \
   log/log.h log/log.c \
   disk/disk.h disk/disk.c \
   print/print.h print/print.c -o AlienOS -lncurses
+```
